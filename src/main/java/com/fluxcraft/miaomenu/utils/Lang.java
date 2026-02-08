@@ -1,4 +1,4 @@
-package com.fluxcraft.miaomenu.utils;
+package com.fluxcraft.MiaoMenu.utils;
 
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;

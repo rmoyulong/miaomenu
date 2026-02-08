@@ -1,7 +1,7 @@
-package com.fluxcraft.miaomenu.listeners;
+package com.fluxcraft.MiaoMenu.listeners;
 
-import com.fluxcraft.miaomenu.MiaoMenu;
-import com.fluxcraft.miaomenu.managers.MenuClockManager;
+import com.fluxcraft.MiaoMenu.MiaoMenu;
+import com.fluxcraft.MiaoMenu.managers.MenuClockManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

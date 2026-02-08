@@ -1,7 +1,7 @@
-package com.fluxcraft.miaomenu.menu.action;
+package com.fluxcraft.MiaoMenu.menu.action;
 
-import com.fluxcraft.miaomenu.javamenu.JavaMenuManager;
-import com.fluxcraft.miaomenu.menu.action.impl.*;
+import com.fluxcraft.MiaoMenu.javamenu.JavaMenuManager;
+import com.fluxcraft.MiaoMenu.menu.action.impl.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import java.util.HashMap;
@@ -20,7 +20,6 @@ public class ActionRegistry {
     private void registerDefaults(JavaMenuManager menuManager) {
         register("player", new PlayerCommandAction());
         register("console", new ConsoleCommandAction());
-        register("op", new OpCommandAction());
         register("message", new MessageAction());
         register("broadcast", new BroadcastAction());
         register("close", new CloseAction());
@@ -40,14 +39,15 @@ public class ActionRegistry {
         String content = rawCommand;
         int bracketStart = rawCommand.indexOf("[");
         int bracketEnd = rawCommand.indexOf("]");
-        if (bracketStart == 0 && bracketEnd > 0) {
+        if (bracketStart == 0 && bracketEnd > bracketStart) {
             prefix = rawCommand.substring(1, bracketEnd).toLowerCase().trim();
             content = rawCommand.substring(bracketEnd + 1).trim();
         }
-        MenuAction action = (prefix != null) ? actions.get(prefix) : defaultAction;
+        MenuAction action = (prefix != null ? actions.get(prefix) : null);
         if (action == null) {
             action = defaultAction;
         }
+
         try {
             action.execute(player, content, plugin);
         } catch (Exception e) {

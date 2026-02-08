@@ -1,4 +1,4 @@
-package com.fluxcraft.miaomenu.menu.action;
+package com.fluxcraft.MiaoMenu.menu.action;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;

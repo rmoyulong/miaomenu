@@ -6,8 +6,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.fluxcraft</groupId>
-    <artifactId>Miaomenu</artifactId>
-    <version>2.1A1</version>
+    <artifactId>MiaoMenu</artifactId>
+    <version>2.2A</version>
     <packaging>jar</packaging>
 
     <name>MiaoMenu</name>
@@ -104,11 +104,11 @@
                             <relocations>
                                 <relocation>
                                     <pattern>org.bstats</pattern>
-                                    <shadedPattern>com.fluxcraft.miaomenu.libs.bstats</shadedPattern>
+                                    <shadedPattern>com.fluxcraft.MiaoMenu.libs.bstats</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.tcoded.folialib</pattern>
-                                    <shadedPattern>com.fluxcraft.miaomenu.lib.folialib</shadedPattern>
+                                    <shadedPattern>com.fluxcraft.MiaoMenu.lib.folialib</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

@@ -1,7 +1,7 @@
-package com.fluxcraft.miaomenu.menu.action.impl;
+package com.fluxcraft.MiaoMenu.menu.action.impl;
 
-import com.fluxcraft.miaomenu.constants.Constants;
-import com.fluxcraft.miaomenu.menu.action.MenuAction;
+import com.fluxcraft.MiaoMenu.constants.Constants;
+import com.fluxcraft.MiaoMenu.menu.action.MenuAction;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;

@@ -1,7 +1,7 @@
-package com.fluxcraft.miaomenu.managers;
+package com.fluxcraft.MiaoMenu.managers;
 
-import com.fluxcraft.miaomenu.MiaoMenu;
-import com.fluxcraft.miaomenu.utils.Lang;
+import com.fluxcraft.MiaoMenu.MiaoMenu;
+import com.fluxcraft.MiaoMenu.utils.Lang;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
@@ -12,10 +12,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class MenuClockManager {
     private final MiaoMenu plugin;
@@ -26,31 +26,28 @@ public class MenuClockManager {
         this.plugin = plugin;
         this.clockKey = clockKey;
     }
-
     public ItemStack createClock() {
         ItemStack clock = new ItemStack(Material.CLOCK);
         ItemMeta meta = clock.getItemMeta();
-
         if (meta != null) {
             String rawName = Lang.get("menu.clock.name");
             Component nameComponent = Component.text(rawName)
                     .decoration(TextDecoration.ITALIC, false);
             meta.displayName(nameComponent);
-
             try {
                 Enchantment unbreaking = Enchantment.getByKey(NamespacedKey.minecraft("unbreaking"));
                 if (unbreaking != null) {
                     meta.addEnchant(unbreaking, 1, true);
                 }
-            } catch (Exception ignored) {}
-
+            } catch (Exception e) {
+                plugin.getLogger().log(Level.FINE, "Failed to apply unbreaking enchantment to menu clock", e);
+            }
             PersistentDataContainer pdc = meta.getPersistentDataContainer();
             pdc.set(clockKey, PersistentDataType.BYTE, (byte) 1);
             clock.setItemMeta(meta);
         }
         return clock;
     }
-
     public boolean isMenuClock(ItemStack item) {
         if (item == null || item.getType() != Material.CLOCK) return false;
         ItemMeta meta = item.getItemMeta();
@@ -59,14 +56,12 @@ public class MenuClockManager {
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
         return pdc.has(clockKey, PersistentDataType.BYTE);
     }
-
     public boolean playerHasClock(Player player) {
         for (ItemStack item : player.getInventory().getContents()) {
             if (isMenuClock(item)) return true;
         }
         return false;
     }
-
     public boolean giveClockToPlayer(Player player) {
         if (playerHasClock(player)) return false;
 
@@ -74,12 +69,10 @@ public class MenuClockManager {
         player.sendMessage(Lang.get("menu.clock.given"));
         return true;
     }
-
     public void openMenuWithClock(Player player) {
         String defaultMenu = this.plugin.getConfig().getString("settings.default-menu", "main");
         this.plugin.getJavaMenuManager().openMenu(player, defaultMenu);
     }
-
     public boolean removeClockFromDrops(Player player, java.util.List<ItemStack> drops) {
         if (drops == null) return false;
         boolean removed = false;
@@ -94,25 +87,23 @@ public class MenuClockManager {
         }
         return removed;
     }
-
     public void ensureClock(Player player) {
         ItemStack clock = createClock();
-
         boolean restoredFromDeath = false;
-
-        if (pendingRestore.containsKey(player.getUniqueId())) {
-            pendingRestore.remove(player.getUniqueId());
+        if (pendingRestore.remove(player.getUniqueId()) != null) { // 使用 remove 直接原子操作
             if (!playerHasClock(player)) {
                 player.getInventory().addItem(clock);
                 player.sendMessage(Lang.get("menu.clock.restored"));
                 restoredFromDeath = true;
             }
         }
-
         if (!playerHasClock(player)) {
             player.getInventory().addItem(clock);
             if (!restoredFromDeath) {
             }
         }
+    }
+    public void cleanupPlayer(Player player) {
+        pendingRestore.remove(player.getUniqueId());
     }
 }

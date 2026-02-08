@@ -1,7 +1,7 @@
-package com.fluxcraft.miaomenu.commands.impl;
+package com.fluxcraft.MiaoMenu.commands.impl;
 
-import com.fluxcraft.miaomenu.commands.PluginCommand;
-import com.fluxcraft.miaomenu.utils.Lang;
+import com.fluxcraft.MiaoMenu.commands.PluginCommand;
+import com.fluxcraft.MiaoMenu.utils.Lang;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;

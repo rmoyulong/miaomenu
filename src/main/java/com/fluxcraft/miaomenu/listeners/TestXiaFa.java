@@ -1,6 +1,6 @@
-package com.fluxcraft.miaomenu.listeners;
+package com.fluxcraft.MiaoMenu.listeners;
 
-import com.fluxcraft.miaomenu.MiaoMenu;
+import com.fluxcraft.MiaoMenu.MiaoMenu;
 
 import java.io.File;
 

@@ -1,4 +1,4 @@
-package com.fluxcraft.miaomenu.commands;
+package com.fluxcraft.MiaoMenu.commands;
 
 import org.bukkit.command.CommandSender;
 

@@ -1,8 +1,8 @@
-package com.fluxcraft.miaomenu.bedrockmenu;
+package com.fluxcraft.MiaoMenu.bedrockmenu;
 
-import com.fluxcraft.miaomenu.MiaoMenu;
-import com.fluxcraft.miaomenu.utils.Lang;
-import com.fluxcraft.miaomenu.utils.PlaceholderUtils;
+import com.fluxcraft.MiaoMenu.MiaoMenu;
+import com.fluxcraft.MiaoMenu.utils.Lang;
+import com.fluxcraft.MiaoMenu.utils.PlaceholderUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.cumulus.util.FormImage;

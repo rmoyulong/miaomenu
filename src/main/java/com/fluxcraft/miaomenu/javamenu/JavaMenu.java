@@ -1,8 +1,8 @@
-package com.fluxcraft.miaomenu.javamenu;
+package com.fluxcraft.MiaoMenu.javamenu;
 
-import com.fluxcraft.miaomenu.constants.Constants;
-import com.fluxcraft.miaomenu.MiaoMenu;
-import com.fluxcraft.miaomenu.utils.PlaceholderUtils;
+import com.fluxcraft.MiaoMenu.constants.Constants;
+import com.fluxcraft.MiaoMenu.MiaoMenu;
+import com.fluxcraft.MiaoMenu.utils.PlaceholderUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;

@@ -1,28 +1,29 @@
-package com.fluxcraft.miaomenu.managers;
+package com.fluxcraft.MiaoMenu.managers;
 
-import com.fluxcraft.miaomenu.MiaoMenu;
-import com.fluxcraft.miaomenu.utils.Lang;
+import com.fluxcraft.MiaoMenu.MiaoMenu;
+import com.fluxcraft.MiaoMenu.utils.Lang;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 public class HotReloadManager {
     private final MiaoMenu plugin;
     private WatchService watchService;
-    private Map<WatchKey, Path> keys;
+    private final Map<WatchKey, Path> keys = new ConcurrentHashMap<>();
     private volatile boolean running = false;
     private static final String JAVA_MENU_DIR = "java_menus";
     private static final String BEDROCK_MENU_DIR = "bedrock_menus";
     private static final String FILE_EXTENSION = ".yml";
+
     public HotReloadManager(MiaoMenu plugin) {
         this.plugin = plugin;
     }
     public void initialize() throws IOException {
         watchService = FileSystems.getDefault().newWatchService();
-        keys = new HashMap<>();
         this.running = true;
         registerDirectory(new File(plugin.getDataFolder(), JAVA_MENU_DIR).toPath());
         registerDirectory(new File(plugin.getDataFolder(), BEDROCK_MENU_DIR).toPath());
@@ -57,8 +58,12 @@ public class HotReloadManager {
                     for (WatchEvent<?> event : key.pollEvents()) {
                         WatchEvent.Kind<?> kind = event.kind();
                         if (kind == StandardWatchEventKinds.OVERFLOW) continue;
+
                         WatchEvent<Path> ev = (WatchEvent<Path>) event;
                         Path filename = ev.context();
+                        Path dir = keys.get(key);
+                        if (dir == null) continue;
+
                         if (filename.toString().endsWith(FILE_EXTENSION)) {
                             String logMsg = Lang.get("hot-reload.detected").replace("{0}", filename.toString());
                             plugin.getLogger().info(logMsg);
@@ -68,9 +73,15 @@ public class HotReloadManager {
                             }, 10L);
                         }
                     }
-                    if (!key.reset()) break;
+                    if (!key.reset()) {
+                        keys.remove(key);
+                        if (keys.isEmpty()) {
+                            break;
+                        }
+                    }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                    break;
                 } catch (Exception e) {
                     plugin.getLogger().log(Level.WARNING, "Error in HotReload watcher loop", e);
                 }
