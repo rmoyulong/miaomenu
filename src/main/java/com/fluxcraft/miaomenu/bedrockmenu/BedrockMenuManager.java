@@ -4,19 +4,18 @@ import com.fluxcraft.miaomenu.miaomenu;
 import com.fluxcraft.miaomenu.menu.action.ActionRegistry;
 import com.fluxcraft.miaomenu.utils.Lang;
 import com.fluxcraft.miaomenu.utils.PlaceholderUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.geysermc.floodgate.api.FloodgateApi;
-
 import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class BedrockMenuManager {
     private final miaomenu plugin;
     private final ActionRegistry actionRegistry;
-    private final Map<String, BedrockMenu> menus = new HashMap<>();
+    private final Map<String, BedrockMenu> menus = new ConcurrentHashMap<>();
     public BedrockMenuManager(miaomenu plugin, ActionRegistry actionRegistry) {
         this.plugin = plugin;
         this.actionRegistry = actionRegistry;
@@ -38,8 +37,17 @@ public class BedrockMenuManager {
         }
     }
     public void openMenu(Player player, String menuName) {
-        if (!FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId())) {
-            player.sendMessage(Lang.get("message.players-only"));
+        if (!Bukkit.getPluginManager().isPluginEnabled("Geyser-Floodgate")) {
+            player.sendMessage(Lang.get("message.players-only") + " (Geyser not detected)");
+            return;
+        }
+        try {
+            if (!org.geysermc.floodgate.api.FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId())) {
+                player.sendMessage(Lang.get("message.players-only"));
+                return;
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Error checking Floodgate player status: " + e.getMessage());
             return;
         }
         BedrockMenu menu = menus.get(menuName);
@@ -47,7 +55,7 @@ public class BedrockMenuManager {
             player.sendMessage(Lang.get("message.menu-not-found") + menuName);
             return;
         }
-        FloodgateApi.getInstance().sendForm(player.getUniqueId(), menu.buildForm(player).validResultHandler(response -> {
+        org.geysermc.floodgate.api.FloodgateApi.getInstance().sendForm(player.getUniqueId(), menu.buildForm(player).validResultHandler(response -> {
             int clickedIndex = response.clickedButtonId();
             if (clickedIndex >= 0 && clickedIndex < menu.getMenuItems().size()) {
                 BedrockMenu.BedrockMenuItem item = menu.getMenuItems().get(clickedIndex);

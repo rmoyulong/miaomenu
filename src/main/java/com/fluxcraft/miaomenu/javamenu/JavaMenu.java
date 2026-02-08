@@ -1,7 +1,7 @@
 package com.fluxcraft.miaomenu.javamenu;
 
-import com.fluxcraft.miaomenu.miaomenu;
 import com.fluxcraft.miaomenu.constants.Constants;
+import com.fluxcraft.miaomenu.miaomenu;
 import com.fluxcraft.miaomenu.utils.PlaceholderUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -25,8 +25,9 @@ public class JavaMenu {
         this.plugin = plugin;
         this.name = name;
         this.title = config.getString("menu_title", config.getString("title", "&6Menu"));
+        // 修复魔法数字：使用 Constants.Config.DEFAULT_MENU_ROWS
         this.size = Math.min(
-                Math.max(config.getInt("rows", 3), Constants.Config.INVENTORY_MIN_ROWS),
+                Math.max(config.getInt("rows", Constants.Config.DEFAULT_MENU_ROWS), Constants.Config.INVENTORY_MIN_ROWS),
                 Constants.Config.INVENTORY_MAX_ROWS
         ) * Constants.Config.INVENTORY_ROW_SIZE;
 
