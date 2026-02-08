@@ -1,7 +1,7 @@
 package com.fluxcraft.miaomenu.javamenu;
 
 import com.fluxcraft.miaomenu.constants.Constants;
-import com.fluxcraft.miaomenu.miaomenu;
+import com.fluxcraft.miaomenu.MiaoMenu;
 import com.fluxcraft.miaomenu.utils.PlaceholderUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -18,14 +18,13 @@ public class JavaMenu {
     private final String name;
     private final String title;
     private final int size;
-    private final miaomenu plugin;
+    private final MiaoMenu plugin;
     private final List<MenuItem> items;
 
-    public JavaMenu(String name, FileConfiguration config, miaomenu plugin) {
+    public JavaMenu(String name, FileConfiguration config, MiaoMenu plugin) {
         this.plugin = plugin;
         this.name = name;
         this.title = config.getString("menu_title", config.getString("title", "&6Menu"));
-        // 修复魔法数字：使用 Constants.Config.DEFAULT_MENU_ROWS
         this.size = Math.min(
                 Math.max(config.getInt("rows", Constants.Config.DEFAULT_MENU_ROWS), Constants.Config.INVENTORY_MIN_ROWS),
                 Constants.Config.INVENTORY_MAX_ROWS
@@ -92,7 +91,7 @@ public class JavaMenu {
             this.commands = commands;
         }
 
-        public ItemStack createItemStack(Player player, miaomenu plugin) {
+        public ItemStack createItemStack(Player player, MiaoMenu plugin) {
             Material mat = Material.matchMaterial(material);
             if (mat == null) mat = Material.STONE;
 

@@ -1,6 +1,6 @@
 package com.fluxcraft.miaomenu.bedrockmenu;
 
-import com.fluxcraft.miaomenu.miaomenu;
+import com.fluxcraft.miaomenu.MiaoMenu;
 import com.fluxcraft.miaomenu.menu.action.ActionRegistry;
 import com.fluxcraft.miaomenu.utils.Lang;
 import com.fluxcraft.miaomenu.utils.PlaceholderUtils;
@@ -13,10 +13,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class BedrockMenuManager {
-    private final miaomenu plugin;
+    private final MiaoMenu plugin;
     private final ActionRegistry actionRegistry;
     private final Map<String, BedrockMenu> menus = new ConcurrentHashMap<>();
-    public BedrockMenuManager(miaomenu plugin, ActionRegistry actionRegistry) {
+    public BedrockMenuManager(MiaoMenu plugin, ActionRegistry actionRegistry) {
         this.plugin = plugin;
         this.actionRegistry = actionRegistry;
     }

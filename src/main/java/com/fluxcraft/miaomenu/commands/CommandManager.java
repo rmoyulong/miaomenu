@@ -1,6 +1,6 @@
 package com.fluxcraft.miaomenu.commands;
 
-import com.fluxcraft.miaomenu.miaomenu;
+import com.fluxcraft.miaomenu.MiaoMenu;
 import com.fluxcraft.miaomenu.commands.impl.*;
 import com.fluxcraft.miaomenu.utils.Lang;
 import org.bukkit.command.Command;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class CommandManager implements CommandExecutor, TabCompleter {
     private final Map<String, PluginCommand> commands = new HashMap<>();
 
-    public CommandManager(miaomenu plugin) {
+    public CommandManager(MiaoMenu plugin) {
         register("open", new OpenCommand(plugin));
         register("reload", new ReloadCommand(plugin));
         register("help", new HelpCommand(List.copyOf(commands.keySet())));

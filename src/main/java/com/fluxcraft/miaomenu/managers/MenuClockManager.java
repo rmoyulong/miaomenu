@@ -1,6 +1,6 @@
 package com.fluxcraft.miaomenu.managers;
 
-import com.fluxcraft.miaomenu.miaomenu;
+import com.fluxcraft.miaomenu.MiaoMenu;
 import com.fluxcraft.miaomenu.utils.Lang;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -18,11 +18,11 @@ import java.util.Map;
 import java.util.UUID;
 
 public class MenuClockManager {
-    private final miaomenu plugin;
+    private final MiaoMenu plugin;
     private final NamespacedKey clockKey;
     private final Map<UUID, Boolean> pendingRestore = new HashMap<>();
 
-    public MenuClockManager(miaomenu plugin, NamespacedKey clockKey) {
+    public MenuClockManager(MiaoMenu plugin, NamespacedKey clockKey) {
         this.plugin = plugin;
         this.clockKey = clockKey;
     }

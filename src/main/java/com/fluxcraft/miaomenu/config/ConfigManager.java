@@ -1,14 +1,14 @@
 package com.fluxcraft.miaomenu.config;
 
-import com.fluxcraft.miaomenu.miaomenu;
+import com.fluxcraft.miaomenu.MiaoMenu;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 
 public class ConfigManager {
-    private final miaomenu plugin;
+    private final MiaoMenu plugin;
 
-    public ConfigManager(miaomenu plugin) {
+    public ConfigManager(MiaoMenu plugin) {
         this.plugin = plugin;
     }
 

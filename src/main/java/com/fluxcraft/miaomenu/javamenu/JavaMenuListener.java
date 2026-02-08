@@ -1,6 +1,6 @@
 package com.fluxcraft.miaomenu.javamenu;
 
-import com.fluxcraft.miaomenu.miaomenu;
+import com.fluxcraft.miaomenu.MiaoMenu;
 import com.fluxcraft.miaomenu.menu.action.ActionRegistry;
 import com.fluxcraft.miaomenu.utils.PlaceholderUtils;
 import org.bukkit.entity.Player;
@@ -13,10 +13,10 @@ import java.util.List;
 
 public class JavaMenuListener implements Listener {
 
-    private final miaomenu plugin;
+    private final MiaoMenu plugin;
     private final ActionRegistry actionRegistry;
 
-    public JavaMenuListener(miaomenu plugin, ActionRegistry actionRegistry) {
+    public JavaMenuListener(MiaoMenu plugin, ActionRegistry actionRegistry) {
         this.plugin = plugin;
         this.actionRegistry = actionRegistry;
     }

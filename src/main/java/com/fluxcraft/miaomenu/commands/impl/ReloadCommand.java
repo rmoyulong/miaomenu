@@ -1,14 +1,14 @@
 package com.fluxcraft.miaomenu.commands.impl;
 
-import com.fluxcraft.miaomenu.miaomenu;
+import com.fluxcraft.miaomenu.MiaoMenu;
 import com.fluxcraft.miaomenu.commands.PluginCommand;
 import com.fluxcraft.miaomenu.utils.Lang;
 import org.bukkit.command.CommandSender;
 
 public class ReloadCommand implements PluginCommand {
-    private final miaomenu plugin;
+    private final MiaoMenu plugin;
 
-    public ReloadCommand(miaomenu plugin) {
+    public ReloadCommand(MiaoMenu plugin) {
         this.plugin = plugin;
     }
 

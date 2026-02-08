@@ -1,6 +1,6 @@
 package com.fluxcraft.miaomenu.javamenu;
 
-import com.fluxcraft.miaomenu.miaomenu;
+import com.fluxcraft.miaomenu.MiaoMenu;
 import com.fluxcraft.miaomenu.utils.Lang;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class JavaMenuManager {
-    private final miaomenu plugin;
+    private final MiaoMenu plugin;
     private final Map<String, JavaMenu> menus = new ConcurrentHashMap<>();
-    public JavaMenuManager(miaomenu plugin) {
+    public JavaMenuManager(MiaoMenu plugin) {
         this.plugin = plugin;
     }
     public void loadAllMenus() {

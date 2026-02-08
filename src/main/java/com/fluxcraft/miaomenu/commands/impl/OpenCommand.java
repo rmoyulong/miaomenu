@@ -1,6 +1,6 @@
 package com.fluxcraft.miaomenu.commands.impl;
 
-import com.fluxcraft.miaomenu.miaomenu;
+import com.fluxcraft.miaomenu.MiaoMenu;
 import com.fluxcraft.miaomenu.commands.PluginCommand;
 import com.fluxcraft.miaomenu.utils.Lang;
 import org.bukkit.command.CommandSender;
@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class OpenCommand implements PluginCommand {
-    private final miaomenu plugin;
+    private final MiaoMenu plugin;
 
-    public OpenCommand(miaomenu plugin) {
+    public OpenCommand(MiaoMenu plugin) {
         this.plugin = plugin;
     }
 

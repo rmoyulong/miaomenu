@@ -1,13 +1,14 @@
 package com.fluxcraft.miaomenu.listeners;
 
-import com.fluxcraft.miaomenu.miaomenu;
+import com.fluxcraft.miaomenu.MiaoMenu;
+
 import java.io.File;
 
 public class TestXiaFa {
 
-    private final miaomenu plugin;
+    private final MiaoMenu plugin;
 
-    public TestXiaFa(miaomenu plugin) {
+    public TestXiaFa(MiaoMenu plugin) {
         this.plugin = plugin;
     }
     public void distribute() {

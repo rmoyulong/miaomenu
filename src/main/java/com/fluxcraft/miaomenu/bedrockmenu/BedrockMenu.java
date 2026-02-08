@@ -1,6 +1,6 @@
 package com.fluxcraft.miaomenu.bedrockmenu;
 
-import com.fluxcraft.miaomenu.miaomenu;
+import com.fluxcraft.miaomenu.MiaoMenu;
 import com.fluxcraft.miaomenu.utils.Lang;
 import com.fluxcraft.miaomenu.utils.PlaceholderUtils;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -29,9 +29,9 @@ public class BedrockMenu {
     private final String name;
     private final FileConfiguration config;
     private final List<BedrockMenuItem> menuItems = new ArrayList<>();
-    private final miaomenu plugin;
+    private final MiaoMenu plugin;
 
-    public BedrockMenu(String name, FileConfiguration config, miaomenu plugin) {
+    public BedrockMenu(String name, FileConfiguration config, MiaoMenu plugin) {
         this.name = name;
         this.config = config;
         this.plugin = plugin;
