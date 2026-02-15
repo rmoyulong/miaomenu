@@ -1,27 +1,21 @@
 #请勿随意更改版本号！！！！
-config-version: 4
+config-version: 6 #config.yml的版本号检测
+menu-version: 1 #test.yml的版本号检测
 
 settings:
-  # 当未指定具体菜单名称时（如玩家右键点击时钟），默认打开的菜单文件名。
-  default-menu: "test"
+  default-menu: "test" #必须修改为其他 test文件会默认被更改 你可以根据模板改完修改文件名进行修改
 
-  # 启用后，插件会实时监控 java_menus 和 bedrock_menus 目录下的文件变化。
-  # 当文件被保存时，无需重启服务器，配置会自动重新加载。
-  hot-reload:
-    enabled: true
+  hot-reload: # 启用后，插件会实时监控 java_menus 和 bedrock_menus 目录下的文件变化。
+    enabled: true # 当文件被保存时，无需重启服务器，配置会自动重新加载。
 
   # 自动生成示例文件开关
   # true  = 插件启动时检测并自动生成 test.yml（仅当文件不存在时生成，只会生成一次）
   # false = 完全跳过示例文件生成逻辑，不检查也不生成
   auto-generate-examples: true
 
-  # 为玩家提供一个特殊的物品（钟表），右键即可打开菜单。
   menu-clock:
-    # 是否启用整个钟表功能（包括事件监听和自动发放）
-    enabled: true
-    # 玩家加入服务器时是否自动给予钟表
-    # 会检测背包中是否已有钟表，避免重复发放。
-    give-on-join: true
+    enabled: true # 是否启用整个钟表功能
+    give-on-join: true # 会检测背包中是否已有钟表，避免重复发放。
 
 # 支持颜色代码：使用 & 符号（例如 &a 代表绿色，&c 代表红色）。
 messages:
@@ -35,9 +29,14 @@ messages:
     config-updated: "&a配置文件已更新至最新版。"
     reloaded: "&a配置重载完成!"
 
-    help:
-      header: "&6=== 欢迎喵！ ==="
-      usage: "&7使用 &f/dgm <子命令> &7来执行"
+  help:
+    header: "&6=== &e你好喵&6==="
+    usage: "&7鼠标悬停查看详情，点击即可执行命令"
+
+  descriptions:
+    open: "&a打开指定的菜单文件"
+    reload: "&c重载插件的配置文件"
+    help: "&e显示此帮助信息"
 
   command:
     unknown: "&c未知的子命令，使用 /dgm help 查看帮助。"
@@ -45,13 +44,10 @@ messages:
 
   menu:
     clock:
-      # 钟表物品名称
       name: "&6菜单钟表 &7(右键打开)"
-      # 进服自动发放时的提示消息
       given: "&a已收到菜单钟表，右键即可打开菜单!"
       restored: "&f你的物品已恢复。"
 
   hot-reload:
-    # 监控启动时的控制台日志
     initialized: "菜单检测自重载已启动."
     detected: "检测到文件变更: {0}，正在重载菜单..."

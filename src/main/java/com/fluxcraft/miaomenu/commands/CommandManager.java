@@ -7,24 +7,45 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class CommandManager implements CommandExecutor, TabCompleter {
-
     private static final String CMD_HELP = "help";
     private final Map<String, PluginCommand> commands = new LinkedHashMap<>();
     private final MiaoMenu plugin;
-
     public CommandManager(@NotNull MiaoMenu plugin) {
         this.plugin = plugin;
+        registerCommands();
+    }
+    private void registerCommands() {
+        Map<String, String> helpDescriptions = loadHelpDescriptions();
         register("open", new OpenCommand(plugin));
         register("reload", new ReloadCommand(plugin));
-        register(CMD_HELP, new HelpCommand(List.copyOf(commands.keySet())));
+        register("help", new ReloadCommand(plugin));
+        register(CMD_HELP, new HelpCommand(helpDescriptions));
+    }
+    @NotNull
+    private Map<String, String> loadHelpDescriptions() {
+        Map<String, String> descriptions = new LinkedHashMap<>();
+        ConfigurationSection section = plugin.getConfig()
+                .getConfigurationSection("messages.message.descriptions");
+
+        if (section != null) {
+            for (String key : section.getKeys(false)) {
+                if (section.isString(key)) {
+                    descriptions.put(key, section.getString(key));
+                }
+            }
+        } else {
+            plugin.getLogger().warning("未在 config.yml 中找到 'messages.message.descriptions' 节点");
+        }
+
+        return descriptions;
     }
     private void register(@NotNull String name, @NotNull PluginCommand command) {
         if (name.isEmpty()) {
@@ -53,11 +74,12 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             dispatchCommand(sender, CMD_HELP, new String[0]);
             return;
         }
+
         try {
             target.execute(sender, args);
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, "An unexpected error occurred while executing command: /" + commandName, e);
-            sender.sendMessage("§cAn internal error occurred while executing this command. Please check the console logs.");
+            sender.sendMessage(Lang.get("open.error"));
         }
     }
     @Override

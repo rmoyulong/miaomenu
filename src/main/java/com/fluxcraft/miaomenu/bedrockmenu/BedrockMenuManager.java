@@ -23,7 +23,10 @@ public class BedrockMenuManager {
     public void loadAllMenus() {
         menus.clear();
         File dir = new File(plugin.getDataFolder(), "bedrock_menus");
-        if (!dir.exists()) dir.mkdirs();
+        if (!dir.exists() && !dir.mkdirs()) {
+            plugin.getLogger().severe("Failed to create bedrock_menus directory! Please check file permissions.");
+            return;
+        }
         File[] files = dir.listFiles((d, n) -> n.endsWith(".yml"));
         if (files == null) return;
         for (File file : files) {
@@ -32,7 +35,7 @@ public class BedrockMenuManager {
                 FileConfiguration config = YamlConfiguration.loadConfiguration(file);
                 menus.put(name, new BedrockMenu(name, config, plugin));
             } catch (Exception e) {
-                plugin.getLogger().warning("Failed to load Bedrock menu: " + file.getName());
+                plugin.getLogger().warning("Failed to load Bedrock menu: " + file.getName() + " | Reason: " + e.getMessage());
             }
         }
     }
@@ -57,7 +60,7 @@ public class BedrockMenuManager {
         }
         org.geysermc.floodgate.api.FloodgateApi.getInstance().sendForm(player.getUniqueId(), menu.buildForm(player).validResultHandler(response -> {
             int clickedIndex = response.clickedButtonId();
-            if (clickedIndex >= 0 && clickedIndex < menu.getMenuItems().size()) {
+            if (clickedIndex < menu.getMenuItems().size()) {
                 BedrockMenu.BedrockMenuItem item = menu.getMenuItems().get(clickedIndex);
                 handleItemClick(player, item);
             }
@@ -71,5 +74,4 @@ public class BedrockMenuManager {
         String parsed = PlaceholderUtils.parse(player, cmd, plugin);
         actionRegistry.dispatch(player, parsed);
     }
-    public Map<String, BedrockMenu> getMenus() { return menus; }
 }

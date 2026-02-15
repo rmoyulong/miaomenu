@@ -7,7 +7,7 @@ menu:
   items: #物品类开始
     - text: "§e§l服务器信息\n§7点击查看服务器状态" #显示的名称
       icon: "textures/items/book_enchanted" #图标路径（可以使用资源包创造专属的图标）
-      icon_type: "path" #默认不要动，该项是因为原来有URL获取图像功能，但因为些许原因去掉了
+      icon_type: "path" #可选项 PATH和URL 若URL icon项则填写图片直链 最佳32x32 64x64
       command: "" #要执行的命令 注:可使用%player%代替玩家名
       execute_as: "player" #可选项console（控制台执行）、message(发送消息)、menu(打开子菜单)、close（关闭菜单）
       #后续都为同样的 请详细耐心为你的玩家打造一个特别的菜单吧！
