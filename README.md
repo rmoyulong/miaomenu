@@ -1,5 +1,9 @@
 # 喵喵菜单 ----喵喵喵喵最适合你的菜单
 ### 本项目为开源项目 欢迎大佬提交Pr
+[![Bukkit API](https://img.shields.io/badge/Spigot-Bukkit%201.21.8-4CC417?style=flat-square&logo=spigot&logoColor=white&labelColor=FFD700)](https://hub.spigotmc.org/javadocs/bukkit/)
+[![Maven](https://img.shields.io/badge/Maven-CB112A?style=flat-square&logo=apachemaven&logoColor=white)](https://maven.apache.org/)
+[![Java](https://img.shields.io/badge/OpenJDK-21+-ED8B00?style=flat-square&logo=openjdk&logoColor=white&labelColor=ED8B00)](https://www.oracle.com/java/)
+[![GitHub](https://img.shields.io/badge/GitHub-MiaoMenu-6e5494?style=flat-square&logo=github&logoColor=white&labelColor=8a2be2&color=0969da)](https://github.com/XingZiNina/MiaoMenu)
 
 ![这是图片](/pic/1.png)
 
