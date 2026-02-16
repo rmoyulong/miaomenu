@@ -1,6 +1,6 @@
 package com.fluxcraft.MiaoMenu.menu.action;
 
-import com.fluxcraft.MiaoMenu.javamenu.JavaMenuManager;
+import com.fluxcraft.MiaoMenu.MiaoMenu;
 import com.fluxcraft.MiaoMenu.menu.action.impl.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -12,18 +12,18 @@ public class ActionRegistry {
     private final Map<String, MenuAction> actions = new HashMap<>();
     private final Plugin plugin;
     private final MenuAction defaultAction;
-    public ActionRegistry(Plugin plugin, JavaMenuManager menuManager) {
+    public ActionRegistry(Plugin plugin) {
         this.plugin = plugin;
         this.defaultAction = new DefaultAction();
-        registerDefaults(menuManager);
+        registerDefaults();
     }
-    private void registerDefaults(JavaMenuManager menuManager) {
+    private void registerDefaults() {
         register("player", new PlayerCommandAction());
         register("console", new ConsoleCommandAction());
         register("message", new MessageAction());
         register("broadcast", new BroadcastAction());
         register("close", new CloseAction());
-        register("menu", new OpenMenuAction(menuManager));
+        register("menu", new OpenMenuAction((MiaoMenu) plugin));
         register("cmd", new ConsoleCommandAction());
     }
     public void register(String prefix, MenuAction action) {
@@ -33,7 +33,6 @@ public class ActionRegistry {
         if (rawCommand == null || rawCommand.trim().isEmpty()) {
             return;
         }
-        rawCommand = rawCommand.replace("%player%", player.getName());
         rawCommand = rawCommand.trim();
         String prefix = null;
         String content = rawCommand;
@@ -47,7 +46,6 @@ public class ActionRegistry {
         if (action == null) {
             action = defaultAction;
         }
-
         try {
             action.execute(player, content, plugin);
         } catch (Exception e) {

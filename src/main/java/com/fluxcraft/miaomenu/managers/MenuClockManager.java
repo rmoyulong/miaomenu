@@ -15,13 +15,11 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class MenuClockManager {
     private final MiaoMenu plugin;
     private final NamespacedKey clockKey;
     private final Map<UUID, Boolean> pendingRestore = new HashMap<>();
-
     public MenuClockManager(MiaoMenu plugin, NamespacedKey clockKey) {
         this.plugin = plugin;
         this.clockKey = clockKey;
@@ -34,14 +32,7 @@ public class MenuClockManager {
             Component nameComponent = Component.text(rawName)
                     .decoration(TextDecoration.ITALIC, false);
             meta.displayName(nameComponent);
-            try {
-                Enchantment unbreaking = Enchantment.getByKey(NamespacedKey.minecraft("unbreaking"));
-                if (unbreaking != null) {
-                    meta.addEnchant(unbreaking, 1, true);
-                }
-            } catch (Exception e) {
-                plugin.getLogger().log(Level.FINE, "Failed to apply unbreaking enchantment to menu clock", e);
-            }
+            meta.addEnchant(Enchantment.UNBREAKING, 1, true);
             PersistentDataContainer pdc = meta.getPersistentDataContainer();
             pdc.set(clockKey, PersistentDataType.BYTE, (byte) 1);
             clock.setItemMeta(meta);
@@ -52,9 +43,7 @@ public class MenuClockManager {
         if (item == null || item.getType() != Material.CLOCK) return false;
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return false;
-
-        PersistentDataContainer pdc = meta.getPersistentDataContainer();
-        return pdc.has(clockKey, PersistentDataType.BYTE);
+        return meta.getPersistentDataContainer().has(clockKey, PersistentDataType.BYTE);
     }
     public boolean playerHasClock(Player player) {
         for (ItemStack item : player.getInventory().getContents()) {
@@ -62,48 +51,37 @@ public class MenuClockManager {
         }
         return false;
     }
-    public boolean giveClockToPlayer(Player player) {
-        if (playerHasClock(player)) return false;
-
-        player.getInventory().addItem(createClock());
-        player.sendMessage(Lang.get("menu.clock.given"));
-        return true;
+    public boolean playerHasNoClock(Player player) {
+        return !playerHasClock(player);
+    }
+    public void giveClockToPlayer(Player player) {
+        if (playerHasNoClock(player)) {
+            player.getInventory().addItem(createClock());
+            player.sendMessage(Lang.get("menu.clock.given"));
+        }
     }
     public void openMenuWithClock(Player player) {
-        String defaultMenu = this.plugin.getConfig().getString("settings.default-menu", "main");
-        this.plugin.getJavaMenuManager().openMenu(player, defaultMenu);
+        String defaultMenu = plugin.getConfig().getString("settings.default-menu", "test");
+        plugin.openSmartMenu(player, defaultMenu);
     }
-    public boolean removeClockFromDrops(Player player, java.util.List<ItemStack> drops) {
-        if (drops == null) return false;
-        boolean removed = false;
-        for (int i = 0; i < drops.size(); i++) {
-            ItemStack drop = drops.get(i);
-            if (isMenuClock(drop)) {
-                drops.remove(i);
-                i--;
-                removed = true;
-                pendingRestore.put(player.getUniqueId(), true);
+    public void removeClockFromDrops(Player player, java.util.List<ItemStack> drops) {
+        if (drops != null) {
+            for (int i = 0; i < drops.size(); i++) {
+                if (isMenuClock(drops.get(i))) {
+                    drops.remove(i);
+                    i--;
+                    pendingRestore.put(player.getUniqueId(), true);
+                }
             }
         }
-        return removed;
     }
     public void ensureClock(Player player) {
-        ItemStack clock = createClock();
-        boolean restoredFromDeath = false;
-        if (pendingRestore.remove(player.getUniqueId()) != null) { // 使用 remove 直接原子操作
-            if (!playerHasClock(player)) {
-                player.getInventory().addItem(clock);
-                player.sendMessage(Lang.get("menu.clock.restored"));
-                restoredFromDeath = true;
-            }
+        boolean restoredFromDeath = pendingRestore.remove(player.getUniqueId()) != null;
+        if (restoredFromDeath && playerHasNoClock(player)) {
+            player.getInventory().addItem(createClock());
+            player.sendMessage(Lang.get("menu.clock.restored"));
+        } else if (playerHasNoClock(player)) {
+            player.getInventory().addItem(createClock());
         }
-        if (!playerHasClock(player)) {
-            player.getInventory().addItem(clock);
-            if (!restoredFromDeath) {
-            }
-        }
-    }
-    public void cleanupPlayer(Player player) {
-        pendingRestore.remove(player.getUniqueId());
     }
 }

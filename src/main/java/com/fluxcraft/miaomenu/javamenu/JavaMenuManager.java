@@ -13,11 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JavaMenuManager {
     private final MiaoMenu plugin;
     private volatile Map<String, JavaMenu> menus = Collections.emptyMap();
-
     public JavaMenuManager(MiaoMenu plugin) {
         this.plugin = plugin;
     }
-
     public void loadAllMenus() {
         Map<String, JavaMenu> newMenus = new ConcurrentHashMap<>();
         File dir = new File(plugin.getDataFolder(), "java_menus");
@@ -31,14 +29,13 @@ public class JavaMenuManager {
             try {
                 String name = file.getName().replace(".yml", "");
                 FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-                newMenus.put(name, new JavaMenu(name, config, plugin));
+                newMenus.put(name, new JavaMenu(config, plugin));
             } catch (Exception e) {
                 plugin.getLogger().warning("Failed to load menu: " + file.getName());
             }
         }
         this.menus = newMenus;
     }
-
     public void openMenu(Player player, String menuName) {
         JavaMenu menu = menus.get(menuName);
         if (menu == null) {

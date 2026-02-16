@@ -10,6 +10,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -18,10 +19,12 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     private static final String CMD_HELP = "help";
     private final Map<String, PluginCommand> commands = new LinkedHashMap<>();
     private final MiaoMenu plugin;
+
     public CommandManager(@NotNull MiaoMenu plugin) {
         this.plugin = plugin;
         registerCommands();
     }
+
     private void registerCommands() {
         Map<String, String> helpDescriptions = loadHelpDescriptions();
         register("open", new OpenCommand(plugin));
@@ -29,6 +32,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         register("help", new ReloadCommand(plugin));
         register(CMD_HELP, new HelpCommand(helpDescriptions));
     }
+
     @NotNull
     private Map<String, String> loadHelpDescriptions() {
         Map<String, String> descriptions = new LinkedHashMap<>();
@@ -47,17 +51,16 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
         return descriptions;
     }
+
     private void register(@NotNull String name, @NotNull PluginCommand command) {
         if (name.isEmpty()) {
             throw new IllegalArgumentException("Command name cannot be empty");
         }
         commands.put(name.toLowerCase(), command);
     }
+
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (args == null) {
-            args = new String[0];
-        }
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NonNull [] args) {
         if (args.length == 0) {
             dispatchCommand(sender, CMD_HELP, new String[0]);
             return true;
@@ -67,6 +70,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         dispatchCommand(sender, subCommandName, subArgs);
         return true;
     }
+
     private void dispatchCommand(@NotNull CommandSender sender, @NotNull String commandName, @NotNull String[] args) {
         PluginCommand target = commands.get(commandName);
         if (target == null) {
@@ -82,11 +86,9 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             sender.sendMessage(Lang.get("open.error"));
         }
     }
+
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        if (args == null) {
-            return Collections.emptyList();
-        }
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String @NonNull [] args) {
         if (args.length == 1) {
             return commands.keySet().stream()
                     .filter(key -> key.startsWith(args[0].toLowerCase()))

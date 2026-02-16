@@ -11,10 +11,8 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import java.util.List;
 
 public class JavaMenuListener implements Listener {
-
     private final MiaoMenu plugin;
     private final ActionRegistry actionRegistry;
-
     public JavaMenuListener(MiaoMenu plugin, ActionRegistry actionRegistry) {
         this.plugin = plugin;
         this.actionRegistry = actionRegistry;

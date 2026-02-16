@@ -3,12 +3,12 @@ package com.fluxcraft.MiaoMenu.bedrockmenu;
 import com.fluxcraft.MiaoMenu.MiaoMenu;
 import com.fluxcraft.MiaoMenu.utils.Lang;
 import com.fluxcraft.MiaoMenu.utils.PlaceholderUtils;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.geysermc.cumulus.form.SimpleForm;
 import org.geysermc.cumulus.util.FormImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class BedrockMenu {
 
@@ -44,11 +44,11 @@ public class BedrockMenu {
             return;
         }
         for (Object itemObj : items) {
-            if (itemObj instanceof ConfigurationSection section) {
-                String text = section.getString(ConfigKeys.TEXT, ConfigKeys.DEFAULT_TEXT);
-                String icon = section.getString(ConfigKeys.ICON, "");
-                String iconType = section.getString(ConfigKeys.ICON_TYPE, ConfigKeys.DEFAULT_ICON_TYPE);
-                String command = section.getString(ConfigKeys.COMMAND, "");
+            if (itemObj instanceof Map<?, ?> map) {
+                String text = map.get(ConfigKeys.TEXT) != null ? map.get(ConfigKeys.TEXT).toString() : ConfigKeys.DEFAULT_TEXT;
+                String icon = map.get(ConfigKeys.ICON) != null ? map.get(ConfigKeys.ICON).toString() : "";
+                String iconType = map.get(ConfigKeys.ICON_TYPE) != null ? map.get(ConfigKeys.ICON_TYPE).toString() : ConfigKeys.DEFAULT_ICON_TYPE;
+                String command = map.get(ConfigKeys.COMMAND) != null ? map.get(ConfigKeys.COMMAND).toString() : "";
                 menuItems.add(new BedrockMenuItem(text, icon, iconType, command));
             }
         }

@@ -1,19 +1,17 @@
 package com.fluxcraft.MiaoMenu.menu.action.impl;
 
-import com.fluxcraft.MiaoMenu.javamenu.JavaMenuManager;
+import com.fluxcraft.MiaoMenu.MiaoMenu;
 import com.fluxcraft.MiaoMenu.menu.action.MenuAction;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class OpenMenuAction implements MenuAction {
-    private final JavaMenuManager menuManager;
-
-    public OpenMenuAction(JavaMenuManager menuManager) {
-        this.menuManager = menuManager;
+    private final MiaoMenu plugin;
+    public OpenMenuAction(MiaoMenu plugin) {
+        this.plugin = plugin;
     }
-
     @Override
     public void execute(Player player, String content, Plugin plugin) {
-        menuManager.openMenu(player, content);
+        this.plugin.openSmartMenu(player, content);
     }
 }

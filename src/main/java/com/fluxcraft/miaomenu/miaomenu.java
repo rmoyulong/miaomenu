@@ -7,7 +7,6 @@ import com.fluxcraft.MiaoMenu.javamenu.JavaMenuManager;
 import com.fluxcraft.MiaoMenu.menu.action.ActionRegistry;
 import com.fluxcraft.MiaoMenu.managers.HotReloadManager;
 import com.fluxcraft.MiaoMenu.managers.MenuClockManager;
-import com.fluxcraft.MiaoMenu.bedrockmenu.BedrockMenuListener;
 import com.fluxcraft.MiaoMenu.bedrockmenu.BedrockMenuManager;
 import com.fluxcraft.MiaoMenu.listeners.ClockInteractionListener;
 import com.fluxcraft.MiaoMenu.listeners.PlayerLifecycleListener;
@@ -15,10 +14,10 @@ import com.fluxcraft.MiaoMenu.utils.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import java.util.logging.Level;
 import java.util.stream.Stream;
-
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 
@@ -46,18 +45,20 @@ public final class MiaoMenu extends JavaPlugin {
             configManager.loadConfig();
             configManager.checkAndRefreshMenus(MENU_VERSION);
             this.javaMenuManager = new JavaMenuManager(this);
-            ActionRegistry actionRegistry = new ActionRegistry(this, javaMenuManager);
+            ActionRegistry actionRegistry = new ActionRegistry(this);
             this.bedrockMenuManager = new BedrockMenuManager(this, actionRegistry);
             this.commandManager = new CommandManager(this);
             MenuClockManager clockManager = new MenuClockManager(this, clockKey);
             this.hotReloadManager = new HotReloadManager(this);
             getServer().getPluginManager().registerEvents(new JavaMenuListener(this, actionRegistry), this);
-            getServer().getPluginManager().registerEvents(new BedrockMenuListener(), this);
             getServer().getPluginManager().registerEvents(new ClockInteractionListener(clockManager), this);
             getServer().getPluginManager().registerEvents(new PlayerLifecycleListener(this, clockManager), this);
+
             registerCommands();
+
             javaMenuManager.loadAllMenus();
             bedrockMenuManager.loadAllMenus();
+
             if (configManager.getConfig().getBoolean("settings.hot-reload.enabled", true)) {
                 try {
                     hotReloadManager.initialize();
@@ -72,12 +73,14 @@ public final class MiaoMenu extends JavaPlugin {
             throw new RuntimeException("Fatal error during MiaoMenu enable", e);
         }
     }
+
     @Override
     public void onDisable() {
         if (hotReloadManager != null) {
             hotReloadManager.shutdown();
         }
     }
+
     private void registerCommands() {
         PluginCommand command = getCommand(MAIN_COMMAND);
         if (command != null) {
@@ -87,6 +90,7 @@ public final class MiaoMenu extends JavaPlugin {
             getLogger().severe("Failed to register command '" + MAIN_COMMAND + "'. Please check your plugin.yml.");
         }
     }
+
     private void checkAndRefreshConfig() {
         int currentVersion = getConfig().getInt("config-version", 0);
         if (currentVersion < CONFIG_VERSION) {
@@ -97,6 +101,21 @@ public final class MiaoMenu extends JavaPlugin {
             getLogger().info(Lang.get("message.config-updated"));
         }
     }
+
+    public void openSmartMenu(Player player, String menuName) {
+        try {
+            org.geysermc.floodgate.api.FloodgateApi api = org.geysermc.floodgate.api.FloodgateApi.getInstance();
+            if (api != null && api.isFloodgatePlayer(player.getUniqueId())) {
+                bedrockMenuManager.openMenu(player, menuName);
+            } else {
+                javaMenuManager.openMenu(player, menuName);
+            }
+        } catch (Exception e) {
+            getLogger().log(Level.WARNING, "Error detecting platform for player " + player.getName() + ", defaulting to Java menu.", e);
+            javaMenuManager.openMenu(player, menuName);
+        }
+    }
+
     private void initializeBStats() {
         try {
             Metrics metrics = new Metrics(this, BSTATS_ID);
@@ -106,6 +125,7 @@ public final class MiaoMenu extends JavaPlugin {
             getLogger().log(Level.WARNING, "BStats initialization failed", e);
         }
     }
+
     private String detectServerSoftware() {
         String version = Bukkit.getVersion();
         return Stream.of("Paper", "Spigot", "Purpur", "Mint", "Leaves", "Leaf", "Luminol", "Folia")
@@ -113,17 +133,21 @@ public final class MiaoMenu extends JavaPlugin {
                 .findFirst()
                 .orElse("Other");
     }
+
     private String detectMinecraftVersion() {
         String version = Bukkit.getBukkitVersion().split("-")[0];
         int maxLength = Math.min(4, version.length());
         return version.substring(0, maxLength);
     }
+
     public ConfigManager getConfigManager() {
         return configManager;
     }
+
     public JavaMenuManager getJavaMenuManager() {
         return javaMenuManager;
     }
+
     public BedrockMenuManager getBedrockMenuManager() {
         return bedrockMenuManager;
     }

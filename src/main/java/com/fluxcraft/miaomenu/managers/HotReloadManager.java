@@ -2,7 +2,6 @@ package com.fluxcraft.MiaoMenu.managers;
 
 import com.fluxcraft.MiaoMenu.MiaoMenu;
 import com.fluxcraft.MiaoMenu.utils.Lang;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -18,7 +17,6 @@ public class HotReloadManager {
     private static final String JAVA_MENU_DIR = "java_menus";
     private static final String BEDROCK_MENU_DIR = "bedrock_menus";
     private static final String FILE_EXTENSION = ".yml";
-
     public HotReloadManager(MiaoMenu plugin) {
         this.plugin = plugin;
     }
@@ -50,6 +48,7 @@ public class HotReloadManager {
             plugin.getLogger().log(Level.WARNING, "Could not watch directory " + dir, e);
         }
     }
+    @SuppressWarnings("unchecked")
     private void startWatcher() {
         Thread t = new Thread(() -> {
             while (running) {
@@ -58,12 +57,10 @@ public class HotReloadManager {
                     for (WatchEvent<?> event : key.pollEvents()) {
                         WatchEvent.Kind<?> kind = event.kind();
                         if (kind == StandardWatchEventKinds.OVERFLOW) continue;
-
                         WatchEvent<Path> ev = (WatchEvent<Path>) event;
                         Path filename = ev.context();
                         Path dir = keys.get(key);
                         if (dir == null) continue;
-
                         if (filename.toString().endsWith(FILE_EXTENSION)) {
                             String logMsg = Lang.get("hot-reload.detected").replace("{0}", filename.toString());
                             plugin.getLogger().info(logMsg);
