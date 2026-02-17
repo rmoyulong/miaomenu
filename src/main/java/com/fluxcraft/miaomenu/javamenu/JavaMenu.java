@@ -2,6 +2,7 @@ package com.fluxcraft.MiaoMenu.javamenu;
 
 import com.fluxcraft.MiaoMenu.constants.Constants;
 import com.fluxcraft.MiaoMenu.MiaoMenu;
+import com.fluxcraft.MiaoMenu.integration.CraftEngineIntegration;
 import com.fluxcraft.MiaoMenu.utils.PlaceholderUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -14,6 +15,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,9 +23,11 @@ public class JavaMenu {
     private final String title;
     private final int size;
     private final MiaoMenu plugin;
+    private final CraftEngineIntegration craftEngineIntegration;
     private final List<MenuItem> items;
-    public JavaMenu(FileConfiguration config, MiaoMenu plugin) {
+    public JavaMenu(FileConfiguration config, MiaoMenu plugin, CraftEngineIntegration craftEngineIntegration) {
         this.plugin = plugin;
+        this.craftEngineIntegration = craftEngineIntegration;
         this.title = config.getString("menu_title", config.getString("title", "&6Menu"));
         this.size = Math.min(
                 Math.max(config.getInt("rows", Constants.Config.DEFAULT_MENU_ROWS), Constants.Config.INVENTORY_MIN_ROWS),
@@ -56,7 +60,7 @@ public class JavaMenu {
         Inventory inventory = Bukkit.createInventory(holder, size, titleComponent);
         holder.setInventory(inventory);
         items.forEach(item -> {
-            ItemStack stack = item.createItemStack(player, plugin);
+            ItemStack stack = item.createItemStack(player, plugin, craftEngineIntegration);
             if (stack != null) inventory.setItem(item.getSlot(), stack);
         });
         player.openInventory(inventory);
@@ -85,20 +89,25 @@ public class JavaMenu {
             this.lore = lore;
             this.commands = commands;
         }
-        public ItemStack createItemStack(Player player, MiaoMenu plugin) {
-            Material mat = Material.matchMaterial(material);
-            if (mat == null) mat = Material.STONE;
-            ItemStack item = new ItemStack(mat);
+        public ItemStack createItemStack(Player player, MiaoMenu plugin, @Nullable CraftEngineIntegration craftEngineIntegration) {
+            ItemStack item = craftEngineIntegration != null ? craftEngineIntegration.getItemStack(material) : getVanillaItemStack(material);
             ItemMeta meta = item.getItemMeta();
             if (meta != null) {
                 String displayNameParsed = PlaceholderUtils.parse(player, name, plugin);
                 meta.displayName(LegacyComponentSerializer.legacySection().deserialize(displayNameParsed));
                 List<Component> loreComponents = new ArrayList<>();
-                lore.forEach(line -> loreComponents.add(LegacyComponentSerializer.legacySection().deserialize(PlaceholderUtils.parse(player, line, plugin))));
+                lore.forEach(line -> loreComponents.add(
+                        LegacyComponentSerializer.legacySection().deserialize(PlaceholderUtils.parse(player, line, plugin))
+                ));
                 meta.lore(loreComponents);
                 item.setItemMeta(meta);
             }
             return item;
+        }
+        @NotNull
+        private ItemStack getVanillaItemStack(@NotNull String materialString) {
+            Material mat = Material.matchMaterial(materialString);
+            return new ItemStack(mat != null ? mat : Material.STONE);
         }
         public int getSlot() { return slot; }
         public List<String> getCommands() { return commands; }

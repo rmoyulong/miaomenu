@@ -1,53 +1,66 @@
-#请勿随意更改版本号！！！！
-config-version: 6 #config.yml的版本号检测
-menu-version: 1 #test.yml的版本号检测
-
+# 请勿随意更改版本号！！！！
+config-version: 10 #config.yml的版本号检测
+menu-version: 2 #test.yml的版本号检测
 settings:
-  default-menu: "test" #必须修改为其他 test文件会默认被更改 你可以根据模板改完修改文件名进行修改
+  open-menu-sound: #打开菜单的音效配置
+    enabled: true
+    sound: "entity.experience_orb.pickup" #MC原版的音效
+    volume: 1.0 #音量 范围 0.0-1.0
+    pitch: 1.0 #音调   范围 0.5-2.0
+  default-menu: "test" #默认打开的菜单（与文件名同步无需后缀）
 
-  hot-reload: # 启用后，插件会实时监控 java_menus 和 bedrock_menus 目录下的文件变化。
-    enabled: true # 当文件被保存时，无需重启服务器，配置会自动重新加载。
+  hot-reload:
+    enabled: true # 当文件被保存时，无需输入reload，配置会自动重新加载。
+  auto-generate-examples: true # 自动生成示例文件开关 仅在没有的时候生成
 
-  # 自动生成示例文件开关
-  # true  = 插件启动时检测并自动生成 test.yml（仅当文件不存在时生成，只会生成一次）
-  # false = 完全跳过示例文件生成逻辑，不检查也不生成
-  auto-generate-examples: true
+  # CraftEngine 自定义物品支持
+  craftengine:
+    enabled: true # 是否启用 CraftEngine 自定义物品支持
+    fallback-material: STONE # 当 CraftEngine 未安装或物品不存在时的备用材质
 
   menu-clock:
     enabled: true # 是否启用整个钟表功能
     give-on-join: true # 会检测背包中是否已有钟表，避免重复发放。
 
-# 支持颜色代码：使用 & 符号（例如 &a 代表绿色，&c 代表红色）。
+# 支持&R&G&B颜色格式
 messages:
+  default-item-name: "&6时光之镜 &7(右键打开菜单)"
   message:
-    no-permission: "&c你没有权限执行此命令!"
-    players-only: "&c只有玩家才能执行此命令!"
-    menu-not-found: "&c菜单不存在: "
-    open-error: "&c打开菜单时发生错误，请检查控制台。"
-    invalid-player: "&c玩家不存在或不在线!"
-    config-update-warning: "&e检测到配置文件版本过低，正在自动更新..."
-    config-updated: "&a配置文件已更新至最新版。"
-    reloaded: "&a配置重载完成!"
+    no-permission: "&c✦ 权限不足，你无法触碰这道指令。"
+    players-only: "&c✦ 只有身临其境的冒险者（玩家）才能使用此令。"
+    menu-not-found: "&c✦ 未曾见过名为 &e{0}&c 的菜单，请检查拼写。"
+    error: "&c✦ 操作受阻，请查看控制台探明原因。"
+    invalid-player: "&c✦ 寻无此人，或他已远去（离线）。"
+    config-update-warning: "&e✦ 检测到旧版配置，正在尝试自动更迭..."
+    reloaded: "&a✦ 配置文件已更新，一切就绪。"
+    io-error: "&c✦ 笔触受阻，无法在卷轴上书写（IO错误），请检查封印权限(文件权限)。"
+
+  verbose:
+    config-adding-key: "✦ 拾遗补缺，刻写法则: {0}"
+    config-keys-added: "✦ 卷轴焕新完毕，共增添 {0} 处笔触"
 
   help:
-    header: "&6=== &e你好喵&6==="
-    usage: "&7鼠标悬停查看详情，点击即可执行命令"
+    header: "&6✿ &e你好呀，旅行者 &6✿"
+    usage: "&7✎ 悬停查看详情，轻触以令之行"
 
   descriptions:
-    open: "&a打开指定的菜单文件"
-    reload: "&c重载插件的配置文件"
-    help: "&e显示此帮助信息"
+    open: "&a✦ 翻开指定的魔法卷轴"
+    reload: "&c✦ 让核心法则重焕新生"
+    help: "&e✦ 探索智慧的指引篇章"
 
   command:
-    unknown: "&c未知的子命令，使用 /dgm help 查看帮助。"
-    usage-open: "&c用法: /dgm open <菜单名称>"
+    unknown: "&c✦ 虚空并未回应这句未知的低语，请查阅 /dgm help。"
+    usage-open: "&c✦ 吟唱咒语的真确格式：/dgm open <卷轴名称>"
+
+  open:
+    error: "&c✦ 界面展开失败，请查阅控制台日志。"
 
   menu:
     clock:
-      name: "&6菜单钟表 &7(右键打开)"
-      given: "&a已收到菜单钟表，右键即可打开菜单!"
-      restored: "&f你的物品已恢复。"
+      name: "&6时光之镜 &7(右键打开菜单)"
+      given: "&a✦ 已获赠时光之镜，右键即可映照出菜单！"
+      restored: "&f✦ 物品已完好如初地归还于你。"
 
   hot-reload:
-    initialized: "菜单检测自重载已启动."
-    detected: "检测到文件变更: {0}，正在重载菜单..."
+    initialized: "✦ 菜单的律动已开始（自重载已启动）。"
+    detected: "✦ 感知到波动: {0}，正在重塑菜单..."

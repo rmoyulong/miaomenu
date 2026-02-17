@@ -7,25 +7,29 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
 public class HotReloadManager {
     private final MiaoMenu plugin;
     private WatchService watchService;
     private final Map<WatchKey, Path> keys = new ConcurrentHashMap<>();
     private volatile boolean running = false;
+    private Thread watcherThread;
     private static final String JAVA_MENU_DIR = "java_menus";
     private static final String BEDROCK_MENU_DIR = "bedrock_menus";
+    private static final String CONFIG_FILE = "config.yml";
     private static final String FILE_EXTENSION = ".yml";
+    private static final long DEBOUNCE_DELAY_MS = 500;
+    private long lastConfigReloadTime = 0;
+    private final Map<String, Long> lastMenuReloadTimes = new ConcurrentHashMap<>();
     public HotReloadManager(MiaoMenu plugin) {
         this.plugin = plugin;
     }
     public void initialize() throws IOException {
         watchService = FileSystems.getDefault().newWatchService();
         this.running = true;
+        registerDirectory(plugin.getDataFolder().toPath());
         registerDirectory(new File(plugin.getDataFolder(), JAVA_MENU_DIR).toPath());
         registerDirectory(new File(plugin.getDataFolder(), BEDROCK_MENU_DIR).toPath());
-
         plugin.getLogger().info(Lang.get("hot-reload.initialized"));
         startWatcher();
     }
@@ -34,8 +38,7 @@ public class HotReloadManager {
             try {
                 Files.createDirectories(dir);
             } catch (IOException e) {
-                plugin.getLogger().log(Level.WARNING, "Could not create directory " + dir + ": " + e.getMessage(), e);
-                return;
+                plugin.getLogger().warning(Lang.get("message.io-error"));
             }
         }
         try {
@@ -45,12 +48,12 @@ public class HotReloadManager {
                     StandardWatchEventKinds.ENTRY_DELETE);
             keys.put(key, dir);
         } catch (IOException e) {
-            plugin.getLogger().log(Level.WARNING, "Could not watch directory " + dir, e);
+            plugin.getLogger().warning(Lang.get("message.io-error"));
         }
     }
     @SuppressWarnings("unchecked")
     private void startWatcher() {
-        Thread t = new Thread(() -> {
+        watcherThread = new Thread(() -> {
             while (running) {
                 try {
                     WatchKey key = watchService.take();
@@ -61,8 +64,27 @@ public class HotReloadManager {
                         Path filename = ev.context();
                         Path dir = keys.get(key);
                         if (dir == null) continue;
-                        if (filename.toString().endsWith(FILE_EXTENSION)) {
-                            String logMsg = Lang.get("hot-reload.detected").replace("{0}", filename.toString());
+                        if (filename.toString().equals(CONFIG_FILE) && dir.equals(plugin.getDataFolder().toPath())) {
+                            long currentTime = System.currentTimeMillis();
+                            if (currentTime - lastConfigReloadTime < DEBOUNCE_DELAY_MS) {
+                                continue;
+                            }
+                            lastConfigReloadTime = currentTime;
+                            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                                plugin.getConfigManager().loadConfig();
+                                plugin.getConfigManager().checkAndRefreshMenus();
+                                plugin.getJavaMenuManager().loadAllMenus();
+                                plugin.getBedrockMenuManager().loadAllMenus();
+                            }, 10L);
+                        } else if (filename.toString().endsWith(FILE_EXTENSION)) {
+                            String fileName = filename.toString();
+                            long currentTime = System.currentTimeMillis();
+                            Long lastReload = lastMenuReloadTimes.get(fileName);
+                            if (lastReload != null && currentTime - lastReload < DEBOUNCE_DELAY_MS) {
+                                continue;
+                            }
+                            lastMenuReloadTimes.put(fileName, currentTime);
+                            String logMsg = Lang.get("hot-reload.detected").replace("{0}", fileName);
                             plugin.getLogger().info(logMsg);
                             plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                                 plugin.getJavaMenuManager().loadAllMenus();
@@ -79,21 +101,25 @@ public class HotReloadManager {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     break;
+                } catch (ClosedWatchServiceException e) {
+                    break;
                 } catch (Exception e) {
-                    plugin.getLogger().log(Level.WARNING, "Error in HotReload watcher loop", e);
+                    plugin.getLogger().warning(Lang.get("message.io-error"));
                 }
             }
         }, "DGeyserMenu-HotReload-Thread");
-        t.setDaemon(true);
-        t.start();
+        watcherThread.setDaemon(true);
+        watcherThread.start();
     }
     public void shutdown() {
         running = false;
+        if (watcherThread != null) {
+            watcherThread.interrupt();
+        }
         if (watchService != null) {
             try {
                 watchService.close();
-            } catch (IOException e) {
-                plugin.getLogger().log(Level.WARNING, "Error closing WatchService", e);
+            } catch (IOException ignored) {
             }
         }
     }

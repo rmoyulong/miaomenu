@@ -5,7 +5,8 @@ import org.bukkit.plugin.Plugin;
 
 public final class Lang {
     private static Plugin plugin;
-    private static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.legacyAmpersand();
+    private static final LegacyComponentSerializer AMPERSAND = LegacyComponentSerializer.legacyAmpersand();
+    private static final LegacyComponentSerializer SECTION = LegacyComponentSerializer.legacySection();
     public static void init(Plugin plugin) {
         Lang.plugin = plugin;
     }
@@ -16,8 +17,8 @@ public final class Lang {
             message = plugin.getConfig().getString(key);
         }
         if (message == null) {
-            return "Missing translation: " + key;
+            return key;
         }
-        return SERIALIZER.deserialize(message).toString();
+        return SECTION.serialize(AMPERSAND.deserialize(message));
     }
 }

@@ -4,6 +4,7 @@ import com.fluxcraft.MiaoMenu.MiaoMenu;
 import com.fluxcraft.MiaoMenu.menu.action.ActionRegistry;
 import com.fluxcraft.MiaoMenu.utils.Lang;
 import com.fluxcraft.MiaoMenu.utils.PlaceholderUtils;
+import com.fluxcraft.MiaoMenu.managers.SoundsClock;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -16,13 +17,13 @@ import java.util.logging.Level;
 public class BedrockMenuManager {
     private final MiaoMenu plugin;
     private final ActionRegistry actionRegistry;
+    private final SoundsClock soundsClock;
     private final Map<String, BedrockMenu> menus = new ConcurrentHashMap<>();
-
-    public BedrockMenuManager(MiaoMenu plugin, ActionRegistry actionRegistry) {
+    public BedrockMenuManager(MiaoMenu plugin, ActionRegistry actionRegistry, SoundsClock soundsClock) {
         this.plugin = plugin;
         this.actionRegistry = actionRegistry;
+        this.soundsClock = soundsClock;
     }
-
     public void loadAllMenus() {
         menus.clear();
         File dir = new File(plugin.getDataFolder(), "bedrock_menus");
@@ -42,13 +43,13 @@ public class BedrockMenuManager {
             }
         }
     }
-
     public void openMenu(Player player, String menuName) {
         BedrockMenu menu = menus.get(menuName);
         if (menu == null) {
             player.sendMessage(Lang.get("message.menu-not-found") + menuName);
             return;
         }
+        soundsClock.playMenuOpenSound(player);
         try {
             org.geysermc.floodgate.api.FloodgateApi.getInstance().sendForm(player.getUniqueId(), menu.buildForm(player).validResultHandler(response -> {
                 int clickedIndex = response.clickedButtonId();
@@ -59,10 +60,9 @@ public class BedrockMenuManager {
             }));
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to send form '" + menuName + "' to Bedrock player " + player.getName(), e);
-            player.sendMessage(Lang.get("message.open-error"));
+            player.sendMessage(Lang.get("open.error"));
         }
     }
-
     private void handleItemClick(Player player, BedrockMenu.BedrockMenuItem item) {
         String cmd = item.getCommand();
         if (cmd == null || cmd.isEmpty()) {
@@ -71,7 +71,6 @@ public class BedrockMenuManager {
         String parsed = PlaceholderUtils.parse(player, cmd, plugin);
         actionRegistry.dispatch(player, parsed);
     }
-
     public Map<String, BedrockMenu> getMenus() {
         return Collections.unmodifiableMap(menus);
     }

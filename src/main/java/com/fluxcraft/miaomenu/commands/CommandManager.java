@@ -19,26 +19,21 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     private static final String CMD_HELP = "help";
     private final Map<String, PluginCommand> commands = new LinkedHashMap<>();
     private final MiaoMenu plugin;
-
     public CommandManager(@NotNull MiaoMenu plugin) {
         this.plugin = plugin;
         registerCommands();
     }
-
     private void registerCommands() {
         Map<String, String> helpDescriptions = loadHelpDescriptions();
         register("open", new OpenCommand(plugin));
         register("reload", new ReloadCommand(plugin));
-        register("help", new ReloadCommand(plugin));
         register(CMD_HELP, new HelpCommand(helpDescriptions));
     }
-
     @NotNull
     private Map<String, String> loadHelpDescriptions() {
         Map<String, String> descriptions = new LinkedHashMap<>();
         ConfigurationSection section = plugin.getConfig()
-                .getConfigurationSection("messages.message.descriptions");
-
+                .getConfigurationSection("messages.descriptions");
         if (section != null) {
             for (String key : section.getKeys(false)) {
                 if (section.isString(key)) {
@@ -46,19 +41,16 @@ public class CommandManager implements CommandExecutor, TabCompleter {
                 }
             }
         } else {
-            plugin.getLogger().warning("未在 config.yml 中找到 'messages.message.descriptions' 节点");
+            plugin.getLogger().warning("未在 config.yml 中找到 'messages.descriptions' 节点");
         }
-
         return descriptions;
     }
-
     private void register(@NotNull String name, @NotNull PluginCommand command) {
         if (name.isEmpty()) {
             throw new IllegalArgumentException("Command name cannot be empty");
         }
         commands.put(name.toLowerCase(), command);
     }
-
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NonNull [] args) {
         if (args.length == 0) {
@@ -70,7 +62,6 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         dispatchCommand(sender, subCommandName, subArgs);
         return true;
     }
-
     private void dispatchCommand(@NotNull CommandSender sender, @NotNull String commandName, @NotNull String[] args) {
         PluginCommand target = commands.get(commandName);
         if (target == null) {
@@ -78,7 +69,6 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             dispatchCommand(sender, CMD_HELP, new String[0]);
             return;
         }
-
         try {
             target.execute(sender, args);
         } catch (Exception e) {
@@ -86,7 +76,6 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             sender.sendMessage(Lang.get("open.error"));
         }
     }
-
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String @NonNull [] args) {
         if (args.length == 1) {

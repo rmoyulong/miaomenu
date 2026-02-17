@@ -2,6 +2,11 @@
 <project version="4">
   <component name="RemoteRepositoriesConfiguration">
     <remote-repository>
+      <option name="id" value="momirealms-repo-mirror1" />
+      <option name="name" value="momirealms-repo-mirror1" />
+      <option name="url" value="https://repo-momi.gtemc.cn/releases/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Central Repository" />
       <option name="url" value="https://repo.maven.apache.org/maven2" />
@@ -15,6 +20,11 @@
       <option name="id" value="placeholderapi" />
       <option name="name" value="placeholderapi" />
       <option name="url" value="https://repo.extendedclip.com/content/repositories/placeholderapi/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="momirealms-repo" />
+      <option name="name" value="momirealms-repo" />
+      <option name="url" value="https://repo.momirealms.net/releases/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="central" />
@@ -35,6 +45,11 @@
       <option name="id" value="bstats" />
       <option name="name" value="bstats" />
       <option name="url" value="https://repo.codemc.org/repository/maven-public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="momirealms-repo-mirror2" />
+      <option name="name" value="momirealms-repo-mirror2" />
+      <option name="url" value="https://repo.gtemc.net/releases/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="papermc" />

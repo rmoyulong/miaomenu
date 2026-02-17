@@ -2,15 +2,18 @@ package com.fluxcraft.MiaoMenu;
 
 import com.fluxcraft.MiaoMenu.commands.CommandManager;
 import com.fluxcraft.MiaoMenu.config.ConfigManager;
+import com.fluxcraft.MiaoMenu.integration.CraftEngineIntegration;
 import com.fluxcraft.MiaoMenu.javamenu.JavaMenuListener;
 import com.fluxcraft.MiaoMenu.javamenu.JavaMenuManager;
 import com.fluxcraft.MiaoMenu.menu.action.ActionRegistry;
 import com.fluxcraft.MiaoMenu.managers.HotReloadManager;
 import com.fluxcraft.MiaoMenu.managers.MenuClockManager;
+import com.fluxcraft.MiaoMenu.managers.SoundsClock;
 import com.fluxcraft.MiaoMenu.bedrockmenu.BedrockMenuManager;
 import com.fluxcraft.MiaoMenu.listeners.ClockInteractionListener;
 import com.fluxcraft.MiaoMenu.listeners.PlayerLifecycleListener;
 import com.fluxcraft.MiaoMenu.utils.Lang;
+import cn.handyplus.lib.adapter.HandySchedulerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.PluginCommand;
@@ -22,9 +25,6 @@ import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 
 public final class MiaoMenu extends JavaPlugin {
-
-    private static final int CONFIG_VERSION = 6;
-    private static final int MENU_VERSION = 1;
     private static final int BSTATS_ID = 28979;
     public static final int JOIN_DELAY_TICKS = 20;
     private static final String MAIN_COMMAND = "dgeysermenu";
@@ -33,37 +33,39 @@ public final class MiaoMenu extends JavaPlugin {
     private BedrockMenuManager bedrockMenuManager;
     private CommandManager commandManager;
     private HotReloadManager hotReloadManager;
-
     @Override
     public void onEnable() {
         try {
             saveDefaultConfig();
             Lang.init(this);
+            HandySchedulerUtil.init(this);
             NamespacedKey clockKey = new NamespacedKey(this, "menu_clock");
             this.configManager = new ConfigManager(this);
-            checkAndRefreshConfig();
             configManager.loadConfig();
-            configManager.checkAndRefreshMenus(MENU_VERSION);
-            this.javaMenuManager = new JavaMenuManager(this);
+            configManager.checkAndRefreshMenus();
+            CraftEngineIntegration craftEngineIntegration = new CraftEngineIntegration(
+                    this,
+                    configManager.isCraftEngineEnabled(),
+                    configManager.getCraftEngineFallbackMaterial()
+            );
+            SoundsClock soundsClock = new SoundsClock(this);
             ActionRegistry actionRegistry = new ActionRegistry(this);
-            this.bedrockMenuManager = new BedrockMenuManager(this, actionRegistry);
+            this.javaMenuManager = new JavaMenuManager(this, craftEngineIntegration, soundsClock);
+            this.bedrockMenuManager = new BedrockMenuManager(this, actionRegistry, soundsClock);
             this.commandManager = new CommandManager(this);
             MenuClockManager clockManager = new MenuClockManager(this, clockKey);
             this.hotReloadManager = new HotReloadManager(this);
             getServer().getPluginManager().registerEvents(new JavaMenuListener(this, actionRegistry), this);
             getServer().getPluginManager().registerEvents(new ClockInteractionListener(clockManager), this);
             getServer().getPluginManager().registerEvents(new PlayerLifecycleListener(this, clockManager), this);
-
             registerCommands();
-
             javaMenuManager.loadAllMenus();
             bedrockMenuManager.loadAllMenus();
-
             if (configManager.getConfig().getBoolean("settings.hot-reload.enabled", true)) {
                 try {
                     hotReloadManager.initialize();
                 } catch (Exception e) {
-                    getLogger().log(Level.SEVERE, "Failed to initialize HotReloadManager. Menu hot-reloading will be disabled.", e);
+                    getLogger().log(Level.SEVERE, "Failed to initialize HotReloadManager. Menu hot-reload will be disabled.", e);
                 }
             }
             initializeBStats();
@@ -73,14 +75,12 @@ public final class MiaoMenu extends JavaPlugin {
             throw new RuntimeException("Fatal error during MiaoMenu enable", e);
         }
     }
-
     @Override
     public void onDisable() {
         if (hotReloadManager != null) {
             hotReloadManager.shutdown();
         }
     }
-
     private void registerCommands() {
         PluginCommand command = getCommand(MAIN_COMMAND);
         if (command != null) {
@@ -90,18 +90,6 @@ public final class MiaoMenu extends JavaPlugin {
             getLogger().severe("Failed to register command '" + MAIN_COMMAND + "'. Please check your plugin.yml.");
         }
     }
-
-    private void checkAndRefreshConfig() {
-        int currentVersion = getConfig().getInt("config-version", 0);
-        if (currentVersion < CONFIG_VERSION) {
-            getLogger().warning(Lang.get("message.config-update-warning"));
-            saveResource("config.yml", true);
-            reloadConfig();
-            Lang.init(this);
-            getLogger().info(Lang.get("message.config-updated"));
-        }
-    }
-
     public void openSmartMenu(Player player, String menuName) {
         try {
             org.geysermc.floodgate.api.FloodgateApi api = org.geysermc.floodgate.api.FloodgateApi.getInstance();
@@ -115,7 +103,6 @@ public final class MiaoMenu extends JavaPlugin {
             javaMenuManager.openMenu(player, menuName);
         }
     }
-
     private void initializeBStats() {
         try {
             Metrics metrics = new Metrics(this, BSTATS_ID);
@@ -125,7 +112,6 @@ public final class MiaoMenu extends JavaPlugin {
             getLogger().log(Level.WARNING, "BStats initialization failed", e);
         }
     }
-
     private String detectServerSoftware() {
         String version = Bukkit.getVersion();
         return Stream.of("Paper", "Spigot", "Purpur", "Mint", "Leaves", "Leaf", "Luminol", "Folia")
@@ -133,21 +119,17 @@ public final class MiaoMenu extends JavaPlugin {
                 .findFirst()
                 .orElse("Other");
     }
-
     private String detectMinecraftVersion() {
         String version = Bukkit.getBukkitVersion().split("-")[0];
         int maxLength = Math.min(4, version.length());
         return version.substring(0, maxLength);
     }
-
     public ConfigManager getConfigManager() {
         return configManager;
     }
-
     public JavaMenuManager getJavaMenuManager() {
         return javaMenuManager;
     }
-
     public BedrockMenuManager getBedrockMenuManager() {
         return bedrockMenuManager;
     }
