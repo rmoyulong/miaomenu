@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fluxcraft</groupId>
     <artifactId>MiaoMenu</artifactId>
-    <version>2.3V</version>
+    <version>2.4-7</version>
     <packaging>jar</packaging>
     <name>MiaoMenu</name>
     <description>喵喵最适合你的菜单插件</description>
@@ -17,7 +17,7 @@
         <folialib.version>1.2.3</folialib.version>
         <bstats.version>3.1.0</bstats.version>
         <floodgate.version>2.2.0-SNAPSHOT</floodgate.version>
-        <placeholderapi.version>2.11.7</placeholderapi.version>
+        <placeholderapi.version>2.12.2</placeholderapi.version>
         <commons-lang3.version>3.18.0</commons-lang3.version>
         <craftengine.version>0.0.67</craftengine.version>
     </properties>
@@ -63,6 +63,12 @@
                     <artifactId>commons-lang3</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>dev.folia</groupId>
+            <artifactId>folia-api</artifactId>
+            <version>1.21.8-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>cn.handyplus.lib.adapter</groupId>

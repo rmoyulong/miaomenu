@@ -9,7 +9,7 @@ menu:
       icon: "textures/items/book_enchanted" #图标路径（可以使用资源包创造专属的图标）
       icon_type: "path" #可选项 PATH和URL 若URL icon项则填写图片直链 最佳32x32 64x64
       command: "" #要执行的命令 注:可使用%player%代替玩家名
-      execute_as: "player" #可选项console（控制台执行）、message(发送消息)、menu(打开子菜单)、close（关闭菜单）
+      execute_as: "player" #可选项player(玩家执行) 、cmd（控制台执行）、message(发送消息)、close（关闭菜单）
       #后续都为同样的 请详细耐心为你的玩家打造一个特别的菜单吧！
 
     - text: "§a§l传送功能\n§7快速传送至各个地点"

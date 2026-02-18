@@ -51,25 +51,27 @@ public class BedrockMenuManager {
         }
         soundsClock.playMenuOpenSound(player);
         try {
-            org.geysermc.floodgate.api.FloodgateApi.getInstance().sendForm(player.getUniqueId(), menu.buildForm(player).validResultHandler(response -> {
-                int clickedIndex = response.clickedButtonId();
-                if (clickedIndex < menu.getMenuItems().size()) {
-                    BedrockMenu.BedrockMenuItem item = menu.getMenuItems().get(clickedIndex);
-                    handleItemClick(player, item);
-                }
-            }));
+            FloodgateSender.send(plugin, player, menu, actionRegistry);
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to send form '" + menuName + "' to Bedrock player " + player.getName(), e);
             player.sendMessage(Lang.get("open.error"));
         }
     }
-    private void handleItemClick(Player player, BedrockMenu.BedrockMenuItem item) {
-        String cmd = item.getCommand();
-        if (cmd == null || cmd.isEmpty()) {
-            return;
+    private static class FloodgateSender {
+        static void send(MiaoMenu plugin, Player player, BedrockMenu menu, ActionRegistry actionRegistry) {
+            org.geysermc.floodgate.api.FloodgateApi api = org.geysermc.floodgate.api.FloodgateApi.getInstance();
+            api.sendForm(player.getUniqueId(), menu.buildForm(player).validResultHandler(response -> {
+                int clickedIndex = response.clickedButtonId();
+                if (clickedIndex < menu.getMenuItems().size()) {
+                    BedrockMenu.BedrockMenuItem item = menu.getMenuItems().get(clickedIndex);
+                    String cmd = item.getCommand();
+                    if (cmd != null && !cmd.isEmpty()) {
+                        String parsed = PlaceholderUtils.parse(player, cmd, plugin);
+                        actionRegistry.dispatch(player, parsed);
+                    }
+                }
+            }));
         }
-        String parsed = PlaceholderUtils.parse(player, cmd, plugin);
-        actionRegistry.dispatch(player, parsed);
     }
     public Map<String, BedrockMenu> getMenus() {
         return Collections.unmodifiableMap(menus);

@@ -7,14 +7,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-public class PlayerLifecycleListener implements Listener {
+public class PlayerLifecycleListener_Folia implements Listener {
     private final MiaoMenu plugin;
     private final MenuClockManager clockManager;
-    public PlayerLifecycleListener(MiaoMenu plugin, MenuClockManager clockManager) {
+    public PlayerLifecycleListener_Folia(MiaoMenu plugin, MenuClockManager clockManager) {
         this.plugin = plugin;
         this.clockManager = clockManager;
     }
@@ -29,19 +28,15 @@ public class PlayerLifecycleListener implements Listener {
             }, MiaoMenu.JOIN_DELAY_TICKS);
         }
     }
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onDeath(PlayerDeathEvent event) {
-        clockManager.removeClockFromDrops(event.getEntity(), event.getDrops());
-    }
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRespawn(PlayerRespawnEvent event) {
-        Player player = event.getPlayer();
         if (plugin.getConfig().getBoolean("settings.menu-clock.enabled", true)) {
+            Player player = event.getPlayer();
             FoliaFactory.getAdapter().runTaskLaterForEntity(plugin, player, () -> {
                 if (player.isOnline()) {
-                    clockManager.ensureClock(player);
+                    clockManager.giveClockToPlayer(player);
                 }
-            }, 1L);
+            }, 45L);
         }
     }
 }

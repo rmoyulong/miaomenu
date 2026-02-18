@@ -8,8 +8,8 @@ import java.io.File;
 
 public class ConfigManager {
     private final MiaoMenu plugin;
-    private static final int CONFIG_VERSION = 10;
-    private static final int MENU_VERSION = 2;
+    private static final int CONFIG_VERSION = 11;
+    private static final int MENU_VERSION = 3;
     private static final String JAVA_MENUS_DIR = "java_menus";
     private static final String BEDROCK_MENUS_DIR = "bedrock_menus";
     private static final String MENU_VERSION_KEY = "menu-version";

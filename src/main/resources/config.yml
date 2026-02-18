@@ -1,6 +1,6 @@
 # 请勿随意更改版本号！！！！
-config-version: 10 #config.yml的版本号检测
-menu-version: 2 #test.yml的版本号检测
+config-version: 11 #config.yml的版本号检测
+menu-version: 3 #test.yml的版本号检测
 settings:
   open-menu-sound: #打开菜单的音效配置
     enabled: true
@@ -15,7 +15,7 @@ settings:
 
   # CraftEngine 自定义物品支持
   craftengine:
-    enabled: true # 是否启用 CraftEngine 自定义物品支持
+    enabled: false # 是否启用 CraftEngine 自定义物品支持
     fallback-material: STONE # 当 CraftEngine 未安装或物品不存在时的备用材质
 
   menu-clock:

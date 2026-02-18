@@ -1,6 +1,5 @@
 package com.fluxcraft.MiaoMenu.menu.action;
 
-import com.fluxcraft.MiaoMenu.MiaoMenu;
 import com.fluxcraft.MiaoMenu.menu.action.impl.*;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -18,13 +17,10 @@ public class ActionRegistry {
         registerDefaults();
     }
     private void registerDefaults() {
-        register("player", new PlayerCommandAction());
-        register("console", new ConsoleCommandAction());
+        register("player", new PlayerAction());
         register("message", new MessageAction());
-        register("broadcast", new BroadcastAction());
         register("close", new CloseAction());
-        register("menu", new OpenMenuAction((MiaoMenu) plugin));
-        register("cmd", new ConsoleCommandAction());
+        register("cmd", new CmdAction());
     }
     public void register(String prefix, MenuAction action) {
         actions.put(prefix.toLowerCase(), action);

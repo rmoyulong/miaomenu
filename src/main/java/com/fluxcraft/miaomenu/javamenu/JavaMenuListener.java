@@ -24,8 +24,17 @@ public class JavaMenuListener implements Listener {
                 && event.getClickedInventory().getHolder() instanceof JavaMenu.MenuHolder holder) {
             event.setCancelled(true);
             JavaMenu.MenuItem item = holder.getMenu().getItem(event.getSlot());
-            if (item != null) {
-                executeActions(player, item.getCommands());
+            if (item == null) return;
+            if (event.isLeftClick()) {
+                List<String> commands = item.getLeftClickCommands();
+                if (!commands.isEmpty()) {
+                    executeActions(player, commands);
+                }
+            } else if (event.isRightClick()) {
+                List<String> commands = item.getRightClickCommands();
+                if (!commands.isEmpty()) {
+                    executeActions(player, commands);
+                }
             }
         }
     }

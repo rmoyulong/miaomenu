@@ -19,10 +19,11 @@ items:
       - ""
       - "&e点击查看详细信息"
     left_click_commands: # 说明: 鼠标左键点击时执行的一系列动作 (按顺序执行)
+    # 此处可替换成right_click_commands  left是左键 right是右键
       - "[message] &6=== 服务器信息 ===" # [message] = 发送一条聊天消息给点击的玩家
       - "[player] list" # [player] = 让玩家自己执行后面的命令 (相当于玩家在聊天框输入)
       - "[close]" # [close] = 点击后关闭菜单
-      # 可选项console（控制台执行）、message(发送消息)、menu(打开子菜单)、close（关闭菜单）
+      # 可选项player(玩家执行) 、cmd（控制台执行）、message(发送消息)、close（关闭菜单）
       #下面的均这么设置即可
 
   # 示例物品 2: 传送

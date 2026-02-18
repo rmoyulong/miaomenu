@@ -41,12 +41,15 @@ public class JavaMenu {
         if (section == null) return;
         for (String key : section.getKeys(false)) {
             String path = "items." + key;
+            List<String> leftCmds = config.getStringList(path + ".left_click_commands");
+            List<String> rightCmds = config.getStringList(path + ".right_click_commands");
             items.add(new MenuItem(
                     config.getInt(path + ".slot", 0),
                     config.getString(path + ".material", "STONE"),
                     config.getString(path + ".display_name", "&fItem"),
                     config.getStringList(path + ".lore"),
-                    config.getStringList(path + ".left_click_commands")
+                    leftCmds,
+                    rightCmds
             ));
         }
     }
@@ -71,23 +74,35 @@ public class JavaMenu {
     public static class MenuHolder implements org.bukkit.inventory.InventoryHolder {
         private Inventory inventory;
         private final JavaMenu menu;
-        public MenuHolder(JavaMenu menu) { this.menu = menu; }
-        @Override @NotNull public Inventory getInventory() { return inventory; }
-        public void setInventory(Inventory inventory) { this.inventory = inventory; }
-        public JavaMenu getMenu() { return menu; }
+        public MenuHolder(JavaMenu menu) {
+            this.menu = menu;
+        }
+        @Override
+        @NotNull
+        public Inventory getInventory() {
+            return inventory;
+        }
+        public void setInventory(Inventory inventory) {
+            this.inventory = inventory;
+        }
+        public JavaMenu getMenu() {
+            return menu;
+        }
     }
     public static class MenuItem {
         private final int slot;
         private final String material;
         private final String name;
         private final List<String> lore;
-        private final List<String> commands;
-        public MenuItem(int slot, String material, String name, List<String> lore, List<String> commands) {
+        private final List<String> leftClickCommands;
+        private final List<String> rightClickCommands;
+        public MenuItem(int slot, String material, String name, List<String> lore, List<String> leftClickCommands, List<String> rightClickCommands) {
             this.slot = slot;
             this.material = material;
             this.name = name;
             this.lore = lore;
-            this.commands = commands;
+            this.leftClickCommands = leftClickCommands != null ? leftClickCommands : new ArrayList<>();
+            this.rightClickCommands = rightClickCommands != null ? rightClickCommands : new ArrayList<>();
         }
         public ItemStack createItemStack(Player player, MiaoMenu plugin, @Nullable CraftEngineIntegration craftEngineIntegration) {
             ItemStack item = craftEngineIntegration != null ? craftEngineIntegration.getItemStack(material) : getVanillaItemStack(material);
@@ -109,7 +124,14 @@ public class JavaMenu {
             Material mat = Material.matchMaterial(materialString);
             return new ItemStack(mat != null ? mat : Material.STONE);
         }
-        public int getSlot() { return slot; }
-        public List<String> getCommands() { return commands; }
+        public int getSlot() {
+            return slot;
+        }
+        public List<String> getLeftClickCommands() {
+            return leftClickCommands;
+        }
+        public List<String> getRightClickCommands() {
+            return rightClickCommands;
+        }
     }
 }

@@ -1,7 +1,9 @@
 package com.fluxcraft.MiaoMenu.managers;
 
 import com.fluxcraft.MiaoMenu.MiaoMenu;
+import com.fluxcraft.MiaoMenu.foliacall.FoliaFactory;
 import com.fluxcraft.MiaoMenu.utils.Lang;
+import org.bukkit.Bukkit;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -66,37 +68,31 @@ public class HotReloadManager {
                         if (dir == null) continue;
                         if (filename.toString().equals(CONFIG_FILE) && dir.equals(plugin.getDataFolder().toPath())) {
                             long currentTime = System.currentTimeMillis();
-                            if (currentTime - lastConfigReloadTime < DEBOUNCE_DELAY_MS) {
-                                continue;
-                            }
+                            if (currentTime - lastConfigReloadTime < DEBOUNCE_DELAY_MS) continue;
                             lastConfigReloadTime = currentTime;
-                            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                            scheduleReload(() -> {
                                 plugin.getConfigManager().loadConfig();
                                 plugin.getConfigManager().checkAndRefreshMenus();
                                 plugin.getJavaMenuManager().loadAllMenus();
                                 plugin.getBedrockMenuManager().loadAllMenus();
-                            }, 10L);
+                            });
                         } else if (filename.toString().endsWith(FILE_EXTENSION)) {
                             String fileName = filename.toString();
                             long currentTime = System.currentTimeMillis();
                             Long lastReload = lastMenuReloadTimes.get(fileName);
-                            if (lastReload != null && currentTime - lastReload < DEBOUNCE_DELAY_MS) {
-                                continue;
-                            }
+                            if (lastReload != null && currentTime - lastReload < DEBOUNCE_DELAY_MS) continue;
                             lastMenuReloadTimes.put(fileName, currentTime);
                             String logMsg = Lang.get("hot-reload.detected").replace("{0}", fileName);
                             plugin.getLogger().info(logMsg);
-                            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                            scheduleReload(() -> {
                                 plugin.getJavaMenuManager().loadAllMenus();
                                 plugin.getBedrockMenuManager().loadAllMenus();
-                            }, 10L);
+                            });
                         }
                     }
                     if (!key.reset()) {
                         keys.remove(key);
-                        if (keys.isEmpty()) {
-                            break;
-                        }
+                        if (keys.isEmpty()) break;
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -110,6 +106,13 @@ public class HotReloadManager {
         }, "DGeyserMenu-HotReload-Thread");
         watcherThread.setDaemon(true);
         watcherThread.start();
+    }
+    private void scheduleReload(Runnable task) {
+        if (FoliaFactory.isFolia()) {
+            Bukkit.getGlobalRegionScheduler().runDelayed(plugin, scheduledTask -> task.run(), 10L);
+        } else {
+            Bukkit.getScheduler().runTaskLater(plugin, task, 10L);
+        }
     }
     public void shutdown() {
         running = false;

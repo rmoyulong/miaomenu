@@ -2,9 +2,11 @@ package com.fluxcraft.MiaoMenu;
 
 import com.fluxcraft.MiaoMenu.commands.CommandManager;
 import com.fluxcraft.MiaoMenu.config.ConfigManager;
+import com.fluxcraft.MiaoMenu.foliacall.FoliaFactory;
 import com.fluxcraft.MiaoMenu.integration.CraftEngineIntegration;
 import com.fluxcraft.MiaoMenu.javamenu.JavaMenuListener;
 import com.fluxcraft.MiaoMenu.javamenu.JavaMenuManager;
+import com.fluxcraft.MiaoMenu.listeners.PlayerLifecycleListener_Folia;
 import com.fluxcraft.MiaoMenu.menu.action.ActionRegistry;
 import com.fluxcraft.MiaoMenu.managers.HotReloadManager;
 import com.fluxcraft.MiaoMenu.managers.MenuClockManager;
@@ -19,6 +21,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 import org.bstats.bukkit.Metrics;
@@ -33,6 +36,9 @@ public final class MiaoMenu extends JavaPlugin {
     private BedrockMenuManager bedrockMenuManager;
     private CommandManager commandManager;
     private HotReloadManager hotReloadManager;
+    private Class<?> floodgateApiClass;
+    private Object floodgateApiInstance;
+
     @Override
     public void onEnable() {
         try {
@@ -57,7 +63,11 @@ public final class MiaoMenu extends JavaPlugin {
             this.hotReloadManager = new HotReloadManager(this);
             getServer().getPluginManager().registerEvents(new JavaMenuListener(this, actionRegistry), this);
             getServer().getPluginManager().registerEvents(new ClockInteractionListener(clockManager), this);
-            getServer().getPluginManager().registerEvents(new PlayerLifecycleListener(this, clockManager), this);
+            if (FoliaFactory.isFolia()) {
+                getServer().getPluginManager().registerEvents(new PlayerLifecycleListener_Folia(this, clockManager), this);
+            } else {
+                getServer().getPluginManager().registerEvents(new PlayerLifecycleListener(this, clockManager), this);
+            }
             registerCommands();
             javaMenuManager.loadAllMenus();
             bedrockMenuManager.loadAllMenus();
@@ -69,7 +79,7 @@ public final class MiaoMenu extends JavaPlugin {
                 }
             }
             initializeBStats();
-            getLogger().info("MiaoMenu v" + getName() + " Enabled.");
+            getLogger().info("MiaoMenu v" + getPluginMeta().getVersion() + " Enabled.");
         } catch (Exception e) {
             getLogger().log(Level.SEVERE, "Fatal error occurred while enabling MiaoMenu. Disabling plugin.", e);
             throw new RuntimeException("Fatal error during MiaoMenu enable", e);
@@ -91,16 +101,27 @@ public final class MiaoMenu extends JavaPlugin {
         }
     }
     public void openSmartMenu(Player player, String menuName) {
-        try {
-            org.geysermc.floodgate.api.FloodgateApi api = org.geysermc.floodgate.api.FloodgateApi.getInstance();
-            if (api != null && api.isFloodgatePlayer(player.getUniqueId())) {
-                bedrockMenuManager.openMenu(player, menuName);
-            } else {
-                javaMenuManager.openMenu(player, menuName);
-            }
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING, "Error detecting platform for player " + player.getName() + ", defaulting to Java menu.", e);
+        if (isBedrockPlayer(player)) {
+            bedrockMenuManager.openMenu(player, menuName);
+        } else {
             javaMenuManager.openMenu(player, menuName);
+        }
+    }
+    private boolean isBedrockPlayer(Player player) {
+        if (Bukkit.getPluginManager().getPlugin("floodgate") == null) {
+            return false;
+        }
+        try {
+            if (floodgateApiClass == null) {
+                floodgateApiClass = Class.forName("org.geysermc.floodgate.api.FloodgateApi");
+            }
+            if (floodgateApiInstance == null) {
+                floodgateApiInstance = floodgateApiClass.getMethod("getInstance").invoke(null);
+            }
+            return (Boolean) floodgateApiClass.getMethod("isFloodgatePlayer", UUID.class)
+                    .invoke(floodgateApiInstance, player.getUniqueId());
+        } catch (Exception e) {
+            return false;
         }
     }
     private void initializeBStats() {
