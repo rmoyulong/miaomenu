@@ -1,5 +1,5 @@
 # 请勿随意更改版本号！！！！
-config-version: 11 #config.yml的版本号检测
+config-version: 12 #config.yml的版本号检测
 menu-version: 3 #test.yml的版本号检测
 settings:
   open-menu-sound: #打开菜单的音效配置
@@ -13,6 +13,9 @@ settings:
     enabled: true # 当文件被保存时，无需输入reload，配置会自动重新加载。
   auto-generate-examples: true # 自动生成示例文件开关 仅在没有的时候生成
 
+  # 代理网络配置 (支持BungeeCord和Velocity)
+  velocity-network: true # 是否启用Velocity网络支持（自动检测BungeeCord）
+  
   # CraftEngine 自定义物品支持
   craftengine:
     enabled: false # 是否启用 CraftEngine 自定义物品支持

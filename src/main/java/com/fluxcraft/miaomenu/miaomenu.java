@@ -1,31 +1,35 @@
 package com.fluxcraft.MiaoMenu;
 
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.stream.Stream;
+
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
+import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import com.fluxcraft.MiaoMenu.bedrockmenu.BedrockMenuManager;
 import com.fluxcraft.MiaoMenu.commands.CommandManager;
 import com.fluxcraft.MiaoMenu.config.ConfigManager;
 import com.fluxcraft.MiaoMenu.foliacall.FoliaFactory;
 import com.fluxcraft.MiaoMenu.integration.CraftEngineIntegration;
 import com.fluxcraft.MiaoMenu.javamenu.JavaMenuListener;
 import com.fluxcraft.MiaoMenu.javamenu.JavaMenuManager;
+import com.fluxcraft.MiaoMenu.listeners.ClockInteractionListener;
+import com.fluxcraft.MiaoMenu.listeners.PlayerLifecycleListener;
 import com.fluxcraft.MiaoMenu.listeners.PlayerLifecycleListener_Folia;
-import com.fluxcraft.MiaoMenu.menu.action.ActionRegistry;
 import com.fluxcraft.MiaoMenu.managers.HotReloadManager;
 import com.fluxcraft.MiaoMenu.managers.MenuClockManager;
 import com.fluxcraft.MiaoMenu.managers.SoundsClock;
-import com.fluxcraft.MiaoMenu.bedrockmenu.BedrockMenuManager;
-import com.fluxcraft.MiaoMenu.listeners.ClockInteractionListener;
-import com.fluxcraft.MiaoMenu.listeners.PlayerLifecycleListener;
+import com.fluxcraft.MiaoMenu.menu.action.ActionRegistry;
+import com.fluxcraft.MiaoMenu.proxy.ProxyManager;
 import com.fluxcraft.MiaoMenu.utils.Lang;
+
 import cn.handyplus.lib.adapter.HandySchedulerUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.stream.Stream;
-import org.bstats.bukkit.Metrics;
-import org.bstats.charts.SimplePie;
 
 public final class MiaoMenu extends JavaPlugin {
     private static final int BSTATS_ID = 28979;
@@ -36,6 +40,7 @@ public final class MiaoMenu extends JavaPlugin {
     private BedrockMenuManager bedrockMenuManager;
     private CommandManager commandManager;
     private HotReloadManager hotReloadManager;
+    private ProxyManager proxyManager;
     private Class<?> floodgateApiClass;
     private Object floodgateApiInstance;
 
@@ -61,6 +66,8 @@ public final class MiaoMenu extends JavaPlugin {
             this.commandManager = new CommandManager(this);
             MenuClockManager clockManager = new MenuClockManager(this, clockKey);
             this.hotReloadManager = new HotReloadManager(this);
+            this.proxyManager = new ProxyManager(this);
+            proxyManager.initialize();
             getServer().getPluginManager().registerEvents(new JavaMenuListener(this, actionRegistry), this);
             getServer().getPluginManager().registerEvents(new ClockInteractionListener(clockManager), this);
             if (FoliaFactory.isFolia()) {
@@ -89,6 +96,17 @@ public final class MiaoMenu extends JavaPlugin {
     public void onDisable() {
         if (hotReloadManager != null) {
             hotReloadManager.shutdown();
+        }
+        if (proxyManager != null) {
+            if (getServer().getMessenger().isIncomingChannelRegistered(this, "BungeeCord")) {
+                getServer().getMessenger().unregisterIncomingPluginChannel(this, "BungeeCord");
+            }
+            if (getServer().getMessenger().isOutgoingChannelRegistered(this, "BungeeCord")) {
+                getServer().getMessenger().unregisterOutgoingPluginChannel(this, "BungeeCord");
+            }
+            if (getServer().getMessenger().isOutgoingChannelRegistered(this, "velocity:player")) {
+                getServer().getMessenger().unregisterOutgoingPluginChannel(this, "velocity:player");
+            }
         }
     }
     private void registerCommands() {
@@ -153,5 +171,9 @@ public final class MiaoMenu extends JavaPlugin {
     }
     public BedrockMenuManager getBedrockMenuManager() {
         return bedrockMenuManager;
+    }
+    
+    public ProxyManager getProxyManager() {
+        return proxyManager;
     }
 }
