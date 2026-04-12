@@ -1,14 +1,17 @@
 package com.fluxcraft.MiaoMenu.commands.impl;
 
+import java.util.Map;
+
+import org.bukkit.command.CommandSender;
+
 import com.fluxcraft.MiaoMenu.commands.PluginCommand;
 import com.fluxcraft.MiaoMenu.utils.Lang;
+
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.command.CommandSender;
-import java.util.Map;
 
 public class HelpCommand implements PluginCommand {
     private final Map<String, String> commandDescriptions;
@@ -34,7 +37,7 @@ public class HelpCommand implements PluginCommand {
             Component descComponent = LEGACY_SERIALIZER.deserialize(descRaw);
             sender.sendMessage(
                     Component.empty()
-                            .append(Component.text(" ☛ ").color(NamedTextColor.DARK_GRAY)) // Decorative symbol
+                            .append(Component.text(" ☛ ").color(NamedTextColor.DARK_GRAY))
                             .append(cmdComponent)
                             .append(Component.text(" : ").color(NamedTextColor.GRAY))
                             .append(descComponent)

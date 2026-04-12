@@ -1,20 +1,33 @@
-# 菜单标题 (箱子打开时顶部的名字)
 menu_title: "&6&l主菜单 &7| &f服务器名称"
-
 # 菜单行数 (必须填 1, 2, 3, 4, 5 或 6)
 # 1行 = 9个格子, 6行 = 54个格子 (满)
 rows: 6
-
+# 菜单级条件: 不满足时可提示并回退到其他菜单
+view_requirement:
+  deny_message: "&c你当前还不能打开这个菜单。"
+  fallback_menu: "test"
+  requirements:
+    - type: permission
+      permission: dgeysermenu.use
 items:
   # 这里的 "server_info" 是这个物品的ID，你可以随意修改，不要重复即可
   server_info:
     slot: 10 #图标显示的格数
-    material: KNOWLEDGE_BOOK # 说明: 物品的材质ID (必须是Minecraft原版存在的ID) 我推荐使用MCwiki查询
-    display_name: "&e&l服务器信息"     # 说明: 物品显示的名字 (支持颜色代码 &)
+    # material 支持多种前缀:
+    #   原版材质: KNOWLEDGE_BOOK, PAPER 等
+    #   原版材质 + custom_model_data: 资源包自定义贴图
+    #   craftengine:命名空间:物品ID  → CraftEngine 自定义物品
+    #   itemsadder:命名空间:物品ID  → ItemsAdder 自定义物品
+    #   mmoitems:类型:ID            → MMOItems 自定义物品
+    #   headdb:头颅ID               → HeadDatabase 玩家头颅
+    #   base64head:Base64字符串     → Base64 自定义头颅
+    material: KNOWLEDGE_BOOK
+    custom_model_data: 0 # 资源包贴图ID (0=不使用, 需配合资源包)
+    display_name: "&e&l服务器信息" # 说明: 物品显示的名字 (支持颜色代码 &)
     lore: # 说明: 物品的描述文字 (也就是鼠标放上去看到的几行字)
       - "&7点击查看服务器信息"
       - ""
-      - "&f在线玩家: &a%server_online%&f/&a%server_max_players%"  # 常用变量 (需要安装PlaceholderAPI插件):
+      - "&f在线玩家: &a%server_online%&f/&a%server_max_players%" # 常用变量 (需要安装PlaceholderAPI插件)
       - "&f服务器版本: &a%server_version%"
       - ""
       - "&e点击查看详细信息"
@@ -26,7 +39,6 @@ items:
       # 可选项player(玩家执行) 、cmd（控制台执行）、message(发送消息)、close（关闭菜单）
       #下面的均这么设置即可
 
-  # 示例物品 2: 传送
   teleport_spawn:
     slot: 12
     material: COMPASS
@@ -40,34 +52,66 @@ items:
       - "[player] spawn"
       - "[message] &a已传送至主城!"
 
-  # 示例物品 3: 个人信息
   player_info:
     slot: 14
     material: PLAYER_HEAD
     display_name: "&b&l个人信息"
     lore:
       - "&7查看您的个人信息"
+      - ""
+      - "&f昵称: &e%player_name%"
+      - "&f等级: &a%player_level%"
+      - "&f世界: &b%player_world%"
       - "&f金钱: &6%vault_eco_balance%"
+
+    # 物品条件: 条件不满足时，此按钮显示为锁定状态（灰色材质 + [未解锁]）
+    # 支持旧语法 item_conditions (隐式AND) 和新语法 conditions (支持 AND/OR 嵌套)
+    conditions:
+      operator: AND
+      requirements:
+        - type: placeholder_contains
+          placeholder: "%player_name%"
+          value: ""
+    lock_message: "&c尚未满足查看个人信息的条件。"
     left_click_commands:
       - "[message] &6=== 个人信息 ==="
-      - "[message] &f你的等级很高哦！"
+      - "[message] &f昵称: &e%player_name%"
+      - "[message] &f等级: &a%player_level%"
+      - "[message] &f世界: &b%player_world%"
+      - "[message] &f金钱: &6%vault_eco_balance%"
+      - "[close]"
 
-  # 示例物品 4: 商店
   shop:
     slot: 16
     material: EMERALD
     display_name: "&2&l商店系统"
     lore:
       - "&7打开服务器商店"
+      - ""
+      - "&f购买和出售各种物品"
+      - "&f兑换稀有道具和装备"
+      - ""
+      - "&e点击打开商店"
+    # 条件组合示例: 需要完成成就 且 (VIP权限 或 进度达标) 才能解锁
+    conditions:
+      operator: AND
+      requirements:
+        - type: advancement
+          advancement: "minecraft:story/root"
+      children:
+        - operator: OR
+          requirements:
+            - type: permission
+              permission: "vip.shop"
+            - type: progress
+              objective: "trade_count"
+              value: 5
+    lock_message: "&c需要完成初始故事进度才能使用商店"
     left_click_commands:
-      - "[menu] shop"
-      # [menu] = 直接打开本插件的另一个菜单文件 (shop.yml)
-      # 相当于 dgm open shop
+      - "[player] shop"
 
-  # 示例物品 6: 关闭按钮
   close:
     slot: 49
-    # 第6行最中间的位置 (45+4=49)
     material: BARRIER
     display_name: "&c&l关闭菜单"
     lore:

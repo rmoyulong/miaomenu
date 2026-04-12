@@ -1,5 +1,7 @@
 package com.fluxcraft.MiaoMenu.utils;
 
+import java.util.logging.Level;
+
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -10,6 +12,7 @@ public final class PlaceholderUtils {
     private PlaceholderUtils() {
         throw new UnsupportedOperationException("Utility class");
     }
+
     public static String parse(Player player, String text, Plugin plugin) {
         if (text == null) {
             return "";
@@ -22,9 +25,9 @@ public final class PlaceholderUtils {
         if (player != null && plugin != null && Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             try {
                 text = PlaceholderAPI.setPlaceholders(player, text);
-            } catch (Exception e) {
-                if (plugin.getLogger().isLoggable(java.util.logging.Level.FINE)) {
-                    plugin.getLogger().fine("PlaceholderAPI parse error: " + e.getMessage());
+            } catch (RuntimeException e) {
+                if (plugin.getLogger().isLoggable(Level.FINE)) {
+                    plugin.getLogger().log(Level.FINE, plugin.getName() + " PlaceholderAPI parse failed", e);
                 }
             }
         }

@@ -6,18 +6,15 @@ description: 轻量级Java版和基岩版菜单插件
 author: MingLi
 folia-supported: true
 softdepend: [Floodgate, PlaceholderAPI, CraftEngine]
-
 commands:
   dgeysermenu:
     description: 主命令
     usage: /<command> <open|reload|help>
     aliases: [dgm, fluxmenu]
-
   getmenuclock:
     description: 获取菜单钟表
     usage: /<command>
     permission: dgeysermenu.admin
-
 permissions:
   dgeysermenu.*:
     description: 所有权限
@@ -25,15 +22,12 @@ permissions:
       dgeysermenu.use: true
       dgeysermenu.admin: true
       dgeysermenu.reload: true
-
   dgeysermenu.use:
     description: 使用菜单命令
     default: true
-
   dgeysermenu.admin:
     description: 管理权限
     default: op
-
   dgeysermenu.reload:
     description: 重载插件
     default: op

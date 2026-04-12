@@ -1,8 +1,13 @@
 package com.fluxcraft.MiaoMenu.commands;
 
-import com.fluxcraft.MiaoMenu.MiaoMenu;
-import com.fluxcraft.MiaoMenu.commands.impl.*;
-import com.fluxcraft.MiaoMenu.utils.Lang;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -11,46 +16,54 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
+
+import com.fluxcraft.MiaoMenu.MiaoMenu;
+import com.fluxcraft.MiaoMenu.commands.impl.HelpCommand;
+import com.fluxcraft.MiaoMenu.commands.impl.OpenCommand;
+import com.fluxcraft.MiaoMenu.commands.impl.ReloadCommand;
+import com.fluxcraft.MiaoMenu.utils.Lang;
 
 public class CommandManager implements CommandExecutor, TabCompleter {
     private static final String CMD_HELP = "help";
+
     private final Map<String, PluginCommand> commands = new LinkedHashMap<>();
     private final MiaoMenu plugin;
+
     public CommandManager(@NotNull MiaoMenu plugin) {
         this.plugin = plugin;
         registerCommands();
     }
+
     private void registerCommands() {
         Map<String, String> helpDescriptions = loadHelpDescriptions();
         register("open", new OpenCommand(plugin));
         register("reload", new ReloadCommand(plugin));
         register(CMD_HELP, new HelpCommand(helpDescriptions));
     }
+
     @NotNull
     private Map<String, String> loadHelpDescriptions() {
         Map<String, String> descriptions = new LinkedHashMap<>();
-        ConfigurationSection section = plugin.getConfig()
-                .getConfigurationSection("messages.descriptions");
-        if (section != null) {
-            for (String key : section.getKeys(false)) {
-                if (section.isString(key)) {
-                    descriptions.put(key, section.getString(key));
-                }
+        ConfigurationSection section = plugin.getConfig().getConfigurationSection("messages.descriptions");
+        if (section == null) {
+            plugin.getLogger().warning(Lang.get("log.command.descriptions-missing"));
+            return descriptions;
+        }
+        for (String key : section.getKeys(false)) {
+            if (section.isString(key)) {
+                descriptions.put(key, section.getString(key));
             }
-        } else {
-            plugin.getLogger().warning("Could not find 'messages.descriptions' node in config.yml");
         }
         return descriptions;
     }
+
     private void register(@NotNull String name, @NotNull PluginCommand command) {
         if (name.isEmpty()) {
             throw new IllegalArgumentException("Command name cannot be empty");
         }
         commands.put(name.toLowerCase(), command);
     }
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NonNull [] args) {
         if (args.length == 0) {
@@ -62,6 +75,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         dispatchCommand(sender, subCommandName, subArgs);
         return true;
     }
+
     private void dispatchCommand(@NotNull CommandSender sender, @NotNull String commandName, @NotNull String[] args) {
         PluginCommand target = commands.get(commandName);
         if (target == null) {
@@ -71,11 +85,14 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         }
         try {
             target.execute(sender, args);
-        } catch (Exception e) {
-            plugin.getLogger().log(Level.SEVERE, "An unexpected error occurred while executing command: /" + commandName, e);
+        } catch (RuntimeException e) {
+            plugin.getLogger().log(Level.SEVERE, Lang.get("log.command.execute-failed")
+                    .replace("{0}", commandName)
+                    .replace("{1}", sender.getName()), e);
             sender.sendMessage(Lang.get("open.error"));
         }
     }
+
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String @NonNull [] args) {
         if (args.length == 1) {
