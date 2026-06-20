@@ -20,7 +20,7 @@ Fork 版重點放在 **不改使用者操作習慣**：
 
 ### 無痛轉移（自動匯入舊資料夾）
 
-把 `MiaoMenu_fork-0.2.jar` 直接丟到 `plugins/`，啟動時插件會自動偵測下列舊版資料夾並整批匯入到 `plugins/MiaoMenu_fork/`：
+把 `MiaoMenu_fork-1.0.jar` 直接丟到 `plugins/`，啟動時插件會自動偵測下列舊版資料夾並整批匯入到 `plugins/MiaoMenu_fork/`：
 
 1. `plugins/dmenu/`
 2. `plugins/DGeyserMenu/`
@@ -40,7 +40,7 @@ MiaoMenu_fork 是一款雙端選單插件：
 - 內建選單時鐘、範例選單與權限控制
 - 訊息抽出為獨立 `lang/<language>.yml`，繁中／英文可即時切換
 
-目前版本：`0.2`（Fork 版重新起算；原作為 [Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) 2.7.7.9）
+目前版本：`1.0`（Fork 版穩定首發；Fork 版重新起算，原作為 [Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) 2.7.7.9）
 
 ## 介面預覽
 
@@ -576,7 +576,7 @@ mvn test
 mvn package
 ```
 
-預設產物 `MiaoMenu_fork-0.2.jar` 會生成在 `target/` 目錄下。
+預設產物 `MiaoMenu_fork-1.0.jar` 會生成在 `target/` 目錄下。
 
 ## 常見問題
 
@@ -629,6 +629,13 @@ MiaoMenu_fork 適合以下伺服器：
 - 需要英文／繁中雙語介面
 
 ## 更新日誌
+
+### `1.0`（2026-06-20，穩定首發）
+
+- 經過 `0.1` → `0.2` 兩輪多代理掃描／修補／驗證迴圈後，所有 P0／P1 問題清零，正式升為穩定版本
+- 版本號從 `0.x` 預備期跳升到 `1.0`，代表「使用者操作零變動」的相容承諾通過驗證
+- 三語 README（繁中／英文／簡中）同步至本版，三份 README 都加入完整 changelog
+- 產物改名為 `MiaoMenu_fork-1.0.jar`；本版未動程式邏輯，純文件、版本字串與打包編號變更，與 `0.2` 行為等價
 
 ### `0.2`（2026-06-20，穩定性與遷移）
 

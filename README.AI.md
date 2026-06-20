@@ -5,7 +5,7 @@
 >
 > 此檔給 Claude 閱讀，用以接續歷史脈絡；對外正式說明請改看 `README.md`。
 >
-> **目前版本**：`0.2`（穩定性強化 + 無痛遷移；fork 版重新起算，從原作的 2.7.7.9 歸零）
+> **目前版本**：`1.0`（穩定首發；通過兩輪多代理掃描／修補／驗證迴圈，fork 版重新起算，從原作的 2.7.7.9 歸零）
 
 ## 1. 專案核心用意
 
@@ -128,3 +128,21 @@ MiaoMenu_fork 是 MiaoMenu 的分支版，鎖定 Minecraft Java 26.1.2（含 26.
 | `README.AI.md` | 追加本次軌跡 |
 
 **未動**：原始碼、`pom.xml`、`plugin.yml`、`config.yml`、`lang/*.yml`、`java_menus/*.yml`、`bedrock_menus/*.yml` — 純文件層級的同步，不影響執行行為。
+
+### 2026-06-20 — 升版 0.2 → 1.0（穩定首發）
+
+**動機**：Avery 觀察兩輪多代理修補後問題清零，認為相容承諾已驗證、可從 `0.x` 預備期升為穩定 `1.0`，並要求把三語 README 的 changelog 補齊、重新封裝 jar。
+
+**改動範圍**：
+
+| 檔案 | 行為 |
+|------|------|
+| `pom.xml` | `<version>0.2</version>` → `<version>1.0</version>`；`plugin.yml` 透過 `${project.version}` 自動跟著升，不需另改 |
+| `README.md` | 三處 `0.2` → `1.0`（jar 檔名、目前版本、`mvn package` 產物）；新增 `1.0` changelog 段 |
+| `docs/README-en.md` | 同上對應英文版字串與 changelog |
+| `docs/README-zh.md` | 同上對應簡中版字串與 changelog |
+| `README.AI.md` | 頂端版本標示與本次軌跡更新 |
+
+**驗證**：`mvn -DskipTests clean package` 預期產出 `target/MiaoMenu_fork-1.0.jar`，由於本版未動任何 Java／資源檔，與 `0.2` 行為等價。
+
+**未動**：所有 Java 程式碼、`src/main/resources/` 下的 `plugin.yml`／`config.yml`／`lang/*.yml`／`java_menus/*.yml`／`bedrock_menus/*.yml`。

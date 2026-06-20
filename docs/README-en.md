@@ -7,7 +7,7 @@
 >
 > A lightweight menu plugin for Paper / Folia / Geyser **26.1.2** (with 26.2 alpha compatibility), serving both Java and Bedrock players natively. Ships with `en` (default) and `zh_TW` locales.
 
-**Current version**: `0.2` (Fork numbering, reset from upstream 2.7.7.9)
+**Current version**: `1.0` (Fork stable release; numbering reset from upstream 2.7.7.9)
 
 ---
 
@@ -48,7 +48,7 @@ The only new setting is `language: en|zh_TW` (defaults to `en`). If you keep you
 - (Optional) Velocity / BungeeCord proxy for `server <name>` jumps
 
 ### Install
-1. Drop `MiaoMenu_fork-0.2.jar` into `plugins/`.
+1. Drop `MiaoMenu_fork-1.0.jar` into `plugins/`.
 2. Start the server. The plugin auto-generates `config.yml`, `lang/en.yml`, `lang/zh_TW.yml`, and sample menus.
 3. (If migrating) Old data is auto-imported from legacy folders on the first run.
 4. Edit `config.yml` to change `language: en` / `zh_TW`, or edit menus under `java_menus/` / `bedrock_menus/`.
@@ -145,11 +145,18 @@ language: en      # or zh_TW, or any <code> matching a lang/<code>.yml file
 mvn package
 ```
 
-Output: `target/MiaoMenu_fork-0.2.jar`.
+Output: `target/MiaoMenu_fork-1.0.jar`.
 
 ---
 
 ## Changelog
+
+### `1.0` (2026-06-20, stable release)
+
+- After two rounds of multi-agent scan / fix / verify loops (`0.1` → `0.2`), all P0 / P1 findings are clean — promoted to stable.
+- Version jumps from the `0.x` preview range to `1.0` to signal that the "zero user-facing change" compatibility contract has been validated.
+- Trilingual READMEs (Traditional Chinese / English / Simplified Chinese) are aligned to this version with the full changelog.
+- Build artefact renamed to `MiaoMenu_fork-1.0.jar`. No code logic changed in this release — docs, version strings and packaging numbers only; runtime behaviour is equivalent to `0.2`.
 
 ### `0.2` (2026-06-20, stability & migration)
 

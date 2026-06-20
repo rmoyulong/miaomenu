@@ -7,7 +7,7 @@
 >
 > 面向 Paper / Folia / Geyser **26.1.2**（亦兼容 26.2 alpha）的轻量级菜单插件，同时为 Java 版与基岩版玩家提供原生交互体验，内置 `en` 英文（默认）与 `zh_TW` 繁体中文双语切换。
 
-**当前版本**：`0.2`（Fork 版重新起算；原作为 2.7.7.9）
+**当前版本**：`1.0`（Fork 版稳定首发；Fork 版重新起算，原作为 2.7.7.9）
 
 > 想看繁体中文完整说明，请到仓库根目录的 `README.md`。本文件只列重点。
 
@@ -50,7 +50,7 @@ Fork 版重点放在 **不改使用者操作习惯**：
 - （可选）Velocity / BungeeCord 代理（跨服跳转）
 
 ### 安装步骤
-1. 把 `MiaoMenu_fork-0.2.jar` 丢进 `plugins/`。
+1. 把 `MiaoMenu_fork-1.0.jar` 丢进 `plugins/`。
 2. 启动服务器，自动生成 `config.yml`、`lang/en.yml`、`lang/zh_TW.yml` 与示例选单。
 3. （迁移情境）首次启动会从旧版插件文件夹自动匯入数据。
 4. 修改 `config.yml` 中的 `language: en` / `zh_TW`，或编辑 `java_menus/`、`bedrock_menus/` 内的 YAML。
@@ -147,11 +147,18 @@ language: en      # 或 zh_TW，或任何符合 lang/<code>.yml 的代号
 mvn package
 ```
 
-产物：`target/MiaoMenu_fork-0.2.jar`。
+产物：`target/MiaoMenu_fork-1.0.jar`。
 
 ---
 
 ## 更新日志
+
+### `1.0`（2026-06-20，稳定首发）
+
+- 经过 `0.1` → `0.2` 两轮多代理扫描／修补／验证迴圈后，所有 P0／P1 问题清零，正式升为稳定版本
+- 版本号从 `0.x` 预备期跳升到 `1.0`，代表「使用者操作零变动」的兼容承诺通过验证
+- 三语 README（繁中／英文／简中）同步至本版，三份 README 都加入完整 changelog
+- 产物改名为 `MiaoMenu_fork-1.0.jar`；本版未动程式逻辑，纯文件、版本字串与打包编号变更，与 `0.2` 行为等价
 
 ### `0.2`（2026-06-20，稳定性与迁移）
 
