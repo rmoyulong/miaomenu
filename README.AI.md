@@ -5,7 +5,7 @@
 >
 > 此檔給 Claude 閱讀，用以接續歷史脈絡；對外正式說明請改看 `README.md`。
 >
-> **目前版本**：`0.1`（fork 版重新起算，從原作的 2.7.7.9 歸零）
+> **目前版本**：`0.2`（穩定性強化 + 無痛遷移；fork 版重新起算，從原作的 2.7.7.9 歸零）
 
 ## 1. 專案核心用意
 
@@ -77,3 +77,39 @@ MiaoMenu_fork 是 MiaoMenu 的分支版，鎖定 Minecraft Java 26.1.2（含 26.
 **保留的使用者操作**：`/dgeysermenu`、`/dgm`、`/fluxmenu`、`/mmf`、`/getmenuclock` 指令、`dgeysermenu.*` 權限樹、`config.yml` 所有鍵、`java_menus/*.yml` 與 `bedrock_menus/*.yml` 的 YAML 結構、`config-version: 16` 與 `menu-version: 6` — **全部不變**。
 
 **未動**：核心選單渲染／時鐘／代理／安全模組／範例 yaml／pom.xml。`pom.xml` 沒改用 `<release>21</release>`（屬「低嚴重度建議」，未動以縮小 PR 範圍）；`RequirementServiceTest` 仍因 Byte Buddy 與 Java 25 環境不相容掛測（與本次無關，升版前就存在）。
+
+### 2026-06-20（v0.2）— 多輪掃描/修復循環 + 無痛遷移 + 收斂到 main
+
+**動機**：Avery 要求把整個插件支援最新 mc 版（26.1.2）與 Geyser/Floodgate，並要能無痛從 dmenu/DGeyserMenu/MiaoMenu 等舊資料夾轉移過來。鐵則：執行緒「找問題 → 驗證嚴重性 → 不同子代理修 → 不同子代理驗證 → 連兩輪 clean 才能停」。最終把所有變更收斂到 `main` 分支（本地 + GitHub 都只剩 main）。
+
+**處理流程**：
+1. 子代理 A 全面掃描 → 24 條 findings（4 P0 / 8 P1 / 12 P2）
+2. 主代理親自驗證 P0/P1 真實性（讀檔交叉比對，發現 A 對 HelpCommand 的判斷已被既有程式碼吸收掉）
+3. 主代理修復 → mvn 編譯通過
+4. 子代理 B 獨立驗證 → 8/8 通過，順手指出 softdepend 大小寫
+5. 主代理修 softdepend → 第二輪掃描子代理 C → 0 個 P0/P1（只剩美化），C 順手把寫死的 `[未解鎖]` 抽到 `menu.locked-tag`
+6. 子代理 D 最終驗證 → A-K 全 ✅，循環收斂
+7. 主代理實作 `LegacyDataMigrator`，子代理 E 驗證可上線
+
+**改動範圍（v0.2 新增）**：
+
+| 檔案 | 行為 |
+|------|------|
+| `bedrockmenu/BedrockMenuManager.java` | Floodgate 反射改 lazy（volatile + 雙重檢查 + synchronized），純 Java 環境也能 onEnable；handleClick 改傳真實 `menu.getRequirementBlocks()` |
+| `bedrockmenu/BedrockMenu.java` | 新增 `getRequirementBlocks()` getter；鎖定按鈕標籤改用 `Lang.get("menu.locked-tag")` |
+| `MiaoMenu.java` | 補上 `getmenuclock` 指令 executor（admin 權限 + Player 檢查 + `MenuClockManager#giveClockToPlayer`）；onEnable 最前面呼叫 `LegacyDataMigrator.migrateIfNeeded(this)`；`MenuClockManager` 改為 field 以供指令 executor 使用 |
+| `config/ConfigManager.java` | `MENU_VERSION` 3 → 6（與 `config.yml` 對齊，不再每次啟動覆寫使用者 `test.yml`） |
+| `config/LegacyDataMigrator.java`（新） | 首次啟動偵測 `plugins/dmenu`、`plugins/DGeyserMenu`、`plugins/dgeysermenu`、`plugins/MiaoMenu`，整批 `Files.walk` + `Files.copy` 到本插件 dataFolder；觸發條件嚴格（本資料夾 config.yml 不存在才跑） |
+| `listeners/PlayerLifecycleListener_Folia.java` | 補上 `onDeath`，呼叫 `clockManager.removeClockFromDrops(event.getDrops())`，Folia 上死亡不再噴鐘 |
+| `listeners/ClockInteractionListener.java` | 加入 `if (event.getHand() != EquipmentSlot.HAND) return;` 避免雙手雙觸發 |
+| `menu/action/impl/CmdAction.java` | 在 dispatch 前用 `InputValidator.isSafeCommandContent` 過濾，注入內容拒絕並回送 `unsafe-input` log warning |
+| `resources/plugin.yml` | `softdepend` 內 `Floodgate` → `floodgate` 與其 plugin name 對齊 |
+| `resources/lang/{zh_TW,en}.yml` | `descriptions-missing` 訊息文字更新（已遷移到 lang，不再講 config.yml）|
+| `pom.xml` | `version` 0.1 → 0.2 |
+| `README.md` | 新增「無痛轉移」段、`0.2` changelog；改用「插件」用詞 |
+
+**驗證**：`mvn -DskipTests clean package` BUILD SUCCESS；子代理 B、D、E 三輪獨立驗證全部 ✅。
+
+**未動**：javamenu/、menu/action/（除了 CmdAction）、security/、proxy/ — 核心業務邏輯不動。
+
+**收斂分支**：完成後把 `feat/i18n-26.1.2-fork` 合進 `main`，本地與 GitHub 只剩 `main` 分支，避免 fork 內亂枝。

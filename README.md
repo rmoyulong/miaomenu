@@ -18,6 +18,17 @@ Fork 版重點放在 **不改使用者操作習慣**：
 
 唯一新增的設定是 `language: en|zh_TW`（缺省即 `en`），並把 `config.yml` 內原本的 `messages:` 區塊搬到 `lang/<language>.yml`。若你升級時保留原 `config.yml`，插件啟動會偵測 `config-version` 自動補上新鍵，不會壞掉舊設定。
 
+### 無痛轉移（自動匯入舊資料夾）
+
+把 `MiaoMenu_fork-0.1.jar` 直接丟到 `plugins/`，啟動時插件會自動偵測下列舊版資料夾並整批匯入到 `plugins/MiaoMenu_fork/`：
+
+1. `plugins/dmenu/`
+2. `plugins/DGeyserMenu/`
+3. `plugins/dgeysermenu/`
+4. `plugins/MiaoMenu/`
+
+匯入只在 `plugins/MiaoMenu_fork/config.yml` **不存在**時觸發；舊資料夾原封不動，新資料夾內會出現舊 `config.yml`、`java_menus/`、`bedrock_menus/`、`lang/` 等檔案。若舊 `config-version` 與本版不符，舊 `config.yml` 會被 ConfigManager 自動備份成 `config.yml.old`，並寫入本版預設值，你可以對照備份檔把自訂值挪到新版即可。
+
 ## 專案概覽
 
 MiaoMenu_fork 是一款雙端選單插件：
@@ -619,6 +630,19 @@ MiaoMenu_fork 適合以下伺服器：
 
 ## 更新日誌
 
+### `0.2`（2026-06-20，穩定性與遷移）
+
+- **無痛轉移**：新增 `LegacyDataMigrator`，首次啟動時自動從 `plugins/dmenu`、`plugins/DGeyserMenu`、`plugins/dgeysermenu`、`plugins/MiaoMenu` 匯入舊資料到本插件資料夾
+- **修復：沒裝 Floodgate 時插件啟動失敗**：`BedrockMenuManager` 改為 lazy 反射初始化，純 Java 環境也能 onEnable
+- **修復：`/getmenuclock` 指令未掛載**：補上 executor，含 `dgeysermenu.admin` 權限檢查與 Player 檢查
+- **修復：`MENU_VERSION` 反向設定**：常數 3 → 6，與 `config.yml` 對齊，不再每次啟動覆寫使用者 `test.yml`
+- **修復：Folia 環境玩家死亡會噴鐘**：`PlayerLifecycleListener_Folia` 補上 `onDeath` handler 過濾掉口袋鐘錶
+- **修復：基岩選單 `requirement_blocks` 共用條件失效**：點擊處理改傳真實 blocks map，而非 `Collections.emptyMap()`
+- **安全：阻擋潛在 console 命令注入**：`CmdAction` 接入 `InputValidator.isSafeCommandContent` 過濾，注入內容直接拒絕並回送 `unsafe-input` 訊息
+- **體驗：時鐘右鍵不再雙手雙觸發**：`ClockInteractionListener` 加入 `EquipmentSlot.HAND` 早退
+- **`plugin.yml` softdepend 大小寫修正**：`Floodgate` → `floodgate`，與其實際 plugin name 對齊
+- **多語系：`menu.locked-tag` 抽出**：基岩鎖定按鈕的「[未解鎖]」標籤改由 `lang/<language>.yml` 控制
+
 ### `0.1`（2026-06-20，Fork 起點）
 
 - 跟上 MC 26.x：`paper-api` 1.21.11 → **26.1.2.build.72-stable**、`folia-api` → 26.1.2.build.8-stable
@@ -628,7 +652,7 @@ MiaoMenu_fork 適合以下伺服器：
 - `Lang.load()` 查詢順序：`lang/<language>.yml` → `lang/en.yml` fallback → `config.yml`（向後相容舊用法）
 - 熱重載延伸：`HotReloadManager` 監聽 `lang/` 目錄，編輯語系檔即時生效
 - 指令別名新增 `/mmf`，不影響原本 `/dgm`、`/fluxmenu`、`/dgeysermenu`
-- 改名 `MiaoMenu_fork`：jar 與外掛資料夾改名為 `MiaoMenu_fork`；原本指令、權限節點、設定鍵名「完全沒動」
+- 改名 `MiaoMenu_fork`：jar 與插件資料夾改名為 `MiaoMenu_fork`；原本指令、權限節點、設定鍵名「完全沒動」
 - 中文行文重整：README、設定檔 header、lang 訊息一律改稱「插件」，去掉重複的「（台灣）」尾綴
 
 > 想要看每次變更的「為什麼這樣做」與檔案級別差異，請看 `README.AI.md`。
