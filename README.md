@@ -1,6 +1,6 @@
 # MiaoMenu_fork / 喵喵選單外掛（Fork 版）
 
-[English](./README_en_us.md) | 繁體中文（台灣）
+[English](./README_en_us.md) | 繁體中文
 
 > Fork：<https://github.com/Avery11111101/MiaoMenu_fork>
 > 原作：<https://github.com/Yamada0001/MiaoMenu>
@@ -67,7 +67,7 @@ MiaoMenu_fork 是一款雙端選單外掛：
 
 仿照同作者 [AFly](https://github.com/Avery11111101/AFly) 的架構：
 
-- 內建語系：`en`（預設）、`zh_TW`（繁體中文台灣用語）
+- 內建語系：`en`（預設）、`zh_TW`（繁體中文）
 - 自訂語系：在 `plugins/MiaoMenu_fork/lang/` 內新增 `<code>.yml` 即可
 - 切換方式：編輯 `config.yml` 的 `language: en|zh_TW|...` 後 `/dgm reload`，或直接覆寫 lang 檔，熱重載會即時生效
 - 缺少的鍵會自動 fallback 到 jar 內 `lang/en.yml`，不會出現空訊息

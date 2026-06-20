@@ -37,7 +37,7 @@ MiaoMenu_fork 是 MiaoMenu 的分支版，鎖定 Minecraft Java 26.1.2（含 26.
 | `pom.xml` | `artifactId`/`name` 改 `MiaoMenu_fork`；`paper.api.version` 1.21.11-R0.1-SNAPSHOT → `26.1.2.build.72-stable`；`folia.api.version` → `26.1.2.build.8-stable`；`floodgate.version` 2.2.0-SNAPSHOT → `2.2.5-SNAPSHOT`；新增 `geyser.version` = `2.10.1-SNAPSHOT` 與對應 dependency；頂端加 GitHub header |
 | `src/main/resources/plugin.yml` | 頂端加 GitHub header；`api-version` 1.21 → `'26.1'`；`softdepend` 多加 `Geyser-Spigot`；alias 多加 `mmf` |
 | `src/main/resources/config.yml` | 刪除整個 `messages:` 子樹（移到 `lang/<language>.yml`）；新增 `language: zh_TW`；`config-version` 15 → 16；頂端加雙語 GitHub header |
-| `src/main/resources/lang/zh_TW.yml`（新） | 將原本簡體訊息搬過來轉成繁體（台灣用語），保留顏色碼與 `{0}` 佔位符 |
+| `src/main/resources/lang/zh_TW.yml`（新） | 將原本簡體訊息搬過來轉成繁體，保留顏色碼與 `{0}` 佔位符 |
 | `src/main/resources/lang/en.yml`（新） | 英文翻譯，含原本只在中文出現的 `message/menu/help/descriptions/hot-reload` |
 | `src/main/java/com/fluxcraft/MiaoMenu/utils/Lang.java` | 仿 AFly：保留靜態 `Lang.get(key)` API；新增 `Lang.init(plugin)`（同步釋出 jar 內 lang 檔）、`Lang.load(language)`（fallback en、`setDefaults`）；查詢順序：lang 檔 key → lang 檔 `messages.<key>` → config.yml（向後相容） |
 | `src/main/java/com/fluxcraft/MiaoMenu/config/ConfigManager.java` | `CONFIG_VERSION` 12 → 16；`loadConfig()` 末段呼叫 `Lang.load(語言)` |
