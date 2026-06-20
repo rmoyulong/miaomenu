@@ -630,76 +630,7 @@ MiaoMenu_fork 適合以下伺服器：
 
 ## 更新日誌
 
-### `1.1`（2026-06-20，內部健檢循環）
-
-> 「使用者操作零變動」前提下，做了第二輪「找問題 → 驗證嚴重性 → 修補 → 多代理交叉驗證」迴圈，連續兩位獨立驗證代理判 clean 才收尾。`config.yml`、`java_menus/*.yml`、`bedrock_menus/*.yml`、指令、權限、`config-version`、`menu-version` 全部不變。
-
-#### 安全 / 正確性
-- **權限條件補旁路**：`requirement` 寫 `type: permission` 但漏寫 `permission:` 欄位時，原本會放行 → 改為 fail-closed 直接拒絕，避免設定漏字導致玩家繞過權限。
-- **`material` 容錯**：`java_menus/*.yml` 與 `config.yml` 的 `fallback-material` 若使用者寫成 YAML null（`~`）或空字串，原本會丟 `IllegalArgumentException` 卡住 onEnable / 開選單；改為自動退回 `STONE`。
-- **未知 requirement type 不再靜默**：YAML 拼錯 `type:`（例如 `permssion`）原本會被默默跳過、玩家以為設了條件其實全沒套；改為印一次 warning（同 type 之後靜音，不洗版）。
-- **`ScoreboardManager` null 防護**：早期啟動或 Folia 異常狀態下 `getScoreboardManager()` 可能傳 null；補上 null 檢查，避免條件評估時 NPE。
-- **熱重載 watcher 緒清理**：`HotReloadManager.shutdown()` 改成「先關 `WatchService` → interrupt → `join(1000ms)`」順序，確保插件 disable 時 watcher 緒能正確結束。
-- **`SoundsClock` 防護**：插件 disable 期間若仍有開選單流程觸發，包 try-catch 避免 `IllegalStateException` 中斷整個流程。
-- **`saveResourceIfNotExists` 不再靜默**：jar 內找不到範例資源時原本直接吞例外，現在改 log warning。
-- **`OpenCommand` tab 補全防護**：對 `args.length == 0` 與 `args[0] == null` 加邊界檢查。
-
-#### 記憶體 / 資源
-- **`RateLimiter` 加被動清理 + 主動移除**：每 60 秒 CAS 一次掃過期條目（超過 5×window）、玩家離線時 `PlayerQuitEvent` 主動移除 UUID，長期運轉伺服器不再緩慢累積條目。
-- **`MenuClockManager.playerHasClock` 改用 `getContents()`**：原本只掃主物品欄漏掉副手，玩家把選單時鐘放副手後重連會被誤判為「沒時鐘」而重複給予；改用 `getContents()` 掃全部欄位。
-
-#### PlaceholderAPI 一致性
-- **鎖定訊息也吃得到 PlaceholderAPI**：原本 `MenuItem.resolveLockMessage` 傳 null plugin 給 `PlaceholderUtils.parse`，導致鎖定按鈕的 `deny_message` / `lock_message` 不會解析 `%placeholders%`；改為正確傳遞 `Plugin` 參數。
-- **`JavaMenuListener` 單次評估**：點擊選單按鈕時原本 `isLocked()` 與 `getLockMessage()` 會各跑一次條件評估；新增 `LockState` record，一次評估同時取出 locked 狀態與鎖定訊息，避免重複計算且消除中間態不一致。
-
-#### 解耦 / 可維護性
-- **`RequirementService` 改吃 `Plugin` 介面**：建構式從 `RequirementService(MiaoMenu)` 改為 `RequirementService(Plugin)` + 測試友善的 `(Plugin, Server)` 雙建構式；`evaluateAdvancement` / `getScore` 改用注入的 `Server` 而非 `plugin.getServer()`，方便單元測試。
-- **`JavaMenu` 改吃 `Plugin` 介面**：把硬綁的 `MiaoMenu plugin` 欄位替換為 `Plugin plugin`，降低耦合。
-- **`MiaoMenu` 主類去掉 `final`**：plugin 主類無理由 final，去掉後便於將來測試與擴充。
-- **`PlayerLifecycleListener` / `_Folia` onQuit null check**：保險起見對 `RateLimiter` 加 null 檢查，避免 onDisable 期間競態崩潰。
-
-#### 驗證流程
-- **多代理迴圈**：1 位掃描代理找出 20 條候選 → 主代理逐檔驗證得出 8 條真實／12 條誤判 → 套修補 → 驗證代理 A 找到 1 條漏網（PlaceholderAPI 沒傳 plugin）並補 → 驗證代理 B 對抗式找到 5 條 medium（修了 4 條，1 條 `BungeeCord` 偵測 M-4 延 v1.1.1）→ 驗證代理 A' 補 OpenCommand defensive → 驗證代理 C + Plan 角度驗證代理 D 連續兩次判 clean → 收工。
-- **進度同步**：每輪結束都推 Discord webhook 通知 Avery。
-- **`README.AI.md` 同步**：完整修補紀錄與動機已寫入 AI 上下文記憶庫。
-
-#### 留尾項目（延 v1.1.1）
-- **M-4**：`ProxyManager.detectProxyType` 用 `net.md_5.bungee.api.ChatColor` 類存在偵測 BungeeCord 不可靠（Paper / Spigot 自帶該類）；目前預設 `velocity-network: true` 走 Velocity 分支不出事，待重構偵測邏輯。
-- `pom.xml` 改用 `<release>21</release>` 取代 `<source>` / `<target>`（屬「低嚴重度建議」，未動以縮小 PR）。
-
-### `1.0`（2026-06-20，穩定首發）
-
-- 經過 `0.1` → `0.2` 兩輪多代理掃描／修補／驗證迴圈後，所有 P0／P1 問題清零，正式升為穩定版本
-- 版本號從 `0.x` 預備期跳升到 `1.0`，代表「使用者操作零變動」的相容承諾通過驗證
-- 三語 README（繁中／英文／簡中）同步至本版，三份 README 都加入完整 changelog
-- 產物改名為 `MiaoMenu_fork-1.0.jar`；本版未動程式邏輯，純文件、版本字串與打包編號變更，與 `0.2` 行為等價
-
-### `0.2`（2026-06-20，穩定性與遷移）
-
-- **無痛轉移**：新增 `LegacyDataMigrator`，首次啟動時自動從 `plugins/dmenu`、`plugins/DGeyserMenu`、`plugins/dgeysermenu`、`plugins/MiaoMenu` 匯入舊資料到本插件資料夾
-- **修復：沒裝 Floodgate 時插件啟動失敗**：`BedrockMenuManager` 改為 lazy 反射初始化，純 Java 環境也能 onEnable
-- **修復：`/getmenuclock` 指令未掛載**：補上 executor，含 `dgeysermenu.admin` 權限檢查與 Player 檢查
-- **修復：`MENU_VERSION` 反向設定**：常數 3 → 6，與 `config.yml` 對齊，不再每次啟動覆寫使用者 `test.yml`
-- **修復：Folia 環境玩家死亡會噴鐘**：`PlayerLifecycleListener_Folia` 補上 `onDeath` handler 過濾掉口袋鐘錶
-- **修復：基岩選單 `requirement_blocks` 共用條件失效**：點擊處理改傳真實 blocks map，而非 `Collections.emptyMap()`
-- **安全：阻擋潛在 console 命令注入**：`CmdAction` 接入 `InputValidator.isSafeCommandContent` 過濾，注入內容直接拒絕並回送 `unsafe-input` 訊息
-- **體驗：時鐘右鍵不再雙手雙觸發**：`ClockInteractionListener` 加入 `EquipmentSlot.HAND` 早退
-- **`plugin.yml` softdepend 大小寫修正**：`Floodgate` → `floodgate`，與其實際 plugin name 對齊
-- **多語系：`menu.locked-tag` 抽出**：基岩鎖定按鈕的「[未解鎖]」標籤改由 `lang/<language>.yml` 控制
-
-### `0.1`（2026-06-20，Fork 起點）
-
-- 跟上 MC 26.x：`paper-api` 1.21.11 → **26.1.2.build.72-stable**、`folia-api` → 26.1.2.build.8-stable
-- 升級 `floodgate` 2.2.0 → 2.2.5-SNAPSHOT、新增 `geyser` 2.10.1-SNAPSHOT 軟相依
-- `plugin.yml` 的 `api-version` 由 `1.21` 改為 `'26.1'`
-- 多語系拆分：原 `config.yml` 內 `messages:` 區塊抽出為 `lang/<language>.yml`，內建 `en`（預設）與 `zh_TW`
-- `Lang.load()` 查詢順序：`lang/<language>.yml` → `lang/en.yml` fallback → `config.yml`（向後相容舊用法）
-- 熱重載延伸：`HotReloadManager` 監聽 `lang/` 目錄，編輯語系檔即時生效
-- 指令別名新增 `/mmf`，不影響原本 `/dgm`、`/fluxmenu`、`/dgeysermenu`
-- 改名 `MiaoMenu_fork`：jar 與插件資料夾改名為 `MiaoMenu_fork`；原本指令、權限節點、設定鍵名「完全沒動」
-- 中文行文重整：README、設定檔 header、lang 訊息一律改稱「插件」，去掉重複的「（台灣）」尾綴
-
-> 想要看每次變更的「為什麼這樣做」與檔案級別差異，請看 `README.AI.md`。
+完整版本歷程獨立放在根目錄的 [更新日誌.md](./更新日誌.md)（繁中 + 英文雙語）。
 
 ## 鳴謝
 
