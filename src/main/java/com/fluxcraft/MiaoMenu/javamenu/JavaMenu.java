@@ -258,7 +258,7 @@ public class JavaMenu {
             ItemStack item = new ItemStack(LOCKED_MATERIAL);
             ItemMeta meta = item.getItemMeta();
             if (meta != null) {
-                String lockedName = "&7" + PlaceholderUtils.parse(player, name, plugin) + " &8[未解锁]";
+                String lockedName = "&7" + PlaceholderUtils.parse(player, name, plugin) + " " + Lang.get("menu.locked-tag");
                 meta.displayName(LegacyComponentSerializer.legacySection().deserialize(lockedName));
                 List<Component> loreComponents = new ArrayList<>();
                 lore.forEach(line -> loreComponents.add(

@@ -40,6 +40,7 @@ public final class Lang {
 
     /**
      * 載入指定語言檔；找不到時 fallback 到 en.yml，並以 jar 內 en.yml 作為缺鍵的預設。
+     * YAML 解析失敗時保留前次成功的語言內容，避免熱重載期間玩家看到亂碼 key。
      */
     public static void load(String language) {
         if (plugin == null) {
@@ -56,16 +57,27 @@ public final class Lang {
             plugin.getLogger().warning("找不到語言檔 lang/" + language + ".yml，改用 en。");
             file = new File(plugin.getDataFolder(), "lang/en.yml");
         }
-        FileConfiguration cfg = YamlConfiguration.loadConfiguration(file);
+        FileConfiguration cfg;
+        try {
+            cfg = YamlConfiguration.loadConfiguration(file);
+        } catch (RuntimeException e) {
+            plugin.getLogger().warning("載入語言檔 " + file.getName() + " 失敗（YAML 解析錯誤），沿用前次設定。原因：" + e.getMessage());
+            return;
+        }
 
         InputStream def = plugin.getResource("lang/en.yml");
         if (def != null) {
-            YamlConfiguration defCfg = YamlConfiguration.loadConfiguration(
-                    new InputStreamReader(def, StandardCharsets.UTF_8));
-            cfg.setDefaults(defCfg);
+            try {
+                YamlConfiguration defCfg = YamlConfiguration.loadConfiguration(
+                        new InputStreamReader(def, StandardCharsets.UTF_8));
+                cfg.setDefaults(defCfg);
+            } catch (RuntimeException e) {
+                plugin.getLogger().warning("讀取內建預設語言檔 lang/en.yml 失敗（缺鍵將直接回傳 key）：" + e.getMessage());
+            }
         }
         messages = cfg;
         currentLanguage = language;
+        plugin.getLogger().info("已載入語言檔：" + file.getName() + "（current=" + currentLanguage + "）");
     }
 
     public static String getCurrentLanguage() {

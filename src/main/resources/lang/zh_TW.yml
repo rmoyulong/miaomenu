@@ -47,6 +47,7 @@ menu:
     name: "&6時光之鏡 &7(右鍵開啟選單)"
     given: "&a✦ 已獲贈時光之鏡，右鍵即可映照出選單！"
     restored: "&f✦ 物品已完好如初地歸還於你。"
+  locked-tag: "&8[未解鎖]"
 
 hot-reload:
   initialized: "✦ 選單的律動已開始（自動重新載入已啟動）。"
@@ -62,7 +63,7 @@ log:
     menu-refresh-failed: "無法重新整理選單範例檔案。"
   command:
     register-failed: "無法註冊指令 '{0}'，請檢查 plugin.yml。"
-    descriptions-missing: "在 config.yml 中找不到 'messages.descriptions' 節點。"
+    descriptions-missing: "在 lang/<language>.yml 與 config.yml 中皆找不到 'descriptions' 節點。"
     execute-failed: "為發送者 '{1}' 執行指令 '{0}' 失敗。"
   action:
     dispatch-failed: "為玩家 '{1}' 派發動作 '{0}' 失敗。"

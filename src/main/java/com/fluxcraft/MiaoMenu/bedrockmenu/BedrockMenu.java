@@ -115,7 +115,7 @@ public class BedrockMenu {
                 String buttonText;
                 if (locked) {
                     String originalText = PlaceholderUtils.parse(player, item.text(), plugin);
-                    buttonText = "§8[未解锁] §7" + originalText.replaceAll("§[0-9a-fk-or]", "");
+                    buttonText = Lang.get("menu.locked-tag") + " §7" + originalText.replaceAll("§[0-9a-fk-or]", "");
                 } else {
                     buttonText = PlaceholderUtils.parse(player, item.text(), plugin);
                 }
@@ -172,6 +172,10 @@ public class BedrockMenu {
 
     public String getName() {
         return name;
+    }
+
+    public Map<String, RequirementBlock> getRequirementBlocks() {
+        return requirementBlocks;
     }
 
     public record BedrockMenuItem(

@@ -23,7 +23,7 @@ public class HelpCommand implements PluginCommand {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        String headerRaw = Lang.get("message.help.header");
+        String headerRaw = Lang.get("help.header");
         Component header = LEGACY_SERIALIZER.deserialize(headerRaw);
         sender.sendMessage(header);
         for (Map.Entry<String, String> entry : commandDescriptions.entrySet()) {
@@ -43,7 +43,7 @@ public class HelpCommand implements PluginCommand {
                             .append(descComponent)
             );
         }
-        String usageRaw = Lang.get("message.help.usage");
+        String usageRaw = Lang.get("help.usage");
         Component usage = LEGACY_SERIALIZER.deserialize(usageRaw);
         sender.sendMessage(Component.empty());
         sender.sendMessage(usage);

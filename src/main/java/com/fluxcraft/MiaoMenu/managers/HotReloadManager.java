@@ -110,7 +110,7 @@ public class HotReloadManager {
                     plugin.getLogger().log(Level.WARNING, Lang.get("log.hot-reload.loop-failed"), e);
                 }
             }
-        }, "MiaoMenu-HotReload-Thread");
+        }, "MiaoMenu_fork-HotReload-Thread");
         watcherThread.setDaemon(true);
         watcherThread.start();
     }

@@ -41,18 +41,30 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         register(CMD_HELP, new HelpCommand(helpDescriptions));
     }
 
+    /**
+     * 載入指令說明：優先採用 lang/<language>.yml 的 descriptions 區塊，
+     * 找不到時退回 config.yml 內舊版的 messages.descriptions（向後相容）。
+     */
     @NotNull
     private Map<String, String> loadHelpDescriptions() {
         Map<String, String> descriptions = new LinkedHashMap<>();
-        ConfigurationSection section = plugin.getConfig().getConfigurationSection("messages.descriptions");
-        if (section == null) {
-            plugin.getLogger().warning(Lang.get("log.command.descriptions-missing"));
-            return descriptions;
-        }
-        for (String key : section.getKeys(false)) {
-            if (section.isString(key)) {
-                descriptions.put(key, section.getString(key));
+        for (String name : Arrays.asList("open", "reload", CMD_HELP)) {
+            String key = "descriptions." + name;
+            String value = Lang.get(key);
+            if (value != null && !value.equals(key)) {
+                descriptions.put(name, value);
             }
+        }
+        ConfigurationSection legacy = plugin.getConfig().getConfigurationSection("messages.descriptions");
+        if (legacy != null) {
+            for (String key : legacy.getKeys(false)) {
+                if (legacy.isString(key)) {
+                    descriptions.putIfAbsent(key, legacy.getString(key));
+                }
+            }
+        }
+        if (descriptions.isEmpty()) {
+            plugin.getLogger().warning(Lang.get("log.command.descriptions-missing"));
         }
         return descriptions;
     }

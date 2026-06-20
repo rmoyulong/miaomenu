@@ -30,7 +30,7 @@ public class BedrockMenuManager {
     private final SoundsClock soundsClock;
     private final RequirementService requirementService;
     private final RequirementFeedbackHandler requirementFeedbackHandler;
-    private final FloodgateReflectionAccess reflectionAccess;
+    private volatile FloodgateReflectionAccess reflectionAccess;
     private volatile Map<String, BedrockMenu> menus = Collections.emptyMap();
 
     public BedrockMenuManager(
@@ -45,7 +45,19 @@ public class BedrockMenuManager {
         this.soundsClock = soundsClock;
         this.requirementService = requirementService;
         this.requirementFeedbackHandler = requirementFeedbackHandler;
-        this.reflectionAccess = new FloodgateReflectionAccess();
+    }
+
+    private FloodgateReflectionAccess getReflectionAccess() {
+        FloodgateReflectionAccess local = reflectionAccess;
+        if (local != null) {
+            return local;
+        }
+        synchronized (this) {
+            if (reflectionAccess == null) {
+                reflectionAccess = new FloodgateReflectionAccess();
+            }
+            return reflectionAccess;
+        }
     }
 
     public void loadAllMenus() {
@@ -98,8 +110,9 @@ public class BedrockMenuManager {
             return;
         }
         try {
-            Object builtForm = reflectionAccess.buildForm(formBuilder, createFormResponseHandler(menu.getAllItems(), player, menu));
-            reflectionAccess.sendForm(player.getUniqueId(), builtForm);
+            FloodgateReflectionAccess access = getReflectionAccess();
+            Object builtForm = access.buildForm(formBuilder, createFormResponseHandler(menu.getAllItems(), player, menu));
+            access.sendForm(player.getUniqueId(), builtForm);
         } catch (ReflectiveOperationException e) {
             throw new IllegalStateException(Lang.get("log.bedrock-menu.reflection-send-failed")
                     .replace("{0}", menu.getName())
@@ -129,12 +142,17 @@ public class BedrockMenuManager {
             Player player,
             BedrockMenu menu
     ) throws ReflectiveOperationException {
-        int clickedIndex = (int) response.getClass().getMethod("clickedButtonId").invoke(response);
+        // 反射回傳值可能為 null（玩家關閉表單）或非預期型別（Floodgate API 變動），避免拆箱 NPE。
+        Object rawClicked = response.getClass().getMethod("clickedButtonId").invoke(response);
+        if (!(rawClicked instanceof Integer)) {
+            return;
+        }
+        int clickedIndex = (Integer) rawClicked;
         if (clickedIndex < 0 || clickedIndex >= allItems.size()) {
             return;
         }
         BedrockMenu.BedrockMenuItem item = allItems.get(clickedIndex);
-        if (item.isLocked(player, requirementService, menu.getName(), Collections.emptyMap())) {
+        if (item.isLocked(player, requirementService, menu.getName(), menu.getRequirementBlocks())) {
             player.sendMessage(Lang.get("message.item-locked"));
             return;
         }
