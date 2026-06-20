@@ -9,31 +9,40 @@ version: ${project.version}
 main: com.fluxcraft.MiaoMenu.MiaoMenu
 api-version: '26.1'
 description: MiaoMenu_fork — 喵喵選單插件分支版，支援 Java 版與基岩版玩家。Fork https://github.com/Avery11111101/MiaoMenu_fork ／原作 https://github.com/Yamada0001/MiaoMenu
-author: MingLi
+author: Avery11111101
 folia-supported: true
 softdepend: [floodgate, Geyser-Spigot, PlaceholderAPI, CraftEngine]
 commands:
   dgeysermenu:
-    description: 主命令
-    usage: /<command> <open|reload|help>
+    description: 主指令（open / reload / import / lang / about / help）
+    usage: /<command> <open|reload|import|lang|about|help>
     aliases: [dgm, fluxmenu, mmf]
   getmenuclock:
-    description: 获取菜单钟表
+    description: 取得選單時鐘
     usage: /<command>
+    permission: dgeysermenu.admin
+  mmflang:
+    description: 切換 MiaoMenu_fork 顯示語言（同 /dgm lang）
+    usage: /<command> <語言碼>
+    aliases: [lang]
     permission: dgeysermenu.admin
 permissions:
   dgeysermenu.*:
-    description: 所有权限
+    description: 所有權限
     children:
       dgeysermenu.use: true
       dgeysermenu.admin: true
       dgeysermenu.reload: true
+      dgeysermenu.import: true
   dgeysermenu.use:
-    description: 使用菜单命令
+    description: 使用選單指令
     default: true
   dgeysermenu.admin:
-    description: 管理权限
+    description: 管理權限
     default: op
   dgeysermenu.reload:
-    description: 重载插件
+    description: 重載插件
+    default: op
+  dgeysermenu.import:
+    description: 透過指令從舊版插件資料夾匯入 menu 資料（scan/preview/apply/rollback）
     default: op

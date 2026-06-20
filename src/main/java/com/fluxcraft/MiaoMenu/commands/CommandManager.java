@@ -18,7 +18,10 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import com.fluxcraft.MiaoMenu.MiaoMenu;
+import com.fluxcraft.MiaoMenu.commands.impl.AboutCommand;
 import com.fluxcraft.MiaoMenu.commands.impl.HelpCommand;
+import com.fluxcraft.MiaoMenu.commands.impl.ImportCommand;
+import com.fluxcraft.MiaoMenu.commands.impl.LangCommand;
 import com.fluxcraft.MiaoMenu.commands.impl.OpenCommand;
 import com.fluxcraft.MiaoMenu.commands.impl.ReloadCommand;
 import com.fluxcraft.MiaoMenu.utils.Lang;
@@ -28,6 +31,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
 
     private final Map<String, PluginCommand> commands = new LinkedHashMap<>();
     private final MiaoMenu plugin;
+    private HelpCommand helpCommand;
 
     public CommandManager(@NotNull MiaoMenu plugin) {
         this.plugin = plugin;
@@ -38,7 +42,11 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         Map<String, String> helpDescriptions = loadHelpDescriptions();
         register("open", new OpenCommand(plugin));
         register("reload", new ReloadCommand(plugin));
-        register(CMD_HELP, new HelpCommand(helpDescriptions));
+        register("import", new ImportCommand(plugin));
+        register("lang", new LangCommand(plugin));
+        register("about", new AboutCommand(plugin));
+        helpCommand = new HelpCommand(helpDescriptions);
+        register(CMD_HELP, helpCommand);
     }
 
     /**
@@ -48,7 +56,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     @NotNull
     private Map<String, String> loadHelpDescriptions() {
         Map<String, String> descriptions = new LinkedHashMap<>();
-        for (String name : Arrays.asList("open", "reload", CMD_HELP)) {
+        for (String name : HelpCommand.defaultCommandOrder()) {
             String key = "descriptions." + name;
             String value = Lang.get(key);
             if (value != null && !value.equals(key)) {
@@ -67,6 +75,16 @@ public class CommandManager implements CommandExecutor, TabCompleter {
             plugin.getLogger().warning(Lang.get("log.command.descriptions-missing"));
         }
         return descriptions;
+    }
+
+    /**
+     * 給 {@link LangCommand} 在切換語系後熱替換 help 顯示用的描述快取，
+     * 不會重建子指令實例（避免清掉 import 等指令的 session 狀態）。
+     */
+    public void reloadHelpDescriptions() {
+        if (helpCommand != null) {
+            helpCommand.setDescriptions(loadHelpDescriptions());
+        }
     }
 
     private void register(@NotNull String name, @NotNull PluginCommand command) {

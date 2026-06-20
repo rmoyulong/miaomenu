@@ -6,7 +6,7 @@
 > Fork：<https://github.com/Avery11111101/MiaoMenu_fork>
 > 原作：<https://github.com/Yamada0001/MiaoMenu>
 >
-> 面向 Paper / Folia / Geyser **26.1.2**（亦相容 26.2 alpha）的輕量級選單插件，同時為 Java 版與基岩版玩家提供原生互動體驗，內建 `en` 英文（預設）與 `zh_TW` 繁體中文雙語切換。
+### 面向 Paper / Folia / Geyser **26.1.2**（亦相容 26.2 alpha）的輕量級選單插件，同時為 Java 版與基岩版玩家提供原生互動體驗，內建 `en` 英文（預設）與 `zh_TW` 繁體中文雙語切換。
 
 ## 向後相容聲明（從原版 MiaoMenu 升級必看）
 
@@ -21,14 +21,65 @@ Fork 版重點放在 **不改使用者操作習慣**：
 
 ### 無痛轉移（自動匯入舊資料夾）
 
-把 `MiaoMenu_fork-1.1.jar` 直接丟到 `plugins/`，啟動時插件會自動偵測下列舊版資料夾並整批匯入到 `plugins/MiaoMenu_fork/`：
+把 `MiaoMenu_fork-1.2.jar` 直接丟到 `plugins/`，啟動時插件會自動偵測下列舊版資料夾並整批匯入到 `plugins/MiaoMenu_fork/`：
 
-1. `plugins/dmenu/`
-2. `plugins/DGeyserMenu/`
-3. `plugins/dgeysermenu/`
-4. `plugins/MiaoMenu/`
+1. `plugins/DGeyserMenu/`
+2. `plugins/dgeysermenu/`
+3. `plugins/MiaoMenu/`
 
 匯入只在 `plugins/MiaoMenu_fork/config.yml` **不存在**時觸發；舊資料夾原封不動，新資料夾內會出現舊 `config.yml`、`java_menus/`、`bedrock_menus/`、`lang/` 等檔案。若舊 `config-version` 與本版不符，舊 `config.yml` 會被 ConfigManager 自動備份成 `config.yml.old`，並寫入本版預設值，你可以對照備份檔把自訂值挪到新版即可。
+
+> ℹ️ **DeluxeMenus（`plugins/DeluxeMenus/` 或 `plugins/dmenu/`）走「指令引導匯入」+ 自動轉換**。它的 YAML 結構與本插件不同，所以**不會**在啟動時靜默自動匯入；但你可以用下面的 `/dgm import preview DeluxeMenus` → `apply` 流程把 `gui_menus/` 下的每個選單自動轉換成 `java_menus/<id>.yml`（`size`→`rows`、`[console]`→`[cmd]`、`[openguimenu] X`→`[player] dgm open X`，其他原樣保留）。原 DeluxeMenus 資料夾不會被動到。
+
+### 切換語言（`/dgm lang`、`/mmflang`、`/lang`）
+
+需要 `dgeysermenu.admin` 權限。三種寫法都會路由到同一個 `LangCommand`：
+
+```
+/dgm lang                # 顯示目前語言 + 可用語言清單
+/dgm lang zh_TW          # 切換為繁中並即時 reload 所有訊息
+/mmflang zh_TW           # 同上短捷
+/lang zh_TW              # 同上更短捷（注意：可能被其他插件搶走）
+```
+
+> ⚠️ `/lang` 是 `/mmflang` 在 plugin.yml 上掛的 alias。若伺服器同時裝了其他宣告 `/lang` 的插件（例如 LiteBans），Bukkit 會依插件載入順序決定誰先註冊到，本插件不會自動覆蓋。此時請改用 `/mmflang zh_TW` 或 `/dgm lang zh_TW`，效果完全相同。
+
+切換後 `/dgm help`、所有錯誤訊息、選單鎖定文字都會跟著語系變動，**不需重啟伺服器**。如果你想自訂語言，把 `<語言碼>.yml` 放到 `plugins/MiaoMenu_fork/lang/` 下，重啟或 `/dgm lang <語言碼>` 即可載入。
+
+### 關於插件（`/dgm about`）
+
+顯示插件版本、Fork / 原作 GitHub 連結、Modrinth 下載頁；若 Modrinth 上偵測到新版本，也會在訊息底部附上提示。**啟動時也會把同一份資訊印到主控台**，方便維運。
+
+擁有 `dgeysermenu.admin` 權限的管理員上線（join）時，若插件啟動時已從 Modrinth 抓到比目前版本更新的版號，就會主動推一條訊息提示去 Modrinth 下載。普通玩家不受打擾。
+
+### 指令引導的手動匯入（`/dgm import`）
+
+若插件已經運行過、`config.yml` 已存在，自動匯入不會觸發。此時可用 `/dgm import` 系列指令在伺服器上手動補匯入（需要 `dgeysermenu.import` 或 `dgeysermenu.admin` 權限，預設 OP）：
+
+```
+/dgm import scan                                     # 掃描 plugins/ 內可匯入的資料夾
+/dgm import preview <來源>                            # 預覽差異（新增 / 略過 / 衝突），產生 8 碼確認碼
+/dgm import apply   <來源> <確認碼> [--overwrite|--rename]
+                                                     # 帶確認碼才會落盤；衝突檔自動備份到 backups/
+/dgm import rollback [備份ID]                         # 從備份還原（不帶參數＝最近一份）
+```
+
+**支援的來源**：
+
+| 來源資料夾 | 策略 | 說明 |
+|------------|------|------|
+| `plugins/DGeyserMenu/` | 整批檔案複製 | 同 schema，直接搬 |
+| `plugins/dgeysermenu/` | 整批檔案複製 | 同上 |
+| `plugins/MiaoMenu/` | 整批檔案複製 | 同上 |
+| `plugins/DeluxeMenus/` | **自動轉換** | 讀 `config.yml.gui_menus:` 列表，把 `gui_menus/` 內每個選單轉成 `java_menus/<id>.yml`（`size→rows`、`[console]→[cmd]`、`[openguimenu] X→[player] dgm open X`）|
+| `plugins/dmenu/` | **自動轉換** | DeluxeMenus 的舊名稱，同上 |
+
+安全保證：
+- 預覽必先於套用，且 5 分鐘內未 apply 即失效
+- 衝突檔在覆寫前一律備份到 `plugins/MiaoMenu_fork/backups/import-<時戳>/`，保留最近 5 份
+- 套用 / 還原成功後自動 reload（行為與 `/dgm reload` 一致）
+- 預設衝突策略為 `SKIP`；`--overwrite` 直接覆寫、`--rename` 把舊版加 `.imported` 後綴並排存放
+- DeluxeMenus 轉換時，原資料夾完全不會被動到；轉換後的 yaml 頂部會有中文註解標註來源與動作 prefix 對應，方便手動微調
 
 ## 專案概覽
 
@@ -41,7 +92,7 @@ MiaoMenu_fork 是一款雙端選單插件：
 - 內建選單時鐘、範例選單與權限控制
 - 訊息抽出為獨立 `lang/<language>.yml`，繁中／英文可即時切換
 
-目前版本：`1.1`（在穩定首發 `1.0` 之上做的「內部健檢」迴圈版本；使用者操作零變動，純內部修補與解耦。Fork 版重新起算，原作為 [Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) 2.7.7.9）
+目前版本：`1.2`（在 `1.1` 之上以「指令引導舊版資料匯入」為主軸新增 `/dgm import` 系列指令；使用者既有操作零變動，純粹附加新功能。Fork 版重新起算，原作為 [Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) 2.7.7.9）
 
 ## 介面預覽
 
@@ -577,7 +628,7 @@ mvn test
 mvn package
 ```
 
-預設產物 `MiaoMenu_fork-1.1.jar` 會生成在 `target/` 目錄下。
+預設產物 `MiaoMenu_fork-1.2.jar` 會生成在 `target/` 目錄下。
 
 ## 常見問題
 

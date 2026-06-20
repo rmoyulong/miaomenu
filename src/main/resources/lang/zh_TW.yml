@@ -29,15 +29,126 @@ verbose:
 help:
   header: "&6✿ &e你好呀，旅行者 &6✿"
   usage: "&7✎ 懸停查看詳情，輕觸以令之行"
+  detail-hint: "&7✎ 想看單一指令詳解，輸入 &f/dgm help <指令名稱>"
+  unknown-command: "&c✦ 沒有 &e{0}&c 這道指令。可用 &f/dgm help&c 查看完整列表。"
+  detail:
+    header: "&6✿ &e/dgm {0} &6— 指令詳解 ✿"
+    usage-label: "&7用法："
+    permission-label: "&7權限："
+  commands:
+    open:
+      usage: "&f/dgm open <選單名稱>"
+      detail: |-
+        &7開啟指定的選單。
+        &7Java 玩家會看到箱子 GUI，基岩玩家會看到 Floodgate 表單，插件自動判斷。
+        &7選單名稱可用 Tab 補全（會列出 java_menus/ 與 bedrock_menus/ 內定義的選單）。
+      permission: "&fdgeysermenu.use"
+    reload:
+      usage: "&f/dgm reload"
+      detail: |-
+        &7重新載入 config.yml、所有 Java 選單與基岩選單。
+        &7若同時修改了 lang 檔，請改用 &f/dgm lang <現有語言>&7 或直接重啟。
+      permission: "&fdgeysermenu.reload"
+    import:
+      usage: |-
+        &f/dgm import scan
+        &f/dgm import preview <來源>
+        &f/dgm import apply <來源> <token> [--overwrite|--rename]
+        &f/dgm import rollback [備份ID]
+      detail: |-
+        &7在「插件已運行」的伺服器上手動匯入舊版資料夾。
+        &7支援來源：
+        &7  · &fDGeyserMenu&7／&fdgeysermenu&7／&fMiaoMenu&7 — 同 schema，整批檔案複製
+        &7  · &fDeluxeMenus&7／&fdmenu&7 — 不同 schema，自動把 gui_menus 轉換成 java_menus/&lt;id&gt;.yml
+        &7流程：scan 看候選 → preview 出 token → apply 帶 token 落盤（衝突檔自動備份到 backups/）→ rollback 還原。
+        &7預設衝突策略 SKIP；可加 &f--overwrite&7 強制覆寫或 &f--rename&7 把舊版加 .imported 後綴並存。
+      permission: "&fdgeysermenu.import &7或 &fdgeysermenu.admin"
+    lang:
+      usage: "&f/dgm lang [<語言碼>] &7或 &f/mmflang <語言碼> &7或 &f/lang <語言碼>"
+      detail: |-
+        &7切換 MiaoMenu_fork 顯示語言並即時重新載入訊息檔。
+        &7無參數時顯示目前語言與可用語言列表。
+        &7常見語言碼：&fen&7（英文）、&fzh_TW&7（繁中）；你也可以在 plugins/MiaoMenu_fork/lang/ 內放 &f<code>.yml&7 自訂語言檔。
+        &7切換後 &f/dgm help&7 與所有訊息會跟著變語系，無需重啟。
+      permission: "&fdgeysermenu.admin"
+    about:
+      usage: "&f/dgm about"
+      detail: |-
+        &7顯示插件版本、Fork / 原作 GitHub 連結與 Modrinth 下載頁。
+        &7若 Modrinth 上偵測到新版本，也會在此訊息底部提示。
+      permission: "&7（無需權限）"
+    help:
+      usage: "&f/dgm help [<子指令>]"
+      detail: |-
+        &7不帶參數時列出所有子指令；帶參數時顯示該子指令的詳解。
+        &7例如：&f/dgm help import&7 會顯示匯入指令的完整教學。
+      permission: "&7（無需權限）"
 
 descriptions:
   open: "&a✦ 翻開指定的魔法卷軸"
   reload: "&c✦ 讓核心法則重煥新生"
+  import: "&b✦ 從舊版插件資料夾引渡選單與設定"
+  lang: "&d✦ 切換顯示語言並重新載入訊息"
+  about: "&7✦ 關於這個插件（版本、原作、Modrinth）"
   help: "&e✦ 探索智慧的指引篇章"
 
 command:
   unknown: "&c✦ 虛空並未回應這句未知的低語，請查閱 /dgm help。"
   usage-open: "&c✦ 吟唱咒語的真確格式：/dgm open <卷軸名稱>"
+  usage-import: |-
+    &c✦ /dgm import 用法：
+    &7  /dgm import scan
+    &7  /dgm import preview <來源>
+    &7  /dgm import apply <來源> <token> [--overwrite|--rename]
+    &7  /dgm import rollback [備份ID]
+  usage-lang: "&c✦ 用法：&f/dgm lang <語言碼>&c 或 &f/mmflang <語言碼>&c（無參數可查目前語言與可用清單）"
+
+import:
+  scan:
+    header: "&b✦ 偵測到 &e{0} &b個可匯入的資料夾候選："
+    entry: "&7  · &e{0} &7— Java 選單 &a{1} &7／基岩選單 &a{2} &7／config-version &b{3}"
+    entry-deluxemenus: "&7  · &e{0} &d[DeluxeMenus]&7 — 選單 &a{1} &7（會自動轉換到 java_menus/，原資料夾保留）"
+    empty: "&e✦ 未偵測到可匯入的資料夾（會搜尋 plugins/ 內的 DGeyserMenu、dgeysermenu、MiaoMenu、DeluxeMenus、dmenu）。"
+    hint: "&7✎ 下一步：&f/dgm import preview <來源> &7查看差異與 token。"
+  preview:
+    header: "&b✦ 預覽 &e{0} &b：新增 &a{1} &b／略過 &7{2} &b／衝突 &c{3}"
+    add: "&a  + {0}"
+    skip: "&7  = {0}"
+    conflict: "&c  ! {0}"
+    truncated: "&7  …（另有 {0} 筆未顯示）"
+    token: "&e✦ 確認碼：&f{0} &7— 套用時請輸入 &f/dgm import apply {1} {0}"
+    unknown-source: "&c✦ 找不到名為 &e{0}&c 的可匯入資料夾，可先用 &f/dgm import scan&c 查看清單。"
+    io-error: "&c✦ 預覽 &e{0}&c 時讀檔失敗，請查閱主控台。"
+    deluxemenus-note: |-
+      &d✦ 偵測到 DeluxeMenus 結構：將自動把 gui_menus/ 內的選單逐一轉換為本插件的 java_menus/&lt;id&gt;.yml。
+      &7  · 動作 prefix 對應：[console]→[cmd]、[openguimenu] X→[player] dgm open X，其餘原樣保留
+      &7  · 不轉 update / skin 欄位；conditions / view_requirement 會原樣保留供您手動審閱
+      &7  · 原 DeluxeMenus 資料夾完全不動，可隨時 rollback
+  apply:
+    no-session: "&c✦ 找不到對應的 preview 紀錄（可能已超時 5 分鐘），請重跑 &f/dgm import preview <來源>&c。"
+    token-mismatch: "&c✦ 確認碼或來源不符，請對照 preview 顯示的內容重新輸入。"
+    success: "&a✦ 已匯入 &e{0}&a：新增 &f{1} &a／略過 &f{2} &a／衝突處理 &f{3} &a，備份 &7{4}&a。已自動重新載入。"
+    io-error: "&c✦ 套用過程發生 IO 錯誤，請查閱主控台。已建立的備份不會被刪除。"
+  rollback:
+    success: "&a✦ 已從備份 &e{0}&a 還原 &f{1}&a 個檔案，並重新載入。"
+    not-found: "&e✦ 目前沒有可用的匯入備份。"
+    io-error: "&c✦ 還原備份 &e{0}&c 失敗，請查閱主控台。"
+
+lang:
+  current: "&b✦ 目前語言：&f{0}"
+  available: "&7✎ 可用語言：&f{0}"
+  unknown: "&c✦ 沒有語言檔 &e{0}&c。可用清單：&f{1}"
+  changed: "&a✦ 已切換語言為 &f{0}&a。所有訊息已即時重新載入。"
+  save-failed: "&c✦ 切換語言為 &e{0}&c 失敗：寫回 config.yml 時發生 IO 錯誤，請查閱主控台。"
+
+about:
+  header: "&6✿ &eMiaoMenu_fork &6✿"
+  version: "&7版本：&f{0}"
+  author: "&7作者：&fAvery11111101"
+  fork: "&7Fork：&b{0}"
+  modrinth: "&7Modrinth：&b{0}"
+  footer: "&8感謝你使用 MiaoMenu_fork ✦（原作資訊請看 Fork 連結內的來源）"
+  update-available: "&e✦ 偵測到新版本 &6{0}&e（目前 &7{1}&e）→ 下載：&b{2}"
 
 open:
   error: "&c✦ 介面展開失敗，請查閱主控台日誌。"
@@ -66,6 +177,18 @@ log:
     register-failed: "無法註冊指令 '{0}'，請檢查 plugin.yml。"
     descriptions-missing: "在 lang/<language>.yml 與 config.yml 中皆找不到 'descriptions' 節點。"
     execute-failed: "為發送者 '{1}' 執行指令 '{0}' 失敗。"
+  import:
+    preview-failed: "預覽舊版資料 '{0}' 失敗。"
+    copy-failed: "匯入舊版資料 '{0}' 過程中複製檔案失敗。"
+    completed: "舊版資料 '{0}' 已由 {1} 匯入，備份：{2}。"
+    rollback-failed: "還原備份 '{0}' 失敗。"
+  lang:
+    changed: "顯示語言已由 {1} 切換為 '{0}'。"
+    save-failed: "切換語言為 '{0}' 時寫回 config.yml 失敗。"
+  update:
+    fetch-failed: "從 Modrinth 取得最新版本資訊失敗（{0}），略過更新檢查。"
+    available: "偵測到新版本：{0}（目前 {1}）。請至 https://modrinth.com/plugin/miaomenu_fork 下載。"
+    up-to-date: "插件已為最新版本，無需更新。"
   action:
     dispatch-failed: "為玩家 '{1}' 派發動作 '{0}' 失敗。"
   requirement:

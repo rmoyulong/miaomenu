@@ -14,6 +14,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.fluxcraft.MiaoMenu.bedrockmenu.BedrockMenuManager;
 import com.fluxcraft.MiaoMenu.commands.CommandManager;
+import com.fluxcraft.MiaoMenu.commands.impl.AboutCommand;
+import com.fluxcraft.MiaoMenu.commands.impl.LangCommand;
 import com.fluxcraft.MiaoMenu.config.ConfigManager;
 import com.fluxcraft.MiaoMenu.config.LegacyDataMigrator;
 import com.fluxcraft.MiaoMenu.foliacall.FoliaFactory;
@@ -31,6 +33,8 @@ import com.fluxcraft.MiaoMenu.menu.requirement.RequirementFeedbackHandler;
 import com.fluxcraft.MiaoMenu.menu.requirement.RequirementService;
 import com.fluxcraft.MiaoMenu.proxy.ProxyManager;
 import com.fluxcraft.MiaoMenu.security.RateLimiter;
+import com.fluxcraft.MiaoMenu.update.UpdateChecker;
+import com.fluxcraft.MiaoMenu.update.UpdateNoticeListener;
 import com.fluxcraft.MiaoMenu.utils.Lang;
 
 import cn.handyplus.lib.adapter.HandySchedulerUtil;
@@ -40,6 +44,7 @@ public class MiaoMenu extends JavaPlugin {
     public static final int JOIN_DELAY_TICKS = 20;
     private static final String MAIN_COMMAND = "dgeysermenu";
     private static final String CLOCK_COMMAND = "getmenuclock";
+    private static final String LANG_COMMAND = "mmflang";
 
     private ConfigManager configManager;
     private JavaMenuManager javaMenuManager;
@@ -50,6 +55,7 @@ public class MiaoMenu extends JavaPlugin {
     private ProxyManager proxyManager;
     private RequirementService requirementService;
     private RateLimiter interactionRateLimiter;
+    private UpdateChecker updateChecker;
     private Class<?> floodgateApiClass;
     private Object floodgateApiInstance;
 
@@ -61,11 +67,45 @@ public class MiaoMenu extends JavaPlugin {
             registerListeners();
             registerCommands();
             initializeOptionalFeatures();
+            initializeUpdateChecker();
+            printAboutBanner();
             getLogger().info(Lang.get("log.plugin.enabled").replace("{0}", getPluginMeta().getVersion()));
         } catch (RuntimeException e) {
             getLogger().log(Level.SEVERE, Lang.get("log.plugin.enable-failed"), e);
             throw e;
         }
+    }
+
+    /** 啟動時把 about 資訊也印到主控台，讓伺服器主有一眼可看到的 GitHub / Modrinth 連結。 */
+    private void printAboutBanner() {
+        // 用 Lang.get 拉純文字（已含 &color，主控台會略過 ANSI/legacy section 但仍可讀）
+        getLogger().info("------------------------------------------------------------");
+        for (String line : AboutCommand.renderLines(this)) {
+            // 主控台不渲染顏色碼，剝掉 §x 以維持可讀性
+            getLogger().info(stripLegacyColors(line));
+        }
+        getLogger().info("------------------------------------------------------------");
+    }
+
+    private static String stripLegacyColors(String input) {
+        if (input == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder(input.length());
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (c == '§' && i + 1 < input.length()) {
+                i++;
+                continue;
+            }
+            sb.append(c);
+        }
+        return sb.toString();
+    }
+
+    private void initializeUpdateChecker() {
+        updateChecker = new UpdateChecker(this);
+        updateChecker.refreshAsync(); // 非同步、失敗不影響啟動
     }
 
     @Override
@@ -121,6 +161,7 @@ public class MiaoMenu extends JavaPlugin {
 
     private void registerListeners() {
         getServer().getPluginManager().registerEvents(new JavaMenuListener(this, bedrockMenuManager.getActionRegistry()), this);
+        getServer().getPluginManager().registerEvents(new UpdateNoticeListener(this), this);
     }
 
     private void registerClockListeners(MenuClockManager clockManager) {
@@ -171,6 +212,18 @@ public class MiaoMenu extends JavaPlugin {
             });
         } else {
             getLogger().severe(Lang.get("log.command.register-failed").replace("{0}", CLOCK_COMMAND));
+        }
+        // /mmflang（alias: lang）— 獨立短捷指令，行為等同 /dgm lang
+        PluginCommand langCommand = getCommand(LANG_COMMAND);
+        if (langCommand != null) {
+            LangCommand langImpl = new LangCommand(this);
+            langCommand.setExecutor((sender, cmd, label, args) -> {
+                langImpl.execute(sender, args);
+                return true;
+            });
+            langCommand.setTabCompleter((sender, cmd, label, args) -> langImpl.tabComplete(sender, args));
+        } else {
+            getLogger().severe(Lang.get("log.command.register-failed").replace("{0}", LANG_COMMAND));
         }
     }
 
@@ -247,5 +300,13 @@ public class MiaoMenu extends JavaPlugin {
 
     public RateLimiter getInteractionRateLimiter() {
         return interactionRateLimiter;
+    }
+
+    public CommandManager getCommandManager() {
+        return commandManager;
+    }
+
+    public UpdateChecker getUpdateChecker() {
+        return updateChecker;
     }
 }
