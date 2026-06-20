@@ -20,7 +20,7 @@ MiaoMenu_fork 是 MiaoMenu 的分支版，鎖定 Minecraft Java 26.1.2（含 26.
 
 ### 2026-06-20 — 多語系架構 + 升至 26.1.2
 
-- **動機**：Avery 要把專案打造成跟 AFly（同作者另一個外掛）一樣的多語系結構，且 MC 已經邁入 26.x 系列，原本還停在 1.21.11 的 Paper API 已過時。
+- **動機**：Avery 要把專案打造成跟 AFly（同作者另一個插件）一樣的多語系結構，且 MC 已經邁入 26.x 系列，原本還停在 1.21.11 的 Paper API 已過時。
 - **背景考量**：
   - AFly 的 `Lang.java` 是「instance 載入 + jar 內 en.yml setDefaults fallback」模式，Avery 喜歡這種乾淨的結構
   - Floodgate/Geyser 對 26.x 的支援已上線（Floodgate 2.2.5-SNAPSHOT、Geyser 2.10.1-SNAPSHOT）

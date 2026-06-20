@@ -1,15 +1,15 @@
-# MiaoMenu_fork / 喵喵選單外掛（Fork 版）
+# MiaoMenu_fork / 喵喵選單插件（Fork 版）
 
 [English](./README_en_us.md) | 繁體中文
 
 > Fork：<https://github.com/Avery11111101/MiaoMenu_fork>
 > 原作：<https://github.com/Yamada0001/MiaoMenu>
 >
-> 面向 Paper / Folia / Geyser **26.1.2**（亦相容 26.2 alpha）的輕量級選單外掛，同時為 Java 版與基岩版玩家提供原生互動體驗，內建 `en` 英文（預設）與 `zh_TW` 繁體中文雙語切換。
+> 面向 Paper / Folia / Geyser **26.1.2**（亦相容 26.2 alpha）的輕量級選單插件，同時為 Java 版與基岩版玩家提供原生互動體驗，內建 `en` 英文（預設）與 `zh_TW` 繁體中文雙語切換。
 
 ## 專案概覽
 
-MiaoMenu_fork 是一款雙端選單外掛：
+MiaoMenu_fork 是一款雙端選單插件：
 
 - Java 玩家使用箱子 GUI 選單
 - 基岩玩家使用 Floodgate 表單選單
@@ -38,7 +38,7 @@ MiaoMenu_fork 是一款雙端選單外掛：
 ### 1. 雙版本原生選單體驗
 - Java 玩家看到熟悉的箱子選單
 - 基岩玩家看到適配行動裝置的原生表單
-- 外掛內部自動分流，無需手動區分指令入口
+- 插件內部自動分流，無需手動區分指令入口
 
 ### 2. 面向實際伺服器場景
 - 支援 PlaceholderAPI 動態變數
@@ -110,7 +110,7 @@ Java 選單位於 `src/main/resources/java_menus/`，支援：
 - `view_requirement`
 
 ### 智慧選單開啟邏輯
-外掛會自動判斷：
+插件會自動判斷：
 
 - 若玩家是 Floodgate 基岩玩家，開啟基岩選單
 - 否則開啟 Java 選單
@@ -118,7 +118,7 @@ Java 選單位於 `src/main/resources/java_menus/`，支援：
 意味著同一個指令入口可以同時服務兩類玩家。
 
 ### 指令系統
-外掛註冊了以下指令：
+插件註冊了以下指令：
 
 ```text
 /dgeysermenu open <menu-name>
@@ -140,7 +140,7 @@ Java 選單位於 `src/main/resources/java_menus/`，支援：
 - `getmenuclock` 用於取得選單時鐘
 
 ### 選單時鐘
-選單時鐘是外掛的特色功能：
+選單時鐘是插件的特色功能：
 
 - 玩家加入時可自動取得時鐘
 - 若時鐘遺失，可自動補發
@@ -157,7 +157,7 @@ Java 選單位於 `src/main/resources/java_menus/`，支援：
 - 更適合高頻除錯選單配置與按鈕邏輯
 
 ### 跨服支援
-外掛支援代理環境中的跨服連線指令：
+插件支援代理環境中的跨服連線指令：
 
 - 可偵測 Velocity 模式
 - 可偵測 BungeeCord 風格通道
@@ -192,7 +192,7 @@ lore:
 - 若需跨服跳轉：建議在代理環境（Velocity / BungeeCord）下使用
 
 ### 安裝步驟
-1. 將外掛 jar 放入伺服器 `plugins` 目錄
+1. 將插件 jar 放入伺服器 `plugins` 目錄
 2. 啟動伺服器
 3. 首次啟動後會產生設定、`lang/`、範例選單
 4. 依需求修改 `config.yml`、`lang/<language>.yml`、`java_menus/`、`bedrock_menus/`
@@ -234,7 +234,7 @@ requirements:
     permission: vip.shop
 ```
 
-這類權限並非外掛固定註冊項，但可作為業務條件判斷使用。
+這類權限並非插件固定註冊項，但可作為業務條件判斷使用。
 
 ## 設定檔詳解
 
@@ -309,7 +309,7 @@ settings:
     fallback-material: STONE
 ```
 
-當外部物品提供方不可用時，外掛會備援到這裡指定的原版材質。
+當外部物品提供方不可用時，插件會備援到這裡指定的原版材質。
 
 ### 選單時鐘
 ```yaml

@@ -55,7 +55,7 @@ hot-reload:
 log:
   plugin:
     enabled: "MiaoMenu v{0} 已啟用。"
-    enable-failed: "啟用 MiaoMenu 時發生致命錯誤，外掛已停用。"
+    enable-failed: "啟用 MiaoMenu 時發生致命錯誤，插件已停用。"
   config:
     backup-delete-failed: "無法刪除備份檔案 {0}。"
     backup-create-failed: "無法備份檔案 {0}，將直接覆寫。"
@@ -75,7 +75,7 @@ log:
     initialize-failed: "BStats 初始化失敗。"
   proxy:
     detected: "偵測到代理: {0} - 跨伺服器指令已啟用"
-    velocity-forwarding-required: "Velocity 模式：請確保已啟用 BungeeCord 外掛訊息轉發"
+    velocity-forwarding-required: "Velocity 模式：請確保已啟用 BungeeCord 插件訊息轉發"
     disabled: "未偵測到代理 - 跨伺服器指令已停用"
     not-detected: "未偵測到代理，無法發送跨伺服器指令"
     send-failed: "跨伺服器指令發送失敗，目標伺服器: {0}"
