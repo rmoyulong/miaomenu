@@ -61,12 +61,15 @@ log:
     backup-delete-failed: "無法刪除備份檔案 {0}。"
     backup-create-failed: "無法備份檔案 {0}，將直接覆寫。"
     menu-refresh-failed: "無法重新整理選單範例檔案。"
+    example-missing: "插件 jar 內找不到範例資源 '{0}'，已略過自動生成。"
   command:
     register-failed: "無法註冊指令 '{0}'，請檢查 plugin.yml。"
     descriptions-missing: "在 lang/<language>.yml 與 config.yml 中皆找不到 'descriptions' 節點。"
     execute-failed: "為發送者 '{1}' 執行指令 '{0}' 失敗。"
   action:
     dispatch-failed: "為玩家 '{1}' 派發動作 '{0}' 失敗。"
+  requirement:
+    unknown-type: "未知的 requirement 類型 '{0}'，請檢查選單 YAML；同類後續出現會被靜音。"
   hot-reload:
     initialize-failed: "無法初始化 HotReloadManager，選單熱重新載入功能將停用。"
     loop-failed: "HotReloadManager 監看迴圈執行失敗。"

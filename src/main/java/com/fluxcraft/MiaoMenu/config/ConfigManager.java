@@ -56,6 +56,10 @@ public class ConfigManager {
 
     public Material getCraftEngineFallbackMaterial() {
         String materialName = getConfig().getString(FALLBACK_MATERIAL_KEY, "STONE");
+        // 使用者顯式寫 ~（YAML null）時，getString 仍會回 null → matchMaterial 丟 IAE。
+        if (materialName == null || materialName.isBlank()) {
+            return Material.STONE;
+        }
         Material material = Material.matchMaterial(materialName);
         return material != null ? material : Material.STONE;
     }
@@ -86,8 +90,14 @@ public class ConfigManager {
 
     private void saveResourceIfNotExists(String path) {
         File file = new File(plugin.getDataFolder(), path);
-        if (!file.exists()) {
+        if (file.exists()) {
+            return;
+        }
+        try {
             plugin.saveResource(path, false);
+        } catch (IllegalArgumentException e) {
+            // jar 內找不到該資源（被使用者自行剔除或打包異常）；改寫成警告而非靜默吞掉。
+            plugin.getLogger().warning(Lang.get("log.config.example-missing").replace("{0}", path));
         }
     }
 

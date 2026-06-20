@@ -35,7 +35,7 @@ import com.fluxcraft.MiaoMenu.utils.Lang;
 
 import cn.handyplus.lib.adapter.HandySchedulerUtil;
 
-public final class MiaoMenu extends JavaPlugin {
+public class MiaoMenu extends JavaPlugin {
     private static final int BSTATS_ID = 28979;
     public static final int JOIN_DELAY_TICKS = 20;
     private static final String MAIN_COMMAND = "dgeysermenu";

@@ -16,7 +16,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import com.fluxcraft.MiaoMenu.MiaoMenu;
+import org.bukkit.plugin.Plugin;
+
 import com.fluxcraft.MiaoMenu.constants.Constants;
 import com.fluxcraft.MiaoMenu.integration.ItemResolver;
 import com.fluxcraft.MiaoMenu.menu.requirement.ConditionGroup;
@@ -33,7 +34,7 @@ public class JavaMenu {
     private final String name;
     private final String title;
     private final int size;
-    private final MiaoMenu plugin;
+    private final Plugin plugin;
     private final ItemResolver itemResolver;
     private final RequirementService requirementService;
     private final List<MenuItem> items;
@@ -46,7 +47,7 @@ public class JavaMenu {
     public JavaMenu(
             String name,
             FileConfiguration config,
-            MiaoMenu plugin,
+            Plugin plugin,
             ItemResolver itemResolver,
             RequirementService requirementService
     ) {
@@ -209,14 +210,17 @@ public class JavaMenu {
             return requirementResult != null && !requirementResult.allowed();
         }
 
-        public String getLockMessage(Player player, RequirementService requirementService, String menuName, Map<String, RequirementBlock> requirementBlocks) {
+        // 一次評估同時取得鎖定狀態與對應訊息，避免 onClick 流程內 evaluate 跑兩次。
+        public LockState resolveLockState(Player player, Plugin plugin, RequirementService requirementService, String menuName, Map<String, RequirementBlock> requirementBlocks) {
             RequirementResult requirementResult = evaluateRequirement(player, requirementService, menuName, requirementBlocks);
-            return resolveLockMessage(player, requirementResult);
+            boolean locked = requirementResult != null && !requirementResult.allowed();
+            String message = locked ? resolveLockMessage(player, plugin, requirementResult) : null;
+            return new LockState(locked, message);
         }
 
         public ItemStack createItemStack(
                 Player player,
-                MiaoMenu plugin,
+                Plugin plugin,
                 @Nullable ItemResolver itemResolver,
                 RequirementService requirementService,
                 String menuName,
@@ -224,7 +228,7 @@ public class JavaMenu {
         ) {
             RequirementResult requirementResult = evaluateRequirement(player, requirementService, menuName, requirementBlocks);
             if (requirementResult != null && !requirementResult.allowed()) {
-                return createLockedItemStack(player, plugin, resolveLockMessage(player, requirementResult));
+                return createLockedItemStack(player, plugin, resolveLockMessage(player, plugin, requirementResult));
             }
             return createUnlockedItemStack(player, plugin, itemResolver);
         }
@@ -241,20 +245,20 @@ public class JavaMenu {
             return requirementService.evaluateGroup(player, menuName, requirementBlocks, conditionGroup);
         }
 
-        private String resolveLockMessage(Player player, @Nullable RequirementResult requirementResult) {
+        private String resolveLockMessage(Player player, @Nullable Plugin plugin, @Nullable RequirementResult requirementResult) {
             if (requirementResult == null || requirementResult.allowed()) {
                 return null;
             }
             if (requirementResult.denyMessage() != null && !requirementResult.denyMessage().isBlank()) {
-                return PlaceholderUtils.parse(player, requirementResult.denyMessage(), null);
+                return PlaceholderUtils.parse(player, requirementResult.denyMessage(), plugin);
             }
             if (lockMessage != null && !lockMessage.isBlank()) {
-                return PlaceholderUtils.parse(player, lockMessage, null);
+                return PlaceholderUtils.parse(player, lockMessage, plugin);
             }
             return Lang.get("message.item-locked");
         }
 
-        private ItemStack createLockedItemStack(Player player, MiaoMenu plugin, String resolvedLockMessage) {
+        private ItemStack createLockedItemStack(Player player, Plugin plugin, String resolvedLockMessage) {
             ItemStack item = new ItemStack(LOCKED_MATERIAL);
             ItemMeta meta = item.getItemMeta();
             if (meta != null) {
@@ -274,8 +278,9 @@ public class JavaMenu {
         }
 
         @SuppressWarnings("deprecation")
-        private ItemStack createUnlockedItemStack(Player player, MiaoMenu plugin, @Nullable ItemResolver itemResolver) {
-            Material resolvedMaterial = Material.matchMaterial(material);
+        private ItemStack createUnlockedItemStack(Player player, Plugin plugin, @Nullable ItemResolver itemResolver) {
+            // material 若使用者在 YAML 寫 ~（null）或空字串，matchMaterial 會丟 IAE；先擋掉再 fallback。
+            Material resolvedMaterial = (material == null || material.isBlank()) ? null : Material.matchMaterial(material);
             ItemStack item = itemResolver != null
                     ? itemResolver.resolve(material, customModelData)
                     : new ItemStack(resolvedMaterial != null ? resolvedMaterial : Material.STONE);
@@ -305,6 +310,9 @@ public class JavaMenu {
 
         public List<String> getRightClickCommands() {
             return rightClickCommands;
+        }
+
+        public record LockState(boolean locked, String message) {
         }
     }
 }

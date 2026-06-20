@@ -8,23 +8,36 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.NamespacedKey;
+import org.bukkit.Server;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
 
-import com.fluxcraft.MiaoMenu.MiaoMenu;
 import com.fluxcraft.MiaoMenu.utils.PlaceholderUtils;
 
 public class RequirementService {
-    private final MiaoMenu plugin;
+    private final Plugin plugin;
+    private final Server server;
     private final Map<String, RequirementEvaluator> evaluators = new HashMap<>();
+    // 紀錄已警告過的 unknown type，避免每次 evaluate 重複洗版。
+    private final Set<String> warnedUnknownTypes = ConcurrentHashMap.newKeySet();
 
-    public RequirementService(MiaoMenu plugin) {
+    public RequirementService(Plugin plugin) {
+        this(plugin, plugin != null ? plugin.getServer() : null);
+    }
+
+    // 測試專用建構式：直接注入 Server，避免測試需要 mock 整個 plugin 主類。
+    public RequirementService(Plugin plugin, Server server) {
         this.plugin = plugin;
+        this.server = server;
         registerDefaults();
     }
 
@@ -79,6 +92,7 @@ public class RequirementService {
             String type = getString(rawRequirement, "type", "permission");
             RequirementEvaluator evaluator = evaluators.get(type.toLowerCase(Locale.ROOT));
             if (evaluator == null) {
+                warnUnknownType(type);
                 continue;
             }
             RequirementResult.RequirementContext ctx = new RequirementResult.RequirementContext(
@@ -151,6 +165,7 @@ public class RequirementService {
             String type = getString(rawRequirement, "type", "permission");
             RequirementEvaluator evaluator = evaluators.get(type.toLowerCase(Locale.ROOT));
             if (evaluator == null) {
+                warnUnknownType(type);
                 continue;
             }
             RequirementResult result = evaluator.evaluate(player, withCurrentRequirement(context, rawRequirement));
@@ -161,6 +176,18 @@ public class RequirementService {
             }
         }
         return RequirementResult.allow();
+    }
+
+    private void warnUnknownType(String rawType) {
+        if (plugin == null || rawType == null) {
+            return;
+        }
+        String key = rawType.toLowerCase(Locale.ROOT);
+        if (warnedUnknownTypes.add(key)) {
+            plugin.getLogger().warning(
+                    com.fluxcraft.MiaoMenu.utils.Lang.get("log.requirement.unknown-type").replace("{0}", rawType)
+            );
+        }
     }
 
     private RequirementResult.RequirementContext withCurrentRequirement(RequirementResult.RequirementContext context, Map<?, ?> rawRequirement) {
@@ -174,7 +201,11 @@ public class RequirementService {
 
     private RequirementResult evaluatePermission(Player player, RequirementResult.RequirementContext context) {
         String permission = getString(context.requirements().getFirst(), "permission", null);
-        if (permission == null || player.hasPermission(permission)) {
+        // 安全防呆：缺 permission 欄位時 fail-closed（拒絕），避免使用者漏寫欄位導致權限旁路。
+        if (permission == null) {
+            return RequirementResult.deny(null, null);
+        }
+        if (player.hasPermission(permission)) {
             return RequirementResult.allow();
         }
         return RequirementResult.deny(null, null);
@@ -217,7 +248,7 @@ public class RequirementService {
         if (namespacedKey == null) {
             return RequirementResult.deny(null, null);
         }
-        Advancement advancement = plugin.getServer().getAdvancement(namespacedKey);
+        Advancement advancement = server != null ? server.getAdvancement(namespacedKey) : null;
         if (advancement == null) {
             return RequirementResult.deny(null, null);
         }
@@ -283,7 +314,11 @@ public class RequirementService {
         Scoreboard scoreboard = player.getScoreboard();
         Objective objective = scoreboard.getObjective(objectiveName);
         if (objective == null) {
-            objective = plugin.getServer().getScoreboardManager().getMainScoreboard().getObjective(objectiveName);
+            ScoreboardManager scoreboardManager = server != null ? server.getScoreboardManager() : null;
+            if (scoreboardManager == null) {
+                return null;
+            }
+            objective = scoreboardManager.getMainScoreboard().getObjective(objectiveName);
         }
         if (objective == null) {
             return null;

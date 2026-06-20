@@ -168,13 +168,19 @@ public class HotReloadManager {
 
     public void shutdown() {
         running = false;
-        if (watcherThread != null) {
-            watcherThread.interrupt();
-        }
         if (watchService != null) {
             try {
                 watchService.close();
             } catch (IOException ignored) {
+            }
+        }
+        if (watcherThread != null) {
+            watcherThread.interrupt();
+            try {
+                // 給 watcher 緒少量時間清理；逾時就放它跑成 daemon，避免阻塞主 onDisable。
+                watcherThread.join(1_000L);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
     }

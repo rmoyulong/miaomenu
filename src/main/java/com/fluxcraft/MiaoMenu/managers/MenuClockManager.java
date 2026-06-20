@@ -43,7 +43,8 @@ public class MenuClockManager {
         return meta != null && meta.getPersistentDataContainer().has(clockKey, PersistentDataType.BYTE);
     }
     public boolean playerHasClock(Player player) {
-        for (ItemStack item : player.getInventory().getStorageContents()) {
+        // 同時掃主物品欄、副手與盔甲槽，避免玩家把選單時鐘放到副手仍被誤判為「沒有」而重複給予。
+        for (ItemStack item : player.getInventory().getContents()) {
             if (isMenuClock(item)) return true;
         }
         return false;

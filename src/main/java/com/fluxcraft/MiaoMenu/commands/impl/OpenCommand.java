@@ -35,8 +35,12 @@ public class OpenCommand implements PluginCommand {
         List<String> allMenus = new ArrayList<>();
         allMenus.addAll(plugin.getJavaMenuManager().getMenus().keySet());
         allMenus.addAll(plugin.getBedrockMenuManager().getMenus().keySet());
+        if (args.length == 0) {
+            return allMenus;
+        }
+        String prefix = args[0] != null ? args[0] : "";
         return allMenus.stream()
-                .filter(s -> s.startsWith(args[0]))
+                .filter(s -> s.startsWith(prefix))
                 .collect(Collectors.toList());
     }
 }

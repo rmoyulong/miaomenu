@@ -1,4 +1,4 @@
-[English](./README-en.md) | [繁體中文](../README.md) | [简体中文](./README-zh.md)
+[English](./README-en.md) | [繁體中文](../README.md) | [Store Listing](./store-listing.md)
 
 # MiaoMenu_fork — Dual-platform Menu Plugin (Fork)
 
@@ -7,7 +7,7 @@
 >
 > A lightweight menu plugin for Paper / Folia / Geyser **26.1.2** (with 26.2 alpha compatibility), serving both Java and Bedrock players natively. Ships with `en` (default) and `zh_TW` locales.
 
-**Current version**: `1.0` (Fork stable release; numbering reset from upstream 2.7.7.9)
+**Current version**: `1.1` (Internal-only health check loop on top of `1.0` stable; **zero user-facing changes** — `config.yml`, menu YAMLs, commands, permissions and versions are all unchanged. Fork numbering reset from upstream 2.7.7.9)
 
 ---
 
@@ -48,7 +48,7 @@ The only new setting is `language: en|zh_TW` (defaults to `en`). If you keep you
 - (Optional) Velocity / BungeeCord proxy for `server <name>` jumps
 
 ### Install
-1. Drop `MiaoMenu_fork-1.0.jar` into `plugins/`.
+1. Drop `MiaoMenu_fork-1.1.jar` into `plugins/`.
 2. Start the server. The plugin auto-generates `config.yml`, `lang/en.yml`, `lang/zh_TW.yml`, and sample menus.
 3. (If migrating) Old data is auto-imported from legacy folders on the first run.
 4. Edit `config.yml` to change `language: en` / `zh_TW`, or edit menus under `java_menus/` / `bedrock_menus/`.
@@ -145,18 +145,55 @@ language: en      # or zh_TW, or any <code> matching a lang/<code>.yml file
 mvn package
 ```
 
-Output: `target/MiaoMenu_fork-1.0.jar`.
+Output: `target/MiaoMenu_fork-1.1.jar`.
 
 ---
 
 ## Changelog
+
+### `1.1` (2026-06-20, internal health-check loop)
+
+> Same "zero user-facing change" contract as `1.0`. A second multi-agent **scan → severity-validate → fix → cross-verify** loop was run, with two independent verifier agents both signing off clean before the release. `config.yml`, menu YAMLs, commands, permissions, `config-version` and `menu-version` are all unchanged.
+
+**Security / correctness**
+- **Permission requirement is fail-closed.** Writing `type: permission` without a `permission:` key used to allow players through; it now denies, eliminating an accidental-bypass class of bug.
+- **`material` null-tolerant.** YAML `material: ~` or empty string in `java_menus/` (and `fallback-material` in `config.yml`) used to throw `IllegalArgumentException` and kill onEnable / menu open; now falls back to `STONE`.
+- **Unknown requirement `type` no longer silent.** A typo like `type: permssion` used to be silently skipped, leaving conditions unenforced; now logs a one-shot warning per type (further occurrences suppressed).
+- **`ScoreboardManager` null guard.** During early startup or under abnormal Folia states `getScoreboardManager()` can return null; checked before use to avoid NPE.
+- **Hot-reload watcher shutdown order.** `HotReloadManager.shutdown()` now closes the `WatchService` first, then interrupts and `join(1000ms)`s the watcher thread to ensure clean termination on disable.
+- **`SoundsClock` resilience.** Wrapped in try-catch + `plugin.isEnabled()` so a disable-time menu open won't crash the flow with `IllegalStateException`.
+- **`saveResourceIfNotExists` no longer silent.** When a packaged sample is missing from the jar, the failure is now warned instead of swallowed.
+- **`OpenCommand` tab-complete defensive.** Guards against `args.length == 0` and `args[0] == null`.
+
+**Memory / resources**
+- **`RateLimiter` lazy sweep + proactive removal.** A CAS-guarded sweep every 60s drops entries older than 5×window, and `PlayerQuitEvent` proactively removes the UUID — preventing slow memory growth on long-running servers.
+- **`MenuClockManager.playerHasClock` scans full inventory.** Switched from `getStorageContents()` (main inv only) to `getContents()` so a menu clock stashed in the off-hand isn't mistaken for "missing" and duplicated on the next join.
+
+**PlaceholderAPI consistency**
+- **Lock messages now resolve PlaceholderAPI.** `MenuItem.resolveLockMessage` used to pass `null` as the plugin to `PlaceholderUtils.parse`, so `%placeholders%` in `deny_message` / `lock_message` weren't substituted; the plugin reference is now correctly threaded through.
+- **`JavaMenuListener` single-evaluate.** A new `LockState` record exposes locked-flag + lock-message in one call, replacing two separate evaluations and eliminating any in-between inconsistency.
+
+**Decoupling / maintainability**
+- **`RequirementService` takes `Plugin`.** Constructor changed from `RequirementService(MiaoMenu)` to `RequirementService(Plugin)` + a test-friendly `(Plugin, Server)` overload. `evaluateAdvancement` and `getScore` use the injected `Server` directly.
+- **`JavaMenu` takes `Plugin`.** Hard-coded `MiaoMenu` field replaced with `Plugin` for looser coupling.
+- **`MiaoMenu` main class is no longer `final`.** No semantic reason for it to be final; removing it makes testing and future extension cleaner.
+- **`PlayerLifecycleListener` / `_Folia` onQuit null guard.** Defensive null check on `RateLimiter` in case quit fires during a partial onDisable.
+
+**Verification flow**
+- 1 scanner found 20 candidates → main agent validated → 8 real / 12 false-positives → fixes applied → verifier A caught 1 missing thread (PlaceholderAPI plugin) → patched → adversarial verifier B caught 5 mediums (4 fixed; 1 `BungeeCord` detection M-4 deferred to v1.1.1) → verifier A' caught `OpenCommand` defensive → patched → verifier C and Plan-style verifier D both signed off clean for two consecutive rounds → released.
+- Progress was streamed to Discord webhook each round.
+- `README.AI.md` updated with the full motivation / step trail.
+
+**Deferred to v1.1.1**
+- **M-4**: `ProxyManager.detectProxyType` uses `net.md_5.bungee.api.ChatColor` class presence to detect BungeeCord — unreliable because Paper / Spigot ship that class. The default `velocity-network: true` path masks this; detection logic needs rewriting.
+- `pom.xml` should switch to `<release>21</release>` instead of `<source>` / `<target>` (low severity).
 
 ### `1.0` (2026-06-20, stable release)
 
 - After two rounds of multi-agent scan / fix / verify loops (`0.1` → `0.2`), all P0 / P1 findings are clean — promoted to stable.
 - Version jumps from the `0.x` preview range to `1.0` to signal that the "zero user-facing change" compatibility contract has been validated.
 - Trilingual READMEs (Traditional Chinese / English / Simplified Chinese) are aligned to this version with the full changelog.
-- Build artefact renamed to `MiaoMenu_fork-1.0.jar`. No code logic changed in this release — docs, version strings and packaging numbers only; runtime behaviour is equivalent to `0.2`.
+- Build artefact renamed to `MiaoMenu_fork-1.1.jar`. No code logic changed in this release — docs, version strings and packaging numbers only; runtime behaviour is equivalent to `0.2`.
 
 ### `0.2` (2026-06-20, stability & migration)
 

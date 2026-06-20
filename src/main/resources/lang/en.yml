@@ -61,12 +61,15 @@ log:
     backup-delete-failed: "Failed to delete backup file {0}."
     backup-create-failed: "Failed to back up file {0}; continuing with overwrite."
     menu-refresh-failed: "Failed to refresh menu example files."
+    example-missing: "Example resource '{0}' is missing from the plugin jar; skipping auto-generation."
   command:
     register-failed: "Failed to register command '{0}'. Please check your plugin.yml."
     descriptions-missing: "Could not find a 'descriptions' node in lang/<language>.yml or config.yml."
     execute-failed: "Failed to execute command '{0}' for sender '{1}'."
   action:
     dispatch-failed: "Failed to dispatch action '{0}' for player '{1}'."
+  requirement:
+    unknown-type: "Unknown requirement type '{0}' — please check your menu YAML. Subsequent occurrences will be silenced."
   hot-reload:
     initialize-failed: "Failed to initialize HotReloadManager. Menu hot-reload will be disabled."
     loop-failed: "HotReloadManager watcher loop failed."

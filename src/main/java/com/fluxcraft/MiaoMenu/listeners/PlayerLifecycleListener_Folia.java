@@ -9,6 +9,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class PlayerLifecycleListener_Folia implements Listener {
@@ -32,6 +33,13 @@ public class PlayerLifecycleListener_Folia implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onDeath(PlayerDeathEvent event) {
         clockManager.removeClockFromDrops(event.getDrops());
+    }
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onQuit(PlayerQuitEvent event) {
+        com.fluxcraft.MiaoMenu.security.RateLimiter limiter = plugin.getInteractionRateLimiter();
+        if (limiter != null) {
+            limiter.remove(event.getPlayer().getUniqueId());
+        }
     }
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRespawn(PlayerRespawnEvent event) {

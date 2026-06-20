@@ -38,8 +38,9 @@ public class JavaMenuListener implements Listener {
         if (item == null) {
             return;
         }
-        if (item.isLocked(player, plugin.getRequirementService(), holder.getMenu().getName(), holder.getMenu().getRequirementBlocks())) {
-            String lockMsg = item.getLockMessage(player, plugin.getRequirementService(), holder.getMenu().getName(), holder.getMenu().getRequirementBlocks());
+        JavaMenu.MenuItem.LockState lockState = item.resolveLockState(player, plugin, plugin.getRequirementService(), holder.getMenu().getName(), holder.getMenu().getRequirementBlocks());
+        if (lockState.locked()) {
+            String lockMsg = lockState.message();
             if (lockMsg != null && !lockMsg.isBlank()) {
                 player.sendMessage(lockMsg);
             }

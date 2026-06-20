@@ -1,6 +1,6 @@
 # MiaoMenu_fork / 喵喵選單插件（Fork 版）
 
-繁體中文（台灣） · 其他語言：[English](./docs/README-en.md) · [简体中文](./docs/README-zh.md)
+繁體中文（台灣） · 其他語言：[English](./docs/README-en.md) · 商店文案：[Store Listing](./docs/store-listing.md)
 
 > Fork：<https://github.com/Avery11111101/MiaoMenu_fork>
 > 原作：<https://github.com/Yamada0001/MiaoMenu>
@@ -20,7 +20,7 @@ Fork 版重點放在 **不改使用者操作習慣**：
 
 ### 無痛轉移（自動匯入舊資料夾）
 
-把 `MiaoMenu_fork-1.0.jar` 直接丟到 `plugins/`，啟動時插件會自動偵測下列舊版資料夾並整批匯入到 `plugins/MiaoMenu_fork/`：
+把 `MiaoMenu_fork-1.1.jar` 直接丟到 `plugins/`，啟動時插件會自動偵測下列舊版資料夾並整批匯入到 `plugins/MiaoMenu_fork/`：
 
 1. `plugins/dmenu/`
 2. `plugins/DGeyserMenu/`
@@ -40,7 +40,7 @@ MiaoMenu_fork 是一款雙端選單插件：
 - 內建選單時鐘、範例選單與權限控制
 - 訊息抽出為獨立 `lang/<language>.yml`，繁中／英文可即時切換
 
-目前版本：`1.0`（Fork 版穩定首發；Fork 版重新起算，原作為 [Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) 2.7.7.9）
+目前版本：`1.1`（在穩定首發 `1.0` 之上做的「內部健檢」迴圈版本；使用者操作零變動，純內部修補與解耦。Fork 版重新起算，原作為 [Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) 2.7.7.9）
 
 ## 介面預覽
 
@@ -576,7 +576,7 @@ mvn test
 mvn package
 ```
 
-預設產物 `MiaoMenu_fork-1.0.jar` 會生成在 `target/` 目錄下。
+預設產物 `MiaoMenu_fork-1.1.jar` 會生成在 `target/` 目錄下。
 
 ## 常見問題
 
@@ -629,6 +629,43 @@ MiaoMenu_fork 適合以下伺服器：
 - 需要英文／繁中雙語介面
 
 ## 更新日誌
+
+### `1.1`（2026-06-20，內部健檢循環）
+
+> 「使用者操作零變動」前提下，做了第二輪「找問題 → 驗證嚴重性 → 修補 → 多代理交叉驗證」迴圈，連續兩位獨立驗證代理判 clean 才收尾。`config.yml`、`java_menus/*.yml`、`bedrock_menus/*.yml`、指令、權限、`config-version`、`menu-version` 全部不變。
+
+#### 安全 / 正確性
+- **權限條件補旁路**：`requirement` 寫 `type: permission` 但漏寫 `permission:` 欄位時，原本會放行 → 改為 fail-closed 直接拒絕，避免設定漏字導致玩家繞過權限。
+- **`material` 容錯**：`java_menus/*.yml` 與 `config.yml` 的 `fallback-material` 若使用者寫成 YAML null（`~`）或空字串，原本會丟 `IllegalArgumentException` 卡住 onEnable / 開選單；改為自動退回 `STONE`。
+- **未知 requirement type 不再靜默**：YAML 拼錯 `type:`（例如 `permssion`）原本會被默默跳過、玩家以為設了條件其實全沒套；改為印一次 warning（同 type 之後靜音，不洗版）。
+- **`ScoreboardManager` null 防護**：早期啟動或 Folia 異常狀態下 `getScoreboardManager()` 可能傳 null；補上 null 檢查，避免條件評估時 NPE。
+- **熱重載 watcher 緒清理**：`HotReloadManager.shutdown()` 改成「先關 `WatchService` → interrupt → `join(1000ms)`」順序，確保插件 disable 時 watcher 緒能正確結束。
+- **`SoundsClock` 防護**：插件 disable 期間若仍有開選單流程觸發，包 try-catch 避免 `IllegalStateException` 中斷整個流程。
+- **`saveResourceIfNotExists` 不再靜默**：jar 內找不到範例資源時原本直接吞例外，現在改 log warning。
+- **`OpenCommand` tab 補全防護**：對 `args.length == 0` 與 `args[0] == null` 加邊界檢查。
+
+#### 記憶體 / 資源
+- **`RateLimiter` 加被動清理 + 主動移除**：每 60 秒 CAS 一次掃過期條目（超過 5×window）、玩家離線時 `PlayerQuitEvent` 主動移除 UUID，長期運轉伺服器不再緩慢累積條目。
+- **`MenuClockManager.playerHasClock` 改用 `getContents()`**：原本只掃主物品欄漏掉副手，玩家把選單時鐘放副手後重連會被誤判為「沒時鐘」而重複給予；改用 `getContents()` 掃全部欄位。
+
+#### PlaceholderAPI 一致性
+- **鎖定訊息也吃得到 PlaceholderAPI**：原本 `MenuItem.resolveLockMessage` 傳 null plugin 給 `PlaceholderUtils.parse`，導致鎖定按鈕的 `deny_message` / `lock_message` 不會解析 `%placeholders%`；改為正確傳遞 `Plugin` 參數。
+- **`JavaMenuListener` 單次評估**：點擊選單按鈕時原本 `isLocked()` 與 `getLockMessage()` 會各跑一次條件評估；新增 `LockState` record，一次評估同時取出 locked 狀態與鎖定訊息，避免重複計算且消除中間態不一致。
+
+#### 解耦 / 可維護性
+- **`RequirementService` 改吃 `Plugin` 介面**：建構式從 `RequirementService(MiaoMenu)` 改為 `RequirementService(Plugin)` + 測試友善的 `(Plugin, Server)` 雙建構式；`evaluateAdvancement` / `getScore` 改用注入的 `Server` 而非 `plugin.getServer()`，方便單元測試。
+- **`JavaMenu` 改吃 `Plugin` 介面**：把硬綁的 `MiaoMenu plugin` 欄位替換為 `Plugin plugin`，降低耦合。
+- **`MiaoMenu` 主類去掉 `final`**：plugin 主類無理由 final，去掉後便於將來測試與擴充。
+- **`PlayerLifecycleListener` / `_Folia` onQuit null check**：保險起見對 `RateLimiter` 加 null 檢查，避免 onDisable 期間競態崩潰。
+
+#### 驗證流程
+- **多代理迴圈**：1 位掃描代理找出 20 條候選 → 主代理逐檔驗證得出 8 條真實／12 條誤判 → 套修補 → 驗證代理 A 找到 1 條漏網（PlaceholderAPI 沒傳 plugin）並補 → 驗證代理 B 對抗式找到 5 條 medium（修了 4 條，1 條 `BungeeCord` 偵測 M-4 延 v1.1.1）→ 驗證代理 A' 補 OpenCommand defensive → 驗證代理 C + Plan 角度驗證代理 D 連續兩次判 clean → 收工。
+- **進度同步**：每輪結束都推 Discord webhook 通知 Avery。
+- **`README.AI.md` 同步**：完整修補紀錄與動機已寫入 AI 上下文記憶庫。
+
+#### 留尾項目（延 v1.1.1）
+- **M-4**：`ProxyManager.detectProxyType` 用 `net.md_5.bungee.api.ChatColor` 類存在偵測 BungeeCord 不可靠（Paper / Spigot 自帶該類）；目前預設 `velocity-network: true` 走 Velocity 分支不出事，待重構偵測邏輯。
+- `pom.xml` 改用 `<release>21</release>` 取代 `<source>` / `<target>`（屬「低嚴重度建議」，未動以縮小 PR）。
 
 ### `1.0`（2026-06-20，穩定首發）
 

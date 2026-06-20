@@ -19,13 +19,14 @@ import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.fluxcraft.MiaoMenu.MiaoMenu;
+import org.bukkit.plugin.Plugin;
+
 import com.fluxcraft.MiaoMenu.javamenu.JavaMenu;
 
 class RequirementServiceTest {
     @Test
     void permissionRequirementAllowsPlayerWithPermission() {
-        MiaoMenu plugin = mock(MiaoMenu.class);
+        Plugin plugin = mock(Plugin.class);
         Player player = mock(Player.class);
         when(player.hasPermission("miao.test")).thenReturn(true);
         RequirementService service = new RequirementService(plugin);
@@ -40,7 +41,7 @@ class RequirementServiceTest {
 
     @Test
     void permissionRequirementDeniesPlayerWithoutPermission() {
-        MiaoMenu plugin = mock(MiaoMenu.class);
+        Plugin plugin = mock(Plugin.class);
         Player player = mock(Player.class);
         when(player.hasPermission("miao.test")).thenReturn(false);
         RequirementService service = new RequirementService(plugin);
@@ -55,7 +56,7 @@ class RequirementServiceTest {
 
     @Test
     void scoreGreaterOrEqualRequirementAllowsEnoughScore() {
-        MiaoMenu plugin = mock(MiaoMenu.class);
+        Plugin plugin = mock(Plugin.class);
         org.bukkit.Server server = mock(org.bukkit.Server.class);
         ScoreboardManager scoreboardManager = mock(ScoreboardManager.class);
         Scoreboard mainScoreboard = mock(Scoreboard.class);
@@ -85,7 +86,7 @@ class RequirementServiceTest {
 
     @Test
     void scoreRangeRequirementDeniesOutsideRange() {
-        MiaoMenu plugin = mock(MiaoMenu.class);
+        Plugin plugin = mock(Plugin.class);
         org.bukkit.Server server = mock(org.bukkit.Server.class);
         ScoreboardManager scoreboardManager = mock(ScoreboardManager.class);
         Scoreboard mainScoreboard = mock(Scoreboard.class);
@@ -116,7 +117,7 @@ class RequirementServiceTest {
 
     @Test
     void advancementConditionAllowsWhenCompleted() {
-        MiaoMenu plugin = mock(MiaoMenu.class);
+        Plugin plugin = mock(Plugin.class);
         org.bukkit.Server server = mock(org.bukkit.Server.class);
         Player player = mock(Player.class);
         Advancement advancement = mock(Advancement.class);
@@ -138,7 +139,7 @@ class RequirementServiceTest {
 
     @Test
     void advancementConditionDeniesWhenNotCompleted() {
-        MiaoMenu plugin = mock(MiaoMenu.class);
+        Plugin plugin = mock(Plugin.class);
         org.bukkit.Server server = mock(org.bukkit.Server.class);
         Player player = mock(Player.class);
         Advancement advancement = mock(Advancement.class);
@@ -160,7 +161,7 @@ class RequirementServiceTest {
 
     @Test
     void advancementConditionRefreshesAfterChange() {
-        MiaoMenu plugin = mock(MiaoMenu.class);
+        Plugin plugin = mock(Plugin.class);
         org.bukkit.Server server = mock(org.bukkit.Server.class);
         Player player = mock(Player.class);
         Advancement advancement = mock(Advancement.class);
@@ -188,7 +189,7 @@ class RequirementServiceTest {
 
     @Test
     void conditionGroupAndLogicRequiresAllConditions() {
-        MiaoMenu plugin = mock(MiaoMenu.class);
+        Plugin plugin = mock(Plugin.class);
         Player player = mock(Player.class);
         when(player.hasPermission("perm.a")).thenReturn(true);
         when(player.hasPermission("perm.b")).thenReturn(false);
@@ -209,7 +210,7 @@ class RequirementServiceTest {
 
     @Test
     void conditionGroupAndLogicPassesWhenAllMet() {
-        MiaoMenu plugin = mock(MiaoMenu.class);
+        Plugin plugin = mock(Plugin.class);
         Player player = mock(Player.class);
         when(player.hasPermission("perm.a")).thenReturn(true);
         when(player.hasPermission("perm.b")).thenReturn(true);
@@ -230,7 +231,7 @@ class RequirementServiceTest {
 
     @Test
     void conditionGroupOrLogicPassesWithAnyCondition() {
-        MiaoMenu plugin = mock(MiaoMenu.class);
+        Plugin plugin = mock(Plugin.class);
         Player player = mock(Player.class);
         when(player.hasPermission("perm.a")).thenReturn(false);
         when(player.hasPermission("perm.b")).thenReturn(true);
@@ -251,7 +252,7 @@ class RequirementServiceTest {
 
     @Test
     void conditionGroupOrLogicFailsWhenNoneMet() {
-        MiaoMenu plugin = mock(MiaoMenu.class);
+        Plugin plugin = mock(Plugin.class);
         Player player = mock(Player.class);
         when(player.hasPermission("perm.a")).thenReturn(false);
         when(player.hasPermission("perm.b")).thenReturn(false);
@@ -272,7 +273,7 @@ class RequirementServiceTest {
 
     @Test
     void nestedConditionGroupOrInsideAnd() {
-        MiaoMenu plugin = mock(MiaoMenu.class);
+        Plugin plugin = mock(Plugin.class);
         Player player = mock(Player.class);
         when(player.hasPermission("perm.required")).thenReturn(true);
         when(player.hasPermission("perm.opt_a")).thenReturn(false);
@@ -300,7 +301,7 @@ class RequirementServiceTest {
 
     @Test
     void rootLevelItemRequirementsAreLoadedAsConditionGroup() {
-        MiaoMenu plugin = mock(MiaoMenu.class);
+        Plugin plugin = mock(Plugin.class);
         YamlConfiguration config = new YamlConfiguration();
         config.set("items.server_info.slot", 10);
         config.set("items.server_info.material", "KNOWLEDGE_BOOK");
@@ -320,7 +321,7 @@ class RequirementServiceTest {
 
     @Test
     void progressConditionDeniesWhenScoreBelowThreshold() {
-        MiaoMenu plugin = mock(MiaoMenu.class);
+        Plugin plugin = mock(Plugin.class);
         org.bukkit.Server server = mock(org.bukkit.Server.class);
         ScoreboardManager scoreboardManager = mock(ScoreboardManager.class);
         Scoreboard mainScoreboard = mock(Scoreboard.class);
@@ -350,7 +351,7 @@ class RequirementServiceTest {
 
     @Test
     void hotReloadDoesNotAffectExistingMenuReferences() {
-        MiaoMenu plugin = mock(MiaoMenu.class);
+        Plugin plugin = mock(Plugin.class);
         Player player = mock(Player.class);
         when(player.hasPermission("perm.stable")).thenReturn(true);
 
