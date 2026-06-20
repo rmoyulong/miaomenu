@@ -47,6 +47,7 @@ menu:
     name: "&6時光之鏡 &7(右鍵開啟選單)"
     given: "&a✦ 已獲贈時光之鏡，右鍵即可映照出選單！"
     restored: "&f✦ 物品已完好如初地歸還於你。"
+  locked-tag: "&8[未解鎖]"
 
 hot-reload:
   initialized: "✦ 選單的律動已開始（自動重新載入已啟動）。"
@@ -55,14 +56,14 @@ hot-reload:
 log:
   plugin:
     enabled: "MiaoMenu v{0} 已啟用。"
-    enable-failed: "啟用 MiaoMenu 時發生致命錯誤，外掛已停用。"
+    enable-failed: "啟用 MiaoMenu 時發生致命錯誤，插件已停用。"
   config:
     backup-delete-failed: "無法刪除備份檔案 {0}。"
     backup-create-failed: "無法備份檔案 {0}，將直接覆寫。"
     menu-refresh-failed: "無法重新整理選單範例檔案。"
   command:
     register-failed: "無法註冊指令 '{0}'，請檢查 plugin.yml。"
-    descriptions-missing: "在 config.yml 中找不到 'messages.descriptions' 節點。"
+    descriptions-missing: "在 lang/<language>.yml 與 config.yml 中皆找不到 'descriptions' 節點。"
     execute-failed: "為發送者 '{1}' 執行指令 '{0}' 失敗。"
   action:
     dispatch-failed: "為玩家 '{1}' 派發動作 '{0}' 失敗。"
@@ -75,7 +76,7 @@ log:
     initialize-failed: "BStats 初始化失敗。"
   proxy:
     detected: "偵測到代理: {0} - 跨伺服器指令已啟用"
-    velocity-forwarding-required: "Velocity 模式：請確保已啟用 BungeeCord 外掛訊息轉發"
+    velocity-forwarding-required: "Velocity 模式：請確保已啟用 BungeeCord 插件訊息轉發"
     disabled: "未偵測到代理 - 跨伺服器指令已停用"
     not-detected: "未偵測到代理，無法發送跨伺服器指令"
     send-failed: "跨伺服器指令發送失敗，目標伺服器: {0}"

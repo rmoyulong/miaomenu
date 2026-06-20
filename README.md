@@ -1,15 +1,37 @@
-# MiaoMenu_fork / 喵喵選單外掛（Fork 版）
+# MiaoMenu_fork / 喵喵選單插件（Fork 版）
 
-[English](./README_en_us.md) | 繁體中文
+繁體中文（台灣） · 英文 README 仍在翻譯，暫可參考 `docs/README-en.md`（為原版 DGeyserMenuFlux 版本，與本 Fork 部分不同）
 
 > Fork：<https://github.com/Avery11111101/MiaoMenu_fork>
 > 原作：<https://github.com/Yamada0001/MiaoMenu>
 >
-> 面向 Paper / Folia / Geyser **26.1.2**（亦相容 26.2 alpha）的輕量級選單外掛，同時為 Java 版與基岩版玩家提供原生互動體驗，內建 `en` 英文（預設）與 `zh_TW` 繁體中文雙語切換。
+> 面向 Paper / Folia / Geyser **26.1.2**（亦相容 26.2 alpha）的輕量級選單插件，同時為 Java 版與基岩版玩家提供原生互動體驗，內建 `en` 英文（預設）與 `zh_TW` 繁體中文雙語切換。
+
+## 向後相容聲明（從原版 MiaoMenu 升級必看）
+
+Fork 版重點放在 **不改使用者操作習慣**：
+
+- 主指令 `/dgeysermenu`、`/dgm`、`/fluxmenu` 全數保留，**額外新增** `/mmf` 別名
+- 子指令 `open / reload / help`、`/getmenuclock` 全數保留
+- 權限節點 `dgeysermenu.*`、`dgeysermenu.use`、`dgeysermenu.admin`、`dgeysermenu.reload` 全數保留
+- `config.yml`、`java_menus/*.yml`、`bedrock_menus/*.yml` 鍵名與結構保留，原本的設定檔可直接帶過來
+
+唯一新增的設定是 `language: en|zh_TW`（缺省即 `en`），並把 `config.yml` 內原本的 `messages:` 區塊搬到 `lang/<language>.yml`。若你升級時保留原 `config.yml`，插件啟動會偵測 `config-version` 自動補上新鍵，不會壞掉舊設定。
+
+### 無痛轉移（自動匯入舊資料夾）
+
+把 `MiaoMenu_fork-0.1.jar` 直接丟到 `plugins/`，啟動時插件會自動偵測下列舊版資料夾並整批匯入到 `plugins/MiaoMenu_fork/`：
+
+1. `plugins/dmenu/`
+2. `plugins/DGeyserMenu/`
+3. `plugins/dgeysermenu/`
+4. `plugins/MiaoMenu/`
+
+匯入只在 `plugins/MiaoMenu_fork/config.yml` **不存在**時觸發；舊資料夾原封不動，新資料夾內會出現舊 `config.yml`、`java_menus/`、`bedrock_menus/`、`lang/` 等檔案。若舊 `config-version` 與本版不符，舊 `config.yml` 會被 ConfigManager 自動備份成 `config.yml.old`，並寫入本版預設值，你可以對照備份檔把自訂值挪到新版即可。
 
 ## 專案概覽
 
-MiaoMenu_fork 是一款雙端選單外掛：
+MiaoMenu_fork 是一款雙端選單插件：
 
 - Java 玩家使用箱子 GUI 選單
 - 基岩玩家使用 Floodgate 表單選單
@@ -38,7 +60,7 @@ MiaoMenu_fork 是一款雙端選單外掛：
 ### 1. 雙版本原生選單體驗
 - Java 玩家看到熟悉的箱子選單
 - 基岩玩家看到適配行動裝置的原生表單
-- 外掛內部自動分流，無需手動區分指令入口
+- 插件內部自動分流，無需手動區分指令入口
 
 ### 2. 面向實際伺服器場景
 - 支援 PlaceholderAPI 動態變數
@@ -110,7 +132,7 @@ Java 選單位於 `src/main/resources/java_menus/`，支援：
 - `view_requirement`
 
 ### 智慧選單開啟邏輯
-外掛會自動判斷：
+插件會自動判斷：
 
 - 若玩家是 Floodgate 基岩玩家，開啟基岩選單
 - 否則開啟 Java 選單
@@ -118,7 +140,7 @@ Java 選單位於 `src/main/resources/java_menus/`，支援：
 意味著同一個指令入口可以同時服務兩類玩家。
 
 ### 指令系統
-外掛註冊了以下指令：
+插件註冊了以下指令：
 
 ```text
 /dgeysermenu open <menu-name>
@@ -140,7 +162,7 @@ Java 選單位於 `src/main/resources/java_menus/`，支援：
 - `getmenuclock` 用於取得選單時鐘
 
 ### 選單時鐘
-選單時鐘是外掛的特色功能：
+選單時鐘是插件的特色功能：
 
 - 玩家加入時可自動取得時鐘
 - 若時鐘遺失，可自動補發
@@ -157,7 +179,7 @@ Java 選單位於 `src/main/resources/java_menus/`，支援：
 - 更適合高頻除錯選單配置與按鈕邏輯
 
 ### 跨服支援
-外掛支援代理環境中的跨服連線指令：
+插件支援代理環境中的跨服連線指令：
 
 - 可偵測 Velocity 模式
 - 可偵測 BungeeCord 風格通道
@@ -192,7 +214,7 @@ lore:
 - 若需跨服跳轉：建議在代理環境（Velocity / BungeeCord）下使用
 
 ### 安裝步驟
-1. 將外掛 jar 放入伺服器 `plugins` 目錄
+1. 將插件 jar 放入伺服器 `plugins` 目錄
 2. 啟動伺服器
 3. 首次啟動後會產生設定、`lang/`、範例選單
 4. 依需求修改 `config.yml`、`lang/<language>.yml`、`java_menus/`、`bedrock_menus/`
@@ -234,7 +256,7 @@ requirements:
     permission: vip.shop
 ```
 
-這類權限並非外掛固定註冊項，但可作為業務條件判斷使用。
+這類權限並非插件固定註冊項，但可作為業務條件判斷使用。
 
 ## 設定檔詳解
 
@@ -309,7 +331,7 @@ settings:
     fallback-material: STONE
 ```
 
-當外部物品提供方不可用時，外掛會備援到這裡指定的原版材質。
+當外部物品提供方不可用時，插件會備援到這裡指定的原版材質。
 
 ### 選單時鐘
 ```yaml
@@ -605,6 +627,35 @@ MiaoMenu_fork 適合以下伺服器：
 - 希望結合 PlaceholderAPI 顯示動態資料
 - 希望以低維護成本實作條件選單系統
 - 需要英文／繁中雙語介面
+
+## 更新日誌
+
+### `0.2`（2026-06-20，穩定性與遷移）
+
+- **無痛轉移**：新增 `LegacyDataMigrator`，首次啟動時自動從 `plugins/dmenu`、`plugins/DGeyserMenu`、`plugins/dgeysermenu`、`plugins/MiaoMenu` 匯入舊資料到本插件資料夾
+- **修復：沒裝 Floodgate 時插件啟動失敗**：`BedrockMenuManager` 改為 lazy 反射初始化，純 Java 環境也能 onEnable
+- **修復：`/getmenuclock` 指令未掛載**：補上 executor，含 `dgeysermenu.admin` 權限檢查與 Player 檢查
+- **修復：`MENU_VERSION` 反向設定**：常數 3 → 6，與 `config.yml` 對齊，不再每次啟動覆寫使用者 `test.yml`
+- **修復：Folia 環境玩家死亡會噴鐘**：`PlayerLifecycleListener_Folia` 補上 `onDeath` handler 過濾掉口袋鐘錶
+- **修復：基岩選單 `requirement_blocks` 共用條件失效**：點擊處理改傳真實 blocks map，而非 `Collections.emptyMap()`
+- **安全：阻擋潛在 console 命令注入**：`CmdAction` 接入 `InputValidator.isSafeCommandContent` 過濾，注入內容直接拒絕並回送 `unsafe-input` 訊息
+- **體驗：時鐘右鍵不再雙手雙觸發**：`ClockInteractionListener` 加入 `EquipmentSlot.HAND` 早退
+- **`plugin.yml` softdepend 大小寫修正**：`Floodgate` → `floodgate`，與其實際 plugin name 對齊
+- **多語系：`menu.locked-tag` 抽出**：基岩鎖定按鈕的「[未解鎖]」標籤改由 `lang/<language>.yml` 控制
+
+### `0.1`（2026-06-20，Fork 起點）
+
+- 跟上 MC 26.x：`paper-api` 1.21.11 → **26.1.2.build.72-stable**、`folia-api` → 26.1.2.build.8-stable
+- 升級 `floodgate` 2.2.0 → 2.2.5-SNAPSHOT、新增 `geyser` 2.10.1-SNAPSHOT 軟相依
+- `plugin.yml` 的 `api-version` 由 `1.21` 改為 `'26.1'`
+- 多語系拆分：原 `config.yml` 內 `messages:` 區塊抽出為 `lang/<language>.yml`，內建 `en`（預設）與 `zh_TW`
+- `Lang.load()` 查詢順序：`lang/<language>.yml` → `lang/en.yml` fallback → `config.yml`（向後相容舊用法）
+- 熱重載延伸：`HotReloadManager` 監聽 `lang/` 目錄，編輯語系檔即時生效
+- 指令別名新增 `/mmf`，不影響原本 `/dgm`、`/fluxmenu`、`/dgeysermenu`
+- 改名 `MiaoMenu_fork`：jar 與插件資料夾改名為 `MiaoMenu_fork`；原本指令、權限節點、設定鍵名「完全沒動」
+- 中文行文重整：README、設定檔 header、lang 訊息一律改稱「插件」，去掉重複的「（台灣）」尾綴
+
+> 想要看每次變更的「為什麼這樣做」與檔案級別差異，請看 `README.AI.md`。
 
 ## 鳴謝
 

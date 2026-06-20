@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
     MiaoMenu_fork
-    喵喵選單外掛分支版，支援 Paper / Folia / Geyser 26.1.x（亦相容 26.2 alpha）與多語系。
+    喵喵選單插件分支版，支援 Paper / Folia / Geyser 26.1.x（亦相容 26.2 alpha）與多語系。
     Fork:   https://github.com/Avery11111101/MiaoMenu_fork
     原作 / Original: https://github.com/Yamada0001/MiaoMenu
 -->
@@ -13,10 +13,10 @@
 
     <groupId>com.fluxcraft</groupId>
     <artifactId>MiaoMenu_fork</artifactId>
-    <version>0.1</version>
+    <version>0.2</version>
     <packaging>jar</packaging>
     <name>MiaoMenu_fork</name>
-    <description>MiaoMenu_fork — 喵喵選單外掛分支版，支援 Paper/Folia/Geyser 26.1.x（亦相容 26.2 alpha）與多語系。Fork: https://github.com/Avery11111101/MiaoMenu_fork ／ 原作 Original: https://github.com/Yamada0001/MiaoMenu</description>
+    <description>MiaoMenu_fork — 喵喵選單插件分支版，支援 Paper/Folia/Geyser 26.1.x（亦相容 26.2 alpha）與多語系。Fork: https://github.com/Avery11111101/MiaoMenu_fork ／ 原作 Original: https://github.com/Yamada0001/MiaoMenu</description>
 
     <properties>
         <java.version>21</java.version>

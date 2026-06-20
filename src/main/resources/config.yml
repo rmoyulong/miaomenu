@@ -34,9 +34,9 @@ settings:
 
   velocity-network: true # 是否啟用 Velocity 網路支援（自動偵測 BungeeCord）
 
-  # 物品解析器設定（自動偵測已安裝的外掛 IA / CE / MMO / HEADBASE）
+  # 物品解析器設定（自動偵測已安裝的插件 IA / CE / MMO / HEADBASE）
   item-resolver:
-    fallback-material: STONE # 當物品來源外掛未安裝或物品不存在時的備用原版材質
+    fallback-material: STONE # 當物品來源插件未安裝或物品不存在時的備用原版材質
 
   menu-clock:
     enabled: true # 是否啟用整個鐘錶功能

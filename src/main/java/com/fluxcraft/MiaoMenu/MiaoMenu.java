@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.fluxcraft.MiaoMenu.bedrockmenu.BedrockMenuManager;
 import com.fluxcraft.MiaoMenu.commands.CommandManager;
 import com.fluxcraft.MiaoMenu.config.ConfigManager;
+import com.fluxcraft.MiaoMenu.config.LegacyDataMigrator;
 import com.fluxcraft.MiaoMenu.foliacall.FoliaFactory;
 import com.fluxcraft.MiaoMenu.integration.ItemResolver;
 import com.fluxcraft.MiaoMenu.javamenu.JavaMenuListener;
@@ -38,11 +39,13 @@ public final class MiaoMenu extends JavaPlugin {
     private static final int BSTATS_ID = 28979;
     public static final int JOIN_DELAY_TICKS = 20;
     private static final String MAIN_COMMAND = "dgeysermenu";
+    private static final String CLOCK_COMMAND = "getmenuclock";
 
     private ConfigManager configManager;
     private JavaMenuManager javaMenuManager;
     private BedrockMenuManager bedrockMenuManager;
     private CommandManager commandManager;
+    private MenuClockManager menuClockManager;
     private HotReloadManager hotReloadManager;
     private ProxyManager proxyManager;
     private RequirementService requirementService;
@@ -87,6 +90,7 @@ public final class MiaoMenu extends JavaPlugin {
     }
 
     private void initializeCoreServices() {
+        LegacyDataMigrator.migrateIfNeeded(this);
         saveDefaultConfig();
         Lang.init(this);
         HandySchedulerUtil.init(this);
@@ -106,13 +110,13 @@ public final class MiaoMenu extends JavaPlugin {
         javaMenuManager = new JavaMenuManager(this, itemResolver, soundsClock, requirementService, requirementFeedbackHandler);
         bedrockMenuManager = new BedrockMenuManager(this, actionRegistry, soundsClock, requirementService, requirementFeedbackHandler);
         commandManager = new CommandManager(this);
-        MenuClockManager clockManager = new MenuClockManager(this, clockKey);
+        menuClockManager = new MenuClockManager(this, clockKey);
         hotReloadManager = new HotReloadManager(this);
         proxyManager = new ProxyManager(this);
         proxyManager.initialize();
         javaMenuManager.loadAllMenus();
         bedrockMenuManager.loadAllMenus();
-        registerClockListeners(clockManager);
+        registerClockListeners(menuClockManager);
     }
 
     private void registerListeners() {
@@ -148,9 +152,26 @@ public final class MiaoMenu extends JavaPlugin {
         if (command != null) {
             command.setExecutor(commandManager);
             command.setTabCompleter(commandManager);
-            return;
+        } else {
+            getLogger().severe(Lang.get("log.command.register-failed").replace("{0}", MAIN_COMMAND));
         }
-        getLogger().severe(Lang.get("log.command.register-failed").replace("{0}", MAIN_COMMAND));
+        PluginCommand clockCommand = getCommand(CLOCK_COMMAND);
+        if (clockCommand != null) {
+            clockCommand.setExecutor((sender, cmd, label, args) -> {
+                if (!sender.hasPermission("dgeysermenu.admin")) {
+                    sender.sendMessage(Lang.get("message.no-permission"));
+                    return true;
+                }
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(Lang.get("message.players-only"));
+                    return true;
+                }
+                menuClockManager.giveClockToPlayer(player);
+                return true;
+            });
+        } else {
+            getLogger().severe(Lang.get("log.command.register-failed").replace("{0}", CLOCK_COMMAND));
+        }
     }
 
     public void openSmartMenu(Player player, String menuName) {

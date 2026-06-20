@@ -21,7 +21,7 @@ public class OpenCommand implements PluginCommand {
             return;
         }
         if (args.length < 1) {
-            sender.sendMessage(Lang.get("message.usage-open"));
+            sender.sendMessage(Lang.get("command.usage-open"));
             return;
         }
         if (!(sender instanceof Player player)) {
