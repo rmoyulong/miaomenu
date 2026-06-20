@@ -34,8 +34,9 @@ public class HotReloadManager {
     private WatchService watchService;
     private volatile boolean running = false;
     private Thread watcherThread;
-    private long lastConfigReloadTime = 0;
-    private long lastLangReloadTime = 0;
+    // volatile：watcher 緒寫、其他緒可能透過 reload 觸發點讀；64-bit long 在 32-bit JVM 上沒 volatile 會 torn read。
+    private volatile long lastConfigReloadTime = 0;
+    private volatile long lastLangReloadTime = 0;
 
     public HotReloadManager(MiaoMenu plugin) {
         this.plugin = plugin;
@@ -159,6 +160,11 @@ public class HotReloadManager {
     }
 
     private void scheduleReload(Runnable task) {
+        // shutdown 已把 running 設為 false 但 watcher 可能還在 events 處理迴圈中；
+        // 若此時 plugin 已 disable，再呼叫 Bukkit scheduler 會丟 IllegalPluginAccessException。
+        if (!running || !plugin.isEnabled()) {
+            return;
+        }
         if (FoliaFactory.isFolia()) {
             Bukkit.getGlobalRegionScheduler().runDelayed(plugin, scheduledTask -> task.run(), 10L);
         } else {

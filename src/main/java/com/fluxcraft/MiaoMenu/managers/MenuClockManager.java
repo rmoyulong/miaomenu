@@ -44,7 +44,13 @@ public class MenuClockManager {
     }
     public boolean playerHasClock(Player player) {
         // 同時掃主物品欄、副手與盔甲槽，避免玩家把選單時鐘放到副手仍被誤判為「沒有」而重複給予。
-        for (ItemStack item : player.getInventory().getContents()) {
+        // Paper 1.21+ getContents() 已含 41 槽（含 armor + offhand），但顯式分開查詢更穩，
+        // 避免日後 API 變動或非 Paper 衍生 server 行為差異。
+        for (ItemStack item : player.getInventory().getStorageContents()) {
+            if (isMenuClock(item)) return true;
+        }
+        if (isMenuClock(player.getInventory().getItemInOffHand())) return true;
+        for (ItemStack item : player.getInventory().getArmorContents()) {
             if (isMenuClock(item)) return true;
         }
         return false;

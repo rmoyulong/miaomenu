@@ -6,13 +6,23 @@ import org.bukkit.plugin.Plugin;
 
 import com.fluxcraft.MiaoMenu.MiaoMenu;
 import com.fluxcraft.MiaoMenu.constants.Constants;
+import com.fluxcraft.MiaoMenu.foliacall.FoliaFactory;
 import com.fluxcraft.MiaoMenu.proxy.ProxyManager;
+import com.fluxcraft.MiaoMenu.security.InputValidator;
+import com.fluxcraft.MiaoMenu.utils.Lang;
 
 public class PlayerAction implements com.fluxcraft.MiaoMenu.menu.action.MenuAction {
     @Override
     public void execute(Player player, String content, Plugin plugin) {
         if (content == null || content.isEmpty()) return;
         String cmd = Constants.stripLeadingSlash(content);
+
+        // 與 CmdAction 一致：在派發前過濾不安全字元（PlaceholderAPI 展開後可能藏 ;; / && / ||）。
+        if (!InputValidator.isSafeCommandContent(cmd)) {
+            player.sendMessage(Lang.get("message.unsafe-input"));
+            plugin.getLogger().warning("[player] 拒絕執行不安全指令內容（player=" + player.getName() + "）：" + cmd);
+            return;
+        }
 
         // 與 Paper 處理 client chat packet 時印的 `issued server command:` 對齊；
         // 因 player.performCommand() / ProxyManager.sendServerCommand() 都不會印這行，
@@ -32,6 +42,8 @@ public class PlayerAction implements com.fluxcraft.MiaoMenu.menu.action.MenuActi
             }
         }
 
-        player.performCommand(cmd);
+        // Folia 下 player.performCommand 必須在該玩家所屬的 region 緒；
+        // 透過 BedrockMenu Floodgate callback 進來時呼叫端是 Netty I/O 緒。
+        FoliaFactory.getAdapter().runForEntity(plugin, player, () -> player.performCommand(cmd));
     }
 }

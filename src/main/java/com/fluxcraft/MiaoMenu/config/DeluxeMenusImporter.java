@@ -215,9 +215,19 @@ public final class DeluxeMenusImporter {
         dst.set("rows", rows);
 
         // open_command / register_command 不轉（MiaoMenu 走主指令 /dgm open <menuId>）
-        // 為了讓使用者能溯源，把原始 open_command 寫到一個保留欄位 _imported_open_command
+        // 為了讓使用者能溯源，把原始 open_command 寫到一個保留欄位 _imported_open_command。
+        // DeluxeMenus 自 1.13.x 起允許 open_command 為 string 或 list；
+        // 用 getString 會把 list 變成 "[a, b]" 這種 toString 亂碼，所以分支處理。
         if (src.contains("open_command")) {
-            dst.set("_imported_open_command", src.getString("open_command"));
+            Object raw = src.get("open_command");
+            if (raw instanceof java.util.List<?>) {
+                java.util.List<String> aliases = src.getStringList("open_command");
+                if (!aliases.isEmpty()) {
+                    dst.set("_imported_open_command", aliases);
+                }
+            } else if (raw != null) {
+                dst.set("_imported_open_command", raw.toString());
+            }
         }
 
         ConfigurationSection items = src.getConfigurationSection("items");
@@ -251,8 +261,10 @@ public final class DeluxeMenusImporter {
 
         String header = "# 由 MiaoMenu_fork DeluxeMenusImporter 從 " + sourceFile.getFileName()
                 + " 自動轉換產生。\n"
-                + "# 動作前綴對應：[console]→[cmd]、[openguimenu] X→[player] dgm open X；\n"
-                + "# 其餘 prefix（[player]/[message]/[close]）原樣保留。\n"
+                + "# 動作前綴對應：[console]/[commandevent]→[cmd]、[openguimenu] X→[player] dgm open X、\n"
+                + "# [chat]/[broadcast]/[json]/[minimessage]/[actionbar]/[title]/[subtitle]→[message]、\n"
+                + "# [refresh]→[close]、[connect] X→[player] server X、[sound] X→[cmd] playsound X %player_name%。\n"
+                + "# 其餘 prefix（[player]/[message]/[close]/未知）原樣保留。\n"
                 + "# 如需手動微調 PlaceholderAPI、條件或物品 skin，請直接編輯本檔。\n\n";
         return header + dst.saveToString();
     }
@@ -483,9 +495,20 @@ public final class DeluxeMenusImporter {
             }
             String prefix = trimmed.substring(1, bracketEnd).trim().toLowerCase();
             String body = trimmed.substring(bracketEnd + 1).trim();
+            // 擴充對應表：DeluxeMenus 常見 prefix 全部明確映射，避免 default 走原樣保留時
+            // 被 DefaultAction 當成玩家身分指令誤觸發（例如 [broadcast] 變 /broadcast）。
             String converted = switch (prefix) {
                 case "console" -> "[cmd] " + body;
                 case "openguimenu" -> "[player] dgm open " + body;
+                // 純訊息類動作：以聊天訊息呈現給玩家，避免被當成指令送出
+                case "chat", "broadcast", "json", "minimessage", "actionbar", "title", "subtitle" -> "[message] " + body;
+                // 副作用為「重新整理 / 連線 / 觸發事件」這類在 MiaoMenu 沒有對應動作的 prefix：
+                case "refresh" -> "[close]";
+                // [connect] 走玩家身分 /server <name>（MiaoMenu PlayerAction 內建 ProxyManager 處理跨服）
+                case "connect" -> "[player] server " + body;
+                // [sound] 用 PAPI 注入 %player_name% 作為 selector，避免 console 端 @s 失效
+                case "sound" -> "[cmd] playsound " + body + " %player_name%";
+                case "commandevent" -> "[cmd] " + body;
                 // 其他通通保留：[player] [message] [close] 以及未知 prefix
                 default -> raw;
             };

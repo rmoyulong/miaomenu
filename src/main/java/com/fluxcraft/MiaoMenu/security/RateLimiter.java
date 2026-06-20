@@ -24,16 +24,22 @@ public final class RateLimiter {
     public boolean allow(UUID uuid) {
         long now = System.currentTimeMillis();
         sweepExpiredIfDue(now);
-        Window current = windows.get(uuid);
-        if (current == null || now - current.windowStart() >= windowMillis) {
-            windows.put(uuid, new Window(now, 1));
-            return true;
-        }
-        if (current.count() >= maxEvents) {
-            return false;
-        }
-        windows.put(uuid, new Window(current.windowStart(), current.count() + 1));
-        return true;
+        // 原本是 get→put 兩步、非原子。Folia 多 region 緒（或 Paper 非主緒事件）並發點擊時，
+        // 兩個緒會各自讀到舊 count、各自 put 覆蓋對方，造成 rate limit 被穩定繞過。
+        // 改用 compute 把「讀舊值 → 判超限 → 寫新值」三步收進一個原子段落。
+        // ConcurrentHashMap.compute 的 lambda 對同一 key 保證序列化執行。
+        boolean[] allowed = new boolean[]{true};
+        windows.compute(uuid, (k, current) -> {
+            if (current == null || now - current.windowStart() >= windowMillis) {
+                return new Window(now, 1);
+            }
+            if (current.count() >= maxEvents) {
+                allowed[0] = false;
+                return current;
+            }
+            return new Window(current.windowStart(), current.count() + 1);
+        });
+        return allowed[0];
     }
 
     public void remove(UUID uuid) {

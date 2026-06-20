@@ -142,7 +142,15 @@ public class ItemResolver {
         return null;
     }
 
+    // 限制 base64 段只能含 SHA-1 風格的純十六進位（textures.minecraft.net path 的合法格式）。
+    // 既能防 path traversal（`../`、`@`、`:` 等都會被擋）也能擋 PAPI 拼接出的怪字串造成意外網域跳轉。
+    private static final java.util.regex.Pattern TEXTURE_HASH = java.util.regex.Pattern.compile("[A-Fa-f0-9]{16,128}");
+
     private ItemStack resolveBase64Head(String base64) {
+        if (base64 == null || !TEXTURE_HASH.matcher(base64).matches()) {
+            plugin.getLogger().fine("Rejected invalid base64 head id: " + (base64 == null ? "null" : base64.substring(0, Math.min(20, base64.length())) + "..."));
+            return null;
+        }
         try {
             var urlClass = Class.forName("org.bukkit.profile.PlayerProfile");
             var server = plugin.getServer();

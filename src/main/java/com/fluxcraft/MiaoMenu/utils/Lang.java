@@ -23,8 +23,10 @@ public final class Lang {
     private static final LegacyComponentSerializer SECTION = LegacyComponentSerializer.legacySection();
 
     private static Plugin plugin;
-    private static FileConfiguration messages;
-    private static String currentLanguage = "en";
+    // volatile：UpdateChecker 的 HttpClient async 回呼、Floodgate Netty 緒等都會呼叫 Lang.get；
+    // 若主緒 Lang.load 正在替換 messages，非主緒可能讀到 partially published 的 reference 或舊值。
+    private static volatile FileConfiguration messages;
+    private static volatile String currentLanguage = "en";
 
     private Lang() {
     }

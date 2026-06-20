@@ -25,13 +25,22 @@ public class JavaMenuListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        Inventory clickedInventory = event.getClickedInventory();
-        if (!(event.getWhoClicked() instanceof Player player)
-                || clickedInventory == null
-                || !(clickedInventory.getHolder() instanceof JavaMenu.MenuHolder holder)) {
+        if (!(event.getWhoClicked() instanceof Player player)) {
+            return;
+        }
+        // 先看頂層視窗是不是 MenuHolder：玩家對自身物品欄做 shift-click / NUMBER_KEY / SWAP_OFFHAND / COLLECT_TO_CURSOR
+        // 都會在 clickedInventory=PlayerInventory 的情況下把物品 transfer 到 MenuHolder（上層）裡造成物品永久遺失。
+        // 只要視窗是 MiaoMenu 選單，全部 cancel；接著只有「點到選單格」才繼續派發 click 動作。
+        Inventory topInventory = event.getView().getTopInventory();
+        if (!(topInventory.getHolder() instanceof JavaMenu.MenuHolder holder)) {
             return;
         }
         event.setCancelled(true);
+        Inventory clickedInventory = event.getClickedInventory();
+        if (clickedInventory == null || !(clickedInventory.getHolder() instanceof JavaMenu.MenuHolder)) {
+            // 點到下方玩家物品欄、或點到視窗外：已 cancel 防止 shift-transfer，但不派發任何動作。
+            return;
+        }
         if (!plugin.getInteractionRateLimiter().allow(player.getUniqueId())) {
             return;
         }

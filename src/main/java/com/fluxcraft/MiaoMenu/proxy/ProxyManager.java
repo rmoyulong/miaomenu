@@ -7,6 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jspecify.annotations.NonNull;
@@ -44,17 +45,24 @@ public class ProxyManager implements PluginMessageListener {
             proxyType = ProxyType.VELOCITY;
             return;
         }
-        try {
-            Class.forName("net.md_5.bungee.api.ChatColor");
+        if (plugin.getConfig().getBoolean("settings.bungeecord-network", false)) {
             proxyType = ProxyType.BUNGEECORD;
-        } catch (ClassNotFoundException ignored) {
-            try {
-                Class.forName("com.velocitypowered.api.proxy.ProxyServer");
-                proxyType = ProxyType.VELOCITY;
-            } catch (ClassNotFoundException ignored2) {
-                proxyType = ProxyType.NONE;
-            }
+            return;
         }
+        // 不能用 Class.forName("net.md_5.bungee.api.ChatColor") 作判斷：
+        // Paper / Folia 自帶 bungee-chat shaded class，單機伺服器也永遠回 true，
+        // 結果跨服指令 silently 失敗（plugin channel 沒有上游 proxy 收）。
+        // 改讀 spigot.yml 的 settings.bungeecord 旗標（Paper 與 Spigot 共用 API），
+        // 這才是真正的「後端是否接在 BungeeCord/Velocity 之下」設定。
+        try {
+            if (Bukkit.spigot().getSpigotConfig().getBoolean("settings.bungeecord", false)) {
+                proxyType = ProxyType.BUNGEECORD;
+                return;
+            }
+        } catch (Throwable ignored) {
+            // 非 Spigot/Paper 衍生 server 取不到該 API：當作未連 proxy。
+        }
+        proxyType = ProxyType.NONE;
     }
 
     public boolean isProxyConnected() {

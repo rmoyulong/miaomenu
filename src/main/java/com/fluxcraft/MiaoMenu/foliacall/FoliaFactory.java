@@ -30,11 +30,26 @@ public final class FoliaFactory {
         public void runTaskLaterForEntity(Plugin plugin, Entity entity, Runnable task, long delay) {
             scheduler.runTaskLater(plugin, task, delay);
         }
+        @Override
+        public void runForEntity(Plugin plugin, Entity entity, Runnable task) {
+            // Bukkit 主緒：若已經在主緒就直接跑（避免重排造成不必要的一 tick 延遲），
+            // 反之走 runTask 排到下一 tick。
+            if (org.bukkit.Bukkit.isPrimaryThread()) {
+                task.run();
+            } else {
+                scheduler.runTask(plugin, task);
+            }
+        }
     }
     private static final class FoliaSchedulerAdapter implements FoliaAdapter {
         @Override
         public void runTaskLaterForEntity(Plugin plugin, Entity entity, Runnable task, long delay) {
             entity.getScheduler().runDelayed(plugin, scheduledTask -> task.run(), null, delay);
+        }
+        @Override
+        public void runForEntity(Plugin plugin, Entity entity, Runnable task) {
+            // Folia entity scheduler.run：保證在實體 region 緒上立即排隊執行。
+            entity.getScheduler().run(plugin, scheduledTask -> task.run(), null);
         }
     }
 }

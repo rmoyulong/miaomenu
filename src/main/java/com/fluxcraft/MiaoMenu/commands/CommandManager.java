@@ -29,6 +29,14 @@ import com.fluxcraft.MiaoMenu.utils.Lang;
 public class CommandManager implements CommandExecutor, TabCompleter {
     private static final String CMD_HELP = "help";
 
+    // 子指令在 tab-complete 中顯示所需的最小權限；任何使用者都看得到的子指令對應 null。
+    // 與 plugin.yml 的 permissions 區段對齊：admin 涵蓋 reload/import/lang。
+    private static final Map<String, String> SUBCOMMAND_PERMISSIONS = Map.of(
+            "reload", "dgeysermenu.reload",
+            "import", "dgeysermenu.import",
+            "lang", "dgeysermenu.admin"
+    );
+
     private final Map<String, PluginCommand> commands = new LinkedHashMap<>();
     private final MiaoMenu plugin;
     private HelpCommand helpCommand;
@@ -126,13 +134,24 @@ public class CommandManager implements CommandExecutor, TabCompleter {
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String @NonNull [] args) {
         if (args.length == 1) {
+            // 過濾掉 sender 沒權限的管理子指令，避免一般玩家從 tab 看到 reload / import / lang。
             return commands.keySet().stream()
                     .filter(key -> key.startsWith(args[0].toLowerCase()))
+                    .filter(key -> {
+                        String required = SUBCOMMAND_PERMISSIONS.get(key);
+                        return required == null || sender.hasPermission(required);
+                    })
                     .sorted()
                     .collect(Collectors.toList());
         }
         if (args.length > 1) {
-            PluginCommand target = commands.get(args[0].toLowerCase());
+            String subName = args[0].toLowerCase();
+            // 深層子指令也要先檢權限：避免 /dgm import <Tab> 對沒 import 權限的人列出 scan/preview/apply/rollback 與資料夾名稱。
+            String required = SUBCOMMAND_PERMISSIONS.get(subName);
+            if (required != null && !sender.hasPermission(required)) {
+                return Collections.emptyList();
+            }
+            PluginCommand target = commands.get(subName);
             if (target != null) {
                 String[] subArgs = Arrays.copyOfRange(args, 1, args.length);
                 List<String> completion = target.tabComplete(sender, subArgs);

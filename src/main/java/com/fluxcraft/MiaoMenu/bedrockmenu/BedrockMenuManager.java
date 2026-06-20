@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.fluxcraft.MiaoMenu.MiaoMenu;
+import com.fluxcraft.MiaoMenu.foliacall.FoliaFactory;
 import com.fluxcraft.MiaoMenu.managers.SoundsClock;
 import com.fluxcraft.MiaoMenu.menu.action.ActionRegistry;
 import com.fluxcraft.MiaoMenu.menu.requirement.RequirementFeedbackHandler;
@@ -125,7 +126,16 @@ public class BedrockMenuManager {
             Player player,
             BedrockMenu menu
     ) {
-        return response -> {
+        // Floodgate 表單回呼由 Floodgate 內部 Netty 緒觸發，並非主執行緒；
+        // handleFormResponse 內會 sendMessage / 派發動作 / 開新選單，
+        // 在 Folia 上若不排到該玩家所屬的 region 緒，會丟 IllegalStateException。
+        // 統一在這層排程，下游的所有 player API 呼叫就一律安全。
+        return response -> FoliaFactory.getAdapter().runForEntity(plugin, player, () -> {
+            // 玩家在表單開啟到提交之間離線：Bukkit 主緒分支仍會排到下一 tick 跑，但對離線玩家 sendMessage 在新版 Paper 會丟例外，
+            // 統一在進入點檔下；Folia 端對離線實體會 silent drop，這裡多一道 guard 也無壞處。
+            if (!player.isOnline()) {
+                return;
+            }
             try {
                 handleFormResponse(response, allItems, player, menu);
             } catch (ReflectiveOperationException e) {
@@ -133,7 +143,7 @@ public class BedrockMenuManager {
                         .replace("{0}", menu.getName())
                         .replace("{1}", player.getName()), e);
             }
-        };
+        });
     }
 
     private void handleFormResponse(

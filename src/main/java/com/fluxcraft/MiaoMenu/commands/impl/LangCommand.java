@@ -81,6 +81,9 @@ public class LangCommand implements PluginCommand {
             sender.sendMessage(Lang.get("lang.save-failed").replace("{0}", code));
             return;
         }
+        // 重新從磁碟讀回 config，確保其他模組透過 plugin.getConfig() 拿到的是新值，
+        // 避免 set 後 cache 與磁碟暫時不一致造成 hot-reload 時序問題。
+        plugin.reloadConfig();
         // 重新載入訊息檔
         Lang.load(code);
         // help 描述快取在 CommandManager 建構時抓的，這裡呼叫 reloadHelpDescriptions 讓 `/dgm help` 也跟著語系

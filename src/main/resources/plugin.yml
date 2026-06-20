@@ -17,6 +17,7 @@ commands:
     description: 主指令（open / reload / import / lang / about / help）
     usage: /<command> <open|reload|import|lang|about|help>
     aliases: [dgm, fluxmenu, mmf]
+    permission: dgeysermenu.use
   getmenuclock:
     description: 取得選單時鐘
     usage: /<command>
