@@ -1,0 +1,97 @@
+# MiaoMenu_fork 語言檔（繁體中文／台灣）
+# Fork:           https://github.com/Avery11111101/MiaoMenu_fork
+# 原作 / Original: https://github.com/Yamada0001/MiaoMenu
+# Color codes use '&'. Placeholders: {0}, {1}, ...
+
+default-item-name: "&6時光之鏡 &7(右鍵開啟選單)"
+
+message:
+  no-permission: "&c✦ 權限不足，你無法觸碰這道指令。"
+  players-only: "&c✦ 只有身歷其境的冒險者（玩家）才能使用此令。"
+  menu-not-found: "&c✦ 未曾見過名為 &e{0}&c 的選單，請檢查拼字。"
+  error: "&c✦ 操作受阻，請查看主控台探明原因。"
+  invalid-player: "&c✦ 尋無此人，或他已遠去（離線）。"
+  requirement-denied: "&c✦ 目前條件不足，無法執行該選單操作。"
+  item-locked: "&c✦ 該功能尚未解鎖。"
+  unsafe-input: "&c✦ 輸入內容不符合安全規則，操作已攔截。"
+  rate-limited: "&c✦ 操作過於頻繁，請稍後再試。"
+  config-update-warning: "&e✦ 偵測到舊版設定，正在嘗試自動更迭..."
+  reloaded: "&a✦ 設定檔已更新，一切就緒。"
+  io-error: "&c✦ 筆觸受阻，無法在卷軸上書寫（IO 錯誤），請檢查封印權限（檔案權限）。"
+  craftengine-missing: "&e✦ CraftEngine 尚未安裝，已使用備用材質。"
+  craftengine-item-not-found: "&e✦ CraftEngine 物品 &6{0}&e 不存在，已使用備用材質。"
+  config-updated: "&a✦ 設定檔已自動更新到最新版本。"
+
+verbose:
+  config-adding-key: "✦ 拾遺補缺，刻寫法則: {0}"
+  config-keys-added: "✦ 卷軸煥新完畢，共增添 {0} 處筆觸"
+
+help:
+  header: "&6✿ &e你好呀，旅行者 &6✿"
+  usage: "&7✎ 懸停查看詳情，輕觸以令之行"
+
+descriptions:
+  open: "&a✦ 翻開指定的魔法卷軸"
+  reload: "&c✦ 讓核心法則重煥新生"
+  help: "&e✦ 探索智慧的指引篇章"
+
+command:
+  unknown: "&c✦ 虛空並未回應這句未知的低語，請查閱 /dgm help。"
+  usage-open: "&c✦ 吟唱咒語的真確格式：/dgm open <卷軸名稱>"
+
+open:
+  error: "&c✦ 介面展開失敗，請查閱主控台日誌。"
+
+menu:
+  clock:
+    name: "&6時光之鏡 &7(右鍵開啟選單)"
+    given: "&a✦ 已獲贈時光之鏡，右鍵即可映照出選單！"
+    restored: "&f✦ 物品已完好如初地歸還於你。"
+
+hot-reload:
+  initialized: "✦ 選單的律動已開始（自動重新載入已啟動）。"
+  detected: "✦ 感知到波動: {0}，正在重塑選單..."
+
+log:
+  plugin:
+    enabled: "MiaoMenu v{0} 已啟用。"
+    enable-failed: "啟用 MiaoMenu 時發生致命錯誤，外掛已停用。"
+  config:
+    backup-delete-failed: "無法刪除備份檔案 {0}。"
+    backup-create-failed: "無法備份檔案 {0}，將直接覆寫。"
+    menu-refresh-failed: "無法重新整理選單範例檔案。"
+  command:
+    register-failed: "無法註冊指令 '{0}'，請檢查 plugin.yml。"
+    descriptions-missing: "在 config.yml 中找不到 'messages.descriptions' 節點。"
+    execute-failed: "為發送者 '{1}' 執行指令 '{0}' 失敗。"
+  action:
+    dispatch-failed: "為玩家 '{1}' 派發動作 '{0}' 失敗。"
+  hot-reload:
+    initialize-failed: "無法初始化 HotReloadManager，選單熱重新載入功能將停用。"
+    loop-failed: "HotReloadManager 監看迴圈執行失敗。"
+  floodgate:
+    player-check-failed: "無法檢查玩家 {0} 是否為 Floodgate 玩家。"
+  bstats:
+    initialize-failed: "BStats 初始化失敗。"
+  proxy:
+    detected: "偵測到代理: {0} - 跨伺服器指令已啟用"
+    velocity-forwarding-required: "Velocity 模式：請確保已啟用 BungeeCord 外掛訊息轉發"
+    disabled: "未偵測到代理 - 跨伺服器指令已停用"
+    not-detected: "未偵測到代理，無法發送跨伺服器指令"
+    send-failed: "跨伺服器指令發送失敗，目標伺服器: {0}"
+    channel-not-registered: "頻道 {0} 未註冊。"
+    message-create-failed: "建立跨伺服器訊息失敗，目標伺服器: {0}"
+    message-received: "收到 BungeeCord 訊息: {0}"
+    response-handle-failed: "處理 BungeeCord 回應失敗。"
+  java-menu:
+    directory-create-failed: "無法建立 java_menus 資料夾。"
+    load-failed: "無法載入選單: {0}"
+    open-failed: "開啟選單 {0} 時發生錯誤"
+  bedrock-menu:
+    directory-create-failed: "無法建立 bedrock_menus 資料夾，請檢查檔案權限。"
+    load-failed: "無法載入基岩版選單: {0}"
+    send-failed: "無法將表單 '{0}' 傳送給基岩版玩家 {1}。"
+    form-build-returned-null: "為基岩版玩家建構表單失敗: {0}"
+    form-build-failed: "建構基岩版表單失敗。"
+    reflection-send-failed: "透過反射為選單 '{0}' 傳送 Floodgate 表單給玩家 {1} 失敗。"
+    reflection-setup-failed: "無法初始化 Floodgate/Cumulus 反射存取。"

@@ -1,68 +1,81 @@
-# MiaoMenu / 喵喵菜单插件
+# MiaoMenu_fork / 喵喵選單外掛（Fork 版）
 
-[English](../README_en_us.md) | 中文
+[English](./README_en_us.md) | 繁體中文（台灣）
 
-> 面向 Paper 1.21.11 的轻量级菜单插件，同时为 Java 版与基岩版玩家提供原生交互体验。
+> Fork：<https://github.com/Avery11111101/MiaoMenu_fork>
+> 原作：<https://github.com/Yamada0001/MiaoMenu>
+>
+> 面向 Paper / Folia / Geyser **26.1.2**（亦相容 26.2 alpha）的輕量級選單外掛，同時為 Java 版與基岩版玩家提供原生互動體驗，內建 `en` 英文（預設）與 `zh_TW` 繁體中文雙語切換。
 
-## 项目概览
+## 專案概覽
 
-MiaoMenu 是一个双端菜单插件：
+MiaoMenu_fork 是一款雙端選單外掛：
 
-- Java 玩家使用箱子 GUI 菜单
-- Bedrock 玩家使用 Floodgate 表单菜单
-- 自动识别玩家类型并打开对应菜单
-- 支持 PlaceholderAPI、跨服跳转、热重载与条件系统
-- 提供菜单时钟、示例菜单与权限控制
+- Java 玩家使用箱子 GUI 選單
+- 基岩玩家使用 Floodgate 表單選單
+- 自動識別玩家類型並開啟對應選單
+- 支援 PlaceholderAPI、跨服跳轉、熱重載與條件系統
+- 內建選單時鐘、範例選單與權限控制
+- 訊息抽出為獨立 `lang/<language>.yml`，繁中／英文可即時切換
 
-当前版本：`2.7.7.9`
+目前版本：`0.1`（Fork 版重新起算；原作為 [Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) 2.7.7.9）
 
-## 界面预览
+## 介面預覽
 
-### Java 菜单预览
+### Java 選單預覽
 
-![Java 菜单预览 1](../pic/1.png)
-![Java 菜单预览 2](../pic/2.png)
+![Java 選單預覽 1](./pic/1.png)
+![Java 選單預覽 2](./pic/2.png)
 
-### Bedrock 菜单预览
+### 基岩選單預覽
 
-![Bedrock 菜单预览 3](../pic/3.png)
-![Bedrock 菜单预览 4](../pic/4.png)
-![Bedrock 菜单预览 5](../pic/5.png)
+![基岩選單預覽 3](./pic/3.png)
+![基岩選單預覽 4](./pic/4.png)
+![基岩選單預覽 5](./pic/5.png)
 
-## 核心优点
+## 核心優點
 
-### 1. 双版本原生菜单体验
-- Java 玩家看到熟悉的箱子菜单
-- Bedrock 玩家看到适配移动端的原生表单
-- 插件内部自动分流，无需手动区分命令入口
+### 1. 雙版本原生選單體驗
+- Java 玩家看到熟悉的箱子選單
+- 基岩玩家看到適配行動裝置的原生表單
+- 外掛內部自動分流，無需手動區分指令入口
 
-### 2. 面向实际服务器场景
-- 支持 PlaceholderAPI 动态变量
-- 支持 Floodgate / Geyser 场景下的基岩玩家菜单
-- 支持 Velocity / BungeeCord 风格的跨服连接命令
-- 支持 CraftEngine 自定义物品回退材质
+### 2. 面向實際伺服器場景
+- 支援 PlaceholderAPI 動態變數
+- 支援 Floodgate / Geyser 場景下的基岩玩家選單
+- 支援 Velocity / BungeeCord 風格的跨服連線指令
+- 支援 CraftEngine 自訂物品備援材質
 
-### 3. 条件系统完整
-- 支持菜单级 `view_requirement`
-- 支持物品级 `conditions`
-- 支持可复用的 `requirement_blocks`
-- 支持 `deny_message` 与 `fallback_menu`
-- 支持权限、进度、计分板、进度成就、占位符比较等条件
+### 3. 條件系統完整
+- 支援選單級 `view_requirement`
+- 支援物品級 `conditions`
+- 支援可重複使用的 `requirement_blocks`
+- 支援 `deny_message` 與 `fallback_menu`
+- 支援權限、進度、計分板、成就、佔位符比對等條件
 
-### 4. 运维体验友好
-- 支持配置热重载
-- 菜单示例文件可自动生成
-- 菜单时钟支持自动发放、死亡保护、右键打开菜单
-- 配置文本统一在 `config.yml` 的 `messages` 节点管理
+### 4. 運維體驗友善
+- 支援設定熱重載
+- 範例選單檔可自動產生
+- 選單時鐘支援自動發放、死亡保護、右鍵開啟選單
+- **訊息抽離至 `lang/`**：所有可見文字統一由 `lang/<language>.yml` 管理，方便外包翻譯
 
-### 5. 兼容现有配置思路
-- Java 菜单结构与 DeluxeMenus 风格接近
-- 对传统 YAML 菜单服管理方式更加友好
+### 5. 相容既有設定思路
+- Java 選單結構與 DeluxeMenus 風格接近
+- 對傳統 YAML 選單伺服器管理方式更友善
 
-## 功能总览
+## 多語系（Fork 新增）
 
-### Java 菜单
-Java 菜单位于 `src/main/resources/java_menus/`，支持：
+仿照同作者 [AFly](https://github.com/Avery11111101/AFly) 的架構：
+
+- 內建語系：`en`（預設）、`zh_TW`（繁體中文台灣用語）
+- 自訂語系：在 `plugins/MiaoMenu_fork/lang/` 內新增 `<code>.yml` 即可
+- 切換方式：編輯 `config.yml` 的 `language: en|zh_TW|...` 後 `/dgm reload`，或直接覆寫 lang 檔，熱重載會即時生效
+- 缺少的鍵會自動 fallback 到 jar 內 `lang/en.yml`，不會出現空訊息
+
+## 功能總覽
+
+### Java 選單
+Java 選單位於 `src/main/resources/java_menus/`，支援：
 
 - `menu_title`
 - `rows`
@@ -77,12 +90,12 @@ Java 菜单位于 `src/main/resources/java_menus/`，支持：
 - `lock_message`
 - `view_requirement`
 
-示例文件：
+範例檔：
 - `test.yml`
 - `server-selector.yml`
 
-### Bedrock 菜单
-基岩菜单位于 `src/main/resources/bedrock_menus/`，支持：
+### 基岩選單
+基岩選單位於 `src/main/resources/bedrock_menus/`，支援：
 
 - `menu.title`
 - `menu.subtitle`
@@ -96,16 +109,16 @@ Java 菜单位于 `src/main/resources/java_menus/`，支持：
 - `lock_message`
 - `view_requirement`
 
-### 智能菜单打开逻辑
-插件会自动判断：
+### 智慧選單開啟邏輯
+外掛會自動判斷：
 
-- 若玩家是 Floodgate 基岩玩家，则打开 Bedrock 菜单
-- 否则打开 Java 菜单
+- 若玩家是 Floodgate 基岩玩家，開啟基岩選單
+- 否則開啟 Java 選單
 
-这意味着同一个命令入口可以同时服务两类玩家。
+意味著同一個指令入口可以同時服務兩類玩家。
 
-### 命令系统
-插件注册了以下命令：
+### 指令系統
+外掛註冊了以下指令：
 
 ```text
 /dgeysermenu open <menu-name>
@@ -115,77 +128,79 @@ Java 菜单位于 `src/main/resources/java_menus/`，支持：
 /dgm reload
 /dgm help
 /fluxmenu open <menu-name>
+/mmf open <menu-name>
 /getmenuclock
 ```
 
-说明：
-- `dgm` 与 `fluxmenu` 是主命令别名
-- `open` 用于打开指定菜单
-- `reload` 用于重载配置与菜单文件
-- `help` 用于显示帮助信息
-- `getmenuclock` 用于获取菜单时钟
+說明：
+- `dgm`、`fluxmenu`、`mmf` 都是主指令別名
+- `open` 用於開啟指定選單
+- `reload` 用於重新載入設定與選單檔
+- `help` 用於顯示說明
+- `getmenuclock` 用於取得選單時鐘
 
-### 菜单时钟
-菜单时钟是插件的一项特色功能：
+### 選單時鐘
+選單時鐘是外掛的特色功能：
 
-- 玩家加入时可自动获得时钟
-- 若时钟丢失，可自动补发
-- 玩家死亡时，菜单时钟不会掉落
-- 玩家右键时钟即可打开默认菜单
-- 时钟名称由 `messages.menu.clock.name` 控制
+- 玩家加入時可自動取得時鐘
+- 若時鐘遺失，可自動補發
+- 玩家死亡時，選單時鐘不會掉落
+- 玩家右鍵時鐘即可開啟預設選單
+- 時鐘名稱由 `lang/<language>.yml` 的 `menu.clock.name` 控制
 
-### 热重载
-在配置中启用后：
+### 熱重載
+在設定中啟用後：
 
-- 保存配置文件后可自动刷新菜单
-- 无需频繁重启服务器
-- 更适合高频调试菜单布局与按钮逻辑
+- 儲存設定檔後可自動重新整理選單
+- 儲存 `lang/*.yml` 後語系即時切換，無需 `/dgm reload`
+- 無需頻繁重新啟動伺服器
+- 更適合高頻除錯選單配置與按鈕邏輯
 
-### 跨服支持
-插件支持代理环境中的跨服连接命令：
+### 跨服支援
+外掛支援代理環境中的跨服連線指令：
 
-- 可检测 Velocity 模式
-- 可检测 BungeeCord 风格信道
-- 菜单按钮可以执行类似 `server lobby` 的跳转逻辑
+- 可偵測 Velocity 模式
+- 可偵測 BungeeCord 風格通道
+- 選單按鈕可執行類似 `server lobby` 的跳轉邏輯
 
-示例见 `server-selector.yml`。
+範例見 `server-selector.yml`。
 
-### PlaceholderAPI 支持
-如果服务器安装了 PlaceholderAPI，可在：
+### PlaceholderAPI 支援
+若伺服器安裝了 PlaceholderAPI，可在：
 
 - `display_name`
 - `lore`
-- 条件判断中的占位符
-- 菜单提示文本
+- 條件判斷中的佔位符
+- 選單提示文字
 
-中使用动态变量，例如：
+中使用動態變數，例如：
 
 ```yaml
 display_name: "&b%player_name%"
 lore:
-  - "&f等级: &e%player_level%"
-  - "&f金币: &6%vault_eco_balance%"
+  - "&f等級: &e%player_level%"
+  - "&f金幣: &6%vault_eco_balance%"
 ```
 
-## 安装方法
+## 安裝方法
 
-### 环境要求
+### 環境需求
 - Java 21
-- Paper 1.21.11 或兼容实现
-- 若需基岩菜单：安装 Floodgate
-- 若需占位符解析：安装 PlaceholderAPI
-- 若需跨服跳转：建议在代理环境下使用
+- Paper / Folia **26.1.2**（亦相容 26.2 alpha）或相容實作
+- 若需基岩選單：安裝 Floodgate（建議 2.2.5+）與 Geyser（建議 2.10.x）
+- 若需佔位符解析：安裝 PlaceholderAPI
+- 若需跨服跳轉：建議在代理環境（Velocity / BungeeCord）下使用
 
-### 安装步骤
-1. 将插件 jar 放入服务器 `plugins` 目录
-2. 启动服务器
-3. 首次启动后会生成配置与示例菜单
-4. 根据需求修改 `config.yml`、`java_menus/`、`bedrock_menus/`
-5. 使用 `/dgm reload` 或重启服务器使配置生效
+### 安裝步驟
+1. 將外掛 jar 放入伺服器 `plugins` 目錄
+2. 啟動伺服器
+3. 首次啟動後會產生設定、`lang/`、範例選單
+4. 依需求修改 `config.yml`、`lang/<language>.yml`、`java_menus/`、`bedrock_menus/`
+5. 使用 `/dgm reload` 或重新啟動伺服器使設定生效
 
-## 权限节点
+## 權限節點
 
-来自 `plugin.yml` 的权限定义如下：
+來自 `plugin.yml` 的權限定義如下：
 
 ```yaml
 dgeysermenu.*:
@@ -204,14 +219,14 @@ dgeysermenu.reload:
   default: op
 ```
 
-### 权限说明
-- `dgeysermenu.use`：允许使用菜单基础命令
-- `dgeysermenu.admin`：允许使用管理功能与获取菜单时钟
-- `dgeysermenu.reload`：允许重载配置
-- `dgeysermenu.*`：授予全部权限
+### 權限說明
+- `dgeysermenu.use`：允許使用選單基礎指令
+- `dgeysermenu.admin`：允許使用管理功能與取得選單時鐘
+- `dgeysermenu.reload`：允許重新載入設定
+- `dgeysermenu.*`：授予全部權限
 
-### 额外建议
-在菜单条件中，你还可以自行引用其他权限节点，例如：
+### 額外建議
+在選單條件中，你還可以自行引用其他權限節點，例如：
 
 ```yaml
 requirements:
@@ -219,22 +234,24 @@ requirements:
     permission: vip.shop
 ```
 
-这类权限并非插件固定注册项，但可以作为业务条件判断使用。
+這類權限並非外掛固定註冊項，但可作為業務條件判斷使用。
 
-## 配置文件详解
+## 設定檔詳解
 
-主配置文件：`src/main/resources/config.yml`
+主設定檔：`src/main/resources/config.yml`
 
-### 顶层版本字段
+### 頂層版本欄位
 ```yaml
-config-version: 15
+config-version: 16
 menu-version: 6
+language: en
 ```
 
-- `config-version`：配置文件版本校验
-- `menu-version`：示例菜单版本校验
+- `config-version`：設定檔版本驗證（本 Fork 版為 16）
+- `menu-version`：範例選單版本驗證
+- `language`：要載入的語系（對應 `lang/<language>.yml`；預設 `en`）
 
-### 打开菜单音效
+### 開啟選單音效
 ```yaml
 settings:
   open-menu-sound:
@@ -244,57 +261,57 @@ settings:
     pitch: 1.0
 ```
 
-说明：
-- `enabled`：是否启用打开菜单音效
-- `sound`：播放的原版声音键名
+說明：
+- `enabled`：是否啟用開啟選單音效
+- `sound`：要播放的原版音效鍵名
 - `volume`：音量
-- `pitch`：音调
+- `pitch`：音調
 
-### 默认菜单
+### 預設選單
 ```yaml
 settings:
   default-menu: "test"
 ```
 
-玩家右键菜单时钟时，会打开这里指定的默认菜单。
+玩家右鍵選單時鐘時，會開啟這裡指定的預設選單。
 
-### 热重载
+### 熱重載
 ```yaml
 settings:
   hot-reload:
     enabled: true
 ```
 
-启用后，保存菜单文件时会尝试自动刷新。
+啟用後，儲存選單檔或 `lang/` 內檔案時會嘗試自動重新整理。
 
-### 自动生成示例
+### 自動產生範例
 ```yaml
 settings:
   auto-generate-examples: true
 ```
 
-启用后，缺失示例菜单时会自动补全。
+啟用後，缺少範例選單時會自動補全。
 
-### 代理网络支持
+### 代理網路支援
 ```yaml
 settings:
   velocity-network: true
 ```
 
-说明：
-- 为 `true` 时优先按 Velocity 网络模式处理
-- 适用于需要跨服连接命令的场景
+說明：
+- 為 `true` 時優先以 Velocity 網路模式處理
+- 適用於需要跨服連線指令的場景
 
-### 自定义物品回退材质
+### 自訂物品備援材質
 ```yaml
 settings:
   item-resolver:
     fallback-material: STONE
 ```
 
-当外部物品提供方不可用时，插件会回退到这里指定的原版材质。
+當外部物品提供方不可用時，外掛會備援到這裡指定的原版材質。
 
-### 菜单时钟
+### 選單時鐘
 ```yaml
 settings:
   menu-clock:
@@ -302,26 +319,37 @@ settings:
     give-on-join: true
 ```
 
-说明：
-- `enabled`：是否启用菜单时钟功能
-- `give-on-join`：玩家加入时若没有时钟则自动给予
+說明：
+- `enabled`：是否啟用選單時鐘功能
+- `give-on-join`：玩家加入時若沒有時鐘則自動給予
 
-### 消息系统
+### 訊息系統（已遷移至 lang）
+Fork 版把原本 `config.yml` 內 `messages:` 的所有文字搬到了 `lang/<language>.yml`，鍵名保持不變：
+
 ```yaml
-messages:
-  message:
-    no-permission: "&c✦ You do not have permission to use this command."
-    players-only: "&c✦ Only players can use this command."
-    menu-not-found: "&c✦ No menu named &e{0}&c was found. Please check the spelling."
+# lang/en.yml 範例
+message:
+  no-permission: "&c✦ You do not have permission to use this command."
+  players-only: "&c✦ Only players can use this command."
+  menu-not-found: "&c✦ No menu named &e{0}&c was found. Please check the spelling."
 ```
 
-说明：
-- 所有可见提示文本尽量统一由 `messages` 节点管理
-- 便于你自行改成中文、英文或服务器风格文案
+```yaml
+# lang/zh_TW.yml 範例
+message:
+  no-permission: "&c✦ 權限不足，你無法觸碰這道指令。"
+  players-only: "&c✦ 只有身歷其境的冒險者（玩家）才能使用此令。"
+  menu-not-found: "&c✦ 未曾見過名為 &e{0}&c 的選單，請檢查拼字。"
+```
 
-## Java 菜单配置示例解释
+說明：
+- 所有可見提示文字統一由 `lang/<language>.yml` 管理
+- 想要新增語系，複製 `en.yml` 改名為 `<code>.yml` 即可
+- 缺少的鍵會自動 fallback 到 jar 內 `lang/en.yml`
 
-示例文件：`src/main/resources/java_menus/test.yml`
+## Java 選單設定範例解釋
+
+範例檔：`src/main/resources/java_menus/test.yml`
 
 ```yaml
 menu_title: "&6&lMain Menu &7| &fServer Name"
@@ -347,33 +375,33 @@ items:
       - "[close]"
 ```
 
-### 这一段代表什么
-- `menu_title`：箱子菜单标题
-- `rows`：菜单行数，只能是 1 到 6
-- `view_requirement`：玩家能否打开整个菜单
-- `deny_message`：不满足要求时发送的提示
-- `fallback_menu`：不满足要求时跳转的替代菜单
-- `slot`：按钮放在哪个格子
-- `material`：按钮材质
-- `custom_model_data`：资源包模型编号
-- `display_name`：按钮标题
-- `lore`：按钮说明
-- `left_click_commands`：左键点击执行的动作列表
+### 這段代表什麼
+- `menu_title`：箱子選單標題
+- `rows`：選單行數，只能是 1 到 6
+- `view_requirement`：玩家能否開啟整個選單
+- `deny_message`：不符合需求時送出的提示
+- `fallback_menu`：不符合需求時跳轉的替代選單
+- `slot`：按鈕放在哪個格子
+- `material`：按鈕材質
+- `custom_model_data`：材質包模型編號
+- `display_name`：按鈕標題
+- `lore`：按鈕說明
+- `left_click_commands`：左鍵點擊執行的動作清單
 
-### 支持的材质来源
-`test.yml` 中已经写明，`material` 可以来自多种来源：
+### 支援的材質來源
+`test.yml` 中已寫明，`material` 可以來自多種來源：
 
-- 原版材质，如 `PAPER`
-- 原版材质 + `custom_model_data`
+- 原版材質，如 `PAPER`
+- 原版材質 + `custom_model_data`
 - `craftengine:namespace:item_id`
 - `itemsadder:namespace:item_id`
 - `mmoitems:type:id`
 - `headdb:head_id`
 - `base64head:base64_string`
 
-## Java 菜单中的条件系统
+## Java 選單中的條件系統
 
-### 物品条件示例
+### 物品條件範例
 ```yaml
 player_info:
   conditions:
@@ -385,13 +413,13 @@ player_info:
   lock_message: "&cYou do not meet the requirements to view player info yet."
 ```
 
-说明：
-- `conditions`：物品级条件判断
-- `operator`：多个条件之间的关系，可为 `AND` 或 `OR`
-- `placeholder_contains`：判断占位符结果是否包含指定值
-- `lock_message`：不满足条件时点击按钮显示的文本
+說明：
+- `conditions`：物品級條件判斷
+- `operator`：多個條件之間的關係，可為 `AND` 或 `OR`
+- `placeholder_contains`：判斷佔位符結果是否包含指定值
+- `lock_message`：不符合條件時點擊按鈕顯示的文字
 
-### 复杂条件示例
+### 複雜條件範例
 ```yaml
 shop:
   conditions:
@@ -409,21 +437,21 @@ shop:
             value: 5
 ```
 
-这一示例表示：
-- 玩家必须先完成一个指定进度成就
-- 然后再满足以下任意一个条件：
-  - 拥有 `vip.shop` 权限
-  - 计分板 `trade_count` 至少达到 5
+這個範例表示：
+- 玩家必須先完成指定的成就
+- 然後再符合以下任一條件：
+  - 擁有 `vip.shop` 權限
+  - 計分板 `trade_count` 至少達到 5
 
-## Bedrock 菜单配置示例解释
+## 基岩選單設定範例解釋
 
-示例文件：`src/main/resources/bedrock_menus/test.yml`
+範例檔：`src/main/resources/bedrock_menus/test.yml`
 
 ```yaml
 menu:
   title: "§6§lMain Menu"
   subtitle: "§7Welcome to the server!"
-  footer: "§8Server version 1.21.x"
+  footer: "§8Server version 26.1.x"
   items:
     - text: "§a§lTeleport\n§7Quickly travel to different locations"
       icon: "textures/items/compass_item"
@@ -438,21 +466,21 @@ view_requirement:
       permission: dgeysermenu.use
 ```
 
-### 字段说明
-- `title`：表单标题
-- `subtitle`：副标题
-- `footer`：页脚
-- `items`：按钮列表
-- `text`：按钮显示文本
-- `icon`：图标路径或 URL
-- `icon_type`：图标类型
-- `command`：点击后执行的命令
-- `execute_as`：以玩家或控制台身份执行
-- `view_requirement`：菜单整体访问条件
+### 欄位說明
+- `title`：表單標題
+- `subtitle`：副標題
+- `footer`：頁尾
+- `items`：按鈕清單
+- `text`：按鈕顯示文字
+- `icon`：圖示路徑或 URL
+- `icon_type`：圖示類型
+- `command`：點擊後執行的指令
+- `execute_as`：以玩家或主控台身分執行
+- `view_requirement`：選單整體存取條件
 
-## 跨服菜单示例
+## 跨服選單範例
 
-示例文件：`src/main/resources/java_menus/server-selector.yml`
+範例檔：`src/main/resources/java_menus/server-selector.yml`
 
 ```yaml
 items:
@@ -463,52 +491,55 @@ items:
       - "[close]"
 ```
 
-这类写法适合：
-- Velocity 网络
-- BungeeCord 风格代理网络
-- 大厅服 / 生存服 / 创造服 / 小游戏服切换入口
+這類寫法適合：
+- Velocity 網路
+- BungeeCord 風格代理網路
+- 大廳服 / 生存服 / 創造服 / 小遊戲服切換入口
 
-## 高级玩法示例
+## 進階玩法範例
 
-### 1. 打开另一个菜单
+### 1. 開啟另一個選單
 ```yaml
 left_click_commands:
   - "[menu] shop"
 ```
 
-### 2. 给玩家发送提示
+### 2. 給玩家送出提示
 ```yaml
 left_click_commands:
-  - "[message] &a欢迎使用菜单!"
+  - "[message] &a歡迎使用選單!"
 ```
 
-### 3. 让玩家执行命令
+### 3. 讓玩家執行指令
 ```yaml
 left_click_commands:
   - "[player] spawn"
 ```
 
-### 4. 让控制台执行命令
+### 4. 讓主控台執行指令
 ```yaml
 left_click_commands:
   - "[console] give %player_name% diamond 1"
 ```
 
-### 5. 关闭菜单
+### 5. 關閉選單
 ```yaml
 left_click_commands:
   - "[close]"
 ```
 
-## 目录结构
+## 目錄結構
 
 ```text
-MiaoMenu/
+MiaoMenu_fork/
 ├─ pic/
 ├─ docs/
 ├─ src/main/resources/
 │  ├─ config.yml
 │  ├─ plugin.yml
+│  ├─ lang/
+│  │  ├─ en.yml
+│  │  └─ zh_TW.yml
 │  ├─ java_menus/
 │  │  ├─ test.yml
 │  │  └─ server-selector.yml
@@ -516,58 +547,70 @@ MiaoMenu/
 │     └─ test.yml
 ```
 
-## 构建方法
+## 建置方法
 
 ```bash
 mvn test
 mvn package
 ```
 
-默认产物会生成在 `target/` 目录下。
+預設產物 `MiaoMenu_fork-0.1.jar` 會生成在 `target/` 目錄下。
 
-## 常见问题
+## 常見問題
 
-### 1. 菜单打不开
-请依次检查：
-- 玩家是否拥有 `dgeysermenu.use`
-- 菜单文件名与命令中的菜单名是否一致
-- YAML 缩进是否正确
-- `view_requirement` 是否拒绝了当前玩家
+### 1. 選單打不開
+請依序檢查：
+- 玩家是否擁有 `dgeysermenu.use`
+- 選單檔名與指令中的選單名是否一致
+- YAML 縮排是否正確
+- `view_requirement` 是否拒絕了目前玩家
 
-### 2. 基岩菜单没有显示
-请检查：
-- Floodgate 是否正确安装
-- 玩家是否确实通过 Floodgate 接入
-- `bedrock_menus/` 是否存在对应菜单
+### 2. 基岩選單沒有顯示
+請檢查：
+- Floodgate 是否正確安裝
+- 玩家是否確實透過 Floodgate 連線
+- `bedrock_menus/` 是否存在對應選單
 
-### 3. 按钮点击后没有效果
-请检查：
-- `command` 或点击动作是否写错
-- 玩家本身是否有执行目标命令的权限
-- 控制台是否报错
+### 3. 按鈕點擊後沒有效果
+請檢查：
+- `command` 或點擊動作是否寫錯
+- 玩家本身是否有執行目標指令的權限
+- 主控台是否報錯
 
-### 4. 占位符没有替换
-请检查：
-- PlaceholderAPI 是否已安装
-- 使用的占位符是否来自已安装扩展
-- 写法是否正确
+### 4. 佔位符沒有替換
+請檢查：
+- PlaceholderAPI 是否已安裝
+- 使用的佔位符是否來自已安裝的擴充
+- 寫法是否正確
 
-### 5. 跨服命令无效
-请检查：
-- 代理环境是否正确工作
-- `velocity-network` 配置是否符合你的网络架构
-- 代理转发与信道是否可用
+### 5. 跨服指令無效
+請檢查：
+- 代理環境是否正確運作
+- `velocity-network` 設定是否符合你的網路架構
+- 代理轉發與通道是否可用
 
-## 适用场景
+### 6. 訊息變成英文／繁中沒生效
+請檢查：
+- `config.yml` 的 `language` 是否填正確（`en` / `zh_TW`）
+- `plugins/MiaoMenu_fork/lang/<language>.yml` 是否存在
+- 是否執行了 `/dgm reload` 或開啟熱重載
 
-MiaoMenu 适合以下服务器：
+## 適用場景
 
-- 同时服务 Java 与 Bedrock 玩家
-- 需要主菜单、功能导航、服务器选择器
-- 希望使用 YAML 快速配置菜单
-- 希望结合 PlaceholderAPI 展示动态数据
-- 希望以低维护成本实现条件菜单系统
+MiaoMenu_fork 適合以下伺服器：
+
+- 同時服務 Java 與基岩玩家
+- 需要主選單、功能導覽、伺服器選擇器
+- 希望使用 YAML 快速設定選單
+- 希望結合 PlaceholderAPI 顯示動態資料
+- 希望以低維護成本實作條件選單系統
+- 需要英文／繁中雙語介面
+
+## 鳴謝
+
+- 原作：[Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) — 沒有原版就沒有這個 Fork
+- 多語系架構靈感：[Avery11111101/AFly](https://github.com/Avery11111101/AFly)
 
 ## License
 
-本项目使用 `LICENSE` 文件中声明的许可证。
+本專案使用 `LICENSE` 檔案中宣告的授權條款。

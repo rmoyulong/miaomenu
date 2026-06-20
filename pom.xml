@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    MiaoMenu_fork
+    喵喵選單外掛分支版，支援 Paper / Folia / Geyser 26.1.x（亦相容 26.2 alpha）與多語系。
+    Fork:   https://github.com/Avery11111101/MiaoMenu_fork
+    原作 / Original: https://github.com/Yamada0001/MiaoMenu
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -6,19 +12,21 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.fluxcraft</groupId>
-    <artifactId>MiaoMenu</artifactId>
-    <version>2.7.7.9</version>
+    <artifactId>MiaoMenu_fork</artifactId>
+    <version>0.1</version>
     <packaging>jar</packaging>
-    <name>MiaoMenu</name>
-    <description>喵喵最适合你的菜单插件</description>
+    <name>MiaoMenu_fork</name>
+    <description>MiaoMenu_fork — 喵喵選單外掛分支版，支援 Paper/Folia/Geyser 26.1.x（亦相容 26.2 alpha）與多語系。Fork: https://github.com/Avery11111101/MiaoMenu_fork ／ 原作 Original: https://github.com/Yamada0001/MiaoMenu</description>
 
     <properties>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <paper.api.version>1.21.11-R0.1-SNAPSHOT</paper.api.version>
+        <paper.api.version>26.1.2.build.72-stable</paper.api.version>
+        <folia.api.version>26.1.2.build.8-stable</folia.api.version>
         <folialib.version>1.2.3</folialib.version>
         <bstats.version>3.1.0</bstats.version>
-        <floodgate.version>2.2.0-SNAPSHOT</floodgate.version>
+        <floodgate.version>2.2.5-SNAPSHOT</floodgate.version>
+        <geyser.version>2.10.1-SNAPSHOT</geyser.version>
         <placeholderapi.version>2.12.2</placeholderapi.version>
         <commons-lang3.version>3.18.0</commons-lang3.version>
         <craftengine.version>0.0.67</craftengine.version>
@@ -71,7 +79,7 @@
         <dependency>
             <groupId>dev.folia</groupId>
             <artifactId>folia-api</artifactId>
-            <version>1.21.11-R0.1-SNAPSHOT</version>
+            <version>${folia.api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -90,6 +98,12 @@
             <groupId>org.geysermc.floodgate</groupId>
             <artifactId>api</artifactId>
             <version>${floodgate.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.geysermc.geyser</groupId>
+            <artifactId>api</artifactId>
+            <version>${geyser.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -11,7 +11,7 @@ import com.fluxcraft.MiaoMenu.MiaoMenu;
 import com.fluxcraft.MiaoMenu.utils.Lang;
 
 public class ConfigManager {
-    private static final int CONFIG_VERSION = 12;
+    private static final int CONFIG_VERSION = 16;
     private static final int MENU_VERSION = 3;
     private static final String JAVA_MENUS_DIR = "java_menus";
     private static final String BEDROCK_MENUS_DIR = "bedrock_menus";
@@ -44,6 +44,8 @@ public class ConfigManager {
             plugin.saveDefaultConfig();
         }
         plugin.reloadConfig();
+        // 設定載入完成後，依設定值載入對應語言檔
+        Lang.load(plugin.getConfig().getString("language", "en"));
         initDirectory(JAVA_MENUS_DIR);
         initDirectory(BEDROCK_MENUS_DIR);
     }

@@ -23,6 +23,7 @@ import com.fluxcraft.MiaoMenu.utils.Lang;
 public class HotReloadManager {
     private static final String JAVA_MENU_DIR = "java_menus";
     private static final String BEDROCK_MENU_DIR = "bedrock_menus";
+    private static final String LANG_DIR = "lang";
     private static final String CONFIG_FILE = "config.yml";
     private static final String FILE_EXTENSION = ".yml";
     private static final long DEBOUNCE_DELAY_MS = 500;
@@ -34,6 +35,7 @@ public class HotReloadManager {
     private volatile boolean running = false;
     private Thread watcherThread;
     private long lastConfigReloadTime = 0;
+    private long lastLangReloadTime = 0;
 
     public HotReloadManager(MiaoMenu plugin) {
         this.plugin = plugin;
@@ -45,6 +47,7 @@ public class HotReloadManager {
         registerDirectory(plugin.getDataFolder().toPath());
         registerDirectory(new File(plugin.getDataFolder(), JAVA_MENU_DIR).toPath());
         registerDirectory(new File(plugin.getDataFolder(), BEDROCK_MENU_DIR).toPath());
+        registerDirectory(new File(plugin.getDataFolder(), LANG_DIR).toPath());
         plugin.getLogger().info(Lang.get("hot-reload.initialized"));
         startWatcher();
     }
@@ -83,6 +86,11 @@ public class HotReloadManager {
                             handleConfigReload();
                             continue;
                         }
+                        Path langDir = new File(plugin.getDataFolder(), LANG_DIR).toPath();
+                        if (dir.equals(langDir) && filename.toString().endsWith(FILE_EXTENSION)) {
+                            handleLangReload(filename.toString());
+                            continue;
+                        }
                         if (filename.toString().endsWith(FILE_EXTENSION)) {
                             handleMenuReload(filename.toString());
                         }
@@ -118,6 +126,19 @@ public class HotReloadManager {
             plugin.getConfigManager().checkAndRefreshMenus();
             plugin.getJavaMenuManager().loadAllMenus();
             plugin.getBedrockMenuManager().loadAllMenus();
+            plugin.getLogger().info(Lang.get("message.reloaded"));
+        });
+    }
+
+    private void handleLangReload(String fileName) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastLangReloadTime < DEBOUNCE_DELAY_MS) {
+            return;
+        }
+        lastLangReloadTime = currentTime;
+        scheduleReload(() -> {
+            // 依目前 config.yml 的 language 設定重新載入語言檔
+            Lang.load(plugin.getConfig().getString("language", "en"));
             plugin.getLogger().info(Lang.get("message.reloaded"));
         });
     }

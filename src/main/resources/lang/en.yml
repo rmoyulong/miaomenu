@@ -1,0 +1,97 @@
+# MiaoMenu_fork language file (English)
+# Fork:           https://github.com/Avery11111101/MiaoMenu_fork
+# 原作 / Original: https://github.com/Yamada0001/MiaoMenu
+# Color codes use '&'. Placeholders: {0}, {1}, ...
+
+default-item-name: "&6Mirror of Time &7(right-click to open menu)"
+
+message:
+  no-permission: "&c✦ You don't have permission to use this command."
+  players-only: "&c✦ Only players can use this command."
+  menu-not-found: "&c✦ Menu &e{0}&c was not found. Please check the spelling."
+  error: "&c✦ Operation failed. Please check the console for details."
+  invalid-player: "&c✦ Player not found, or they are offline."
+  requirement-denied: "&c✦ Requirements are not met to perform this menu action."
+  item-locked: "&c✦ This feature is not unlocked yet."
+  unsafe-input: "&c✦ Input does not meet safety rules; the action was blocked."
+  rate-limited: "&c✦ Too many actions, please try again later."
+  config-update-warning: "&e✦ Old configuration detected; attempting auto-migration..."
+  reloaded: "&a✦ Configuration reloaded; everything is ready."
+  io-error: "&c✦ Unable to write to disk (IO error); please check file permissions."
+  craftengine-missing: "&e✦ CraftEngine is not installed; using fallback material."
+  craftengine-item-not-found: "&e✦ CraftEngine item &6{0}&e does not exist; using fallback material."
+  config-updated: "&a✦ Configuration has been auto-updated to the latest version."
+
+verbose:
+  config-adding-key: "✦ Adding missing key: {0}"
+  config-keys-added: "✦ Config updated; {0} key(s) added."
+
+help:
+  header: "&6✿ &eHello, traveller &6✿"
+  usage: "&7✎ Hover to see details, click to run the command"
+
+descriptions:
+  open: "&a✦ Open the specified menu"
+  reload: "&c✦ Reload the plugin configuration"
+  help: "&e✦ Show the help page"
+
+command:
+  unknown: "&c✦ Unknown command. Please run /dgm help."
+  usage-open: "&c✦ Usage: /dgm open <menu-name>"
+
+open:
+  error: "&c✦ Failed to open the menu. Please check the console log."
+
+menu:
+  clock:
+    name: "&6Mirror of Time &7(right-click to open menu)"
+    given: "&a✦ You have received the Mirror of Time. Right-click to open the menu!"
+    restored: "&f✦ Your item has been restored."
+
+hot-reload:
+  initialized: "✦ Menu hot-reload watcher started."
+  detected: "✦ Change detected: {0}, reloading menus..."
+
+log:
+  plugin:
+    enabled: "MiaoMenu v{0} Enabled."
+    enable-failed: "Fatal error occurred while enabling MiaoMenu. Disabling plugin."
+  config:
+    backup-delete-failed: "Failed to delete backup file {0}."
+    backup-create-failed: "Failed to back up file {0}; continuing with overwrite."
+    menu-refresh-failed: "Failed to refresh menu example files."
+  command:
+    register-failed: "Failed to register command '{0}'. Please check your plugin.yml."
+    descriptions-missing: "Could not find 'messages.descriptions' node in config.yml."
+    execute-failed: "Failed to execute command '{0}' for sender '{1}'."
+  action:
+    dispatch-failed: "Failed to dispatch action '{0}' for player '{1}'."
+  hot-reload:
+    initialize-failed: "Failed to initialize HotReloadManager. Menu hot-reload will be disabled."
+    loop-failed: "HotReloadManager watcher loop failed."
+  floodgate:
+    player-check-failed: "Failed to check whether player {0} is a Floodgate player."
+  bstats:
+    initialize-failed: "BStats initialization failed."
+  proxy:
+    detected: "Proxy detected: {0} - cross-server commands enabled."
+    velocity-forwarding-required: "Velocity mode: please make sure BungeeCord plugin-message forwarding is enabled."
+    disabled: "No proxy detected - cross-server commands disabled."
+    not-detected: "No proxy detected; cannot send cross-server commands."
+    send-failed: "Failed to send cross-server command to target server: {0}."
+    channel-not-registered: "Channel {0} is not registered."
+    message-create-failed: "Failed to create cross-server message for target server: {0}."
+    message-received: "Received BungeeCord message: {0}"
+    response-handle-failed: "Failed to handle BungeeCord response."
+  java-menu:
+    directory-create-failed: "Failed to create java_menus directory."
+    load-failed: "Failed to load menu: {0}"
+    open-failed: "Error opening menu {0}"
+  bedrock-menu:
+    directory-create-failed: "Failed to create bedrock_menus directory. Please check file permissions."
+    load-failed: "Failed to load Bedrock menu: {0}"
+    send-failed: "Failed to send form '{0}' to Bedrock player {1}."
+    form-build-returned-null: "Failed to build form for Bedrock player: {0}"
+    form-build-failed: "Failed to build Bedrock form."
+    reflection-send-failed: "Failed to send Floodgate form for menu '{0}' to player {1}."
+    reflection-setup-failed: "Failed to initialize Floodgate/Cumulus reflection access."
