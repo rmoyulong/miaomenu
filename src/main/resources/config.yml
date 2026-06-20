@@ -12,7 +12,7 @@
 
 # 請勿隨意更改版本號！！！！
 config-version: 16 # config.yml 的版本號檢測
-menu-version: 6    # test.yml 的版本號檢測
+menu-version: 7    # test.yml 的版本號檢測
 
 # 語言（lang/<language>.yml 內建：en、zh_TW；預設 en）
 # Language file under lang/<language>.yml (bundled: en, zh_TW; default en)

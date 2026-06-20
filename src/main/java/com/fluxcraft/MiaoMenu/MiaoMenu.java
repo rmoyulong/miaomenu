@@ -38,6 +38,7 @@ import com.fluxcraft.MiaoMenu.update.UpdateNoticeListener;
 import com.fluxcraft.MiaoMenu.utils.Lang;
 
 import cn.handyplus.lib.adapter.HandySchedulerUtil;
+import me.clip.placeholderapi.PlaceholderAPI;
 
 public class MiaoMenu extends JavaPlugin {
     private static final int BSTATS_ID = 28979;
@@ -178,6 +179,31 @@ public class MiaoMenu extends JavaPlugin {
             initializeHotReload();
         }
         initializeBStats();
+        logPlaceholderApiStatus();
+    }
+
+    /**
+     * 在 onEnable 末段印一行 PlaceholderAPI 狀態，讓伺服器主一眼判斷
+     * 「選單 %placeholders% 沒解析」是 PAPI 未裝、還是 expansion 沒下載。
+     * 大部分「PAPI 已裝但佔位符顯示原文」實際是缺對應 expansion，
+     * 此 log 不會修問題，但能避免使用者陷入「程式碼是不是有 bug」的迷宮。
+     */
+    private void logPlaceholderApiStatus() {
+        if (!Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            getLogger().warning("PlaceholderAPI 未啟用 — 選單 YAML 內的 %placeholders% 將原樣顯示（內建 %player_name% / %player% 仍會解析）。");
+            return;
+        }
+        try {
+            int count = PlaceholderAPI.getRegisteredIdentifiers().size();
+            if (count == 0) {
+                getLogger().warning("PlaceholderAPI 已啟用但未載入任何 expansion — 大部分 %placeholders% 會顯示原文。請執行 /papi ecloud download <名稱> 後再 /papi reload。");
+            } else {
+                getLogger().info("PlaceholderAPI 偵測通過，已載入 " + count
+                        + " 個 expansion。若選單仍顯示原文，請用 /papi list 確認對應 expansion；未下載的可用 /papi ecloud download <名稱> 取得。");
+            }
+        } catch (RuntimeException e) {
+            getLogger().log(Level.WARNING, "PlaceholderAPI 偵測通過但 expansion 列舉失敗（可能 API 不相容）", e);
+        }
     }
 
     private void initializeHotReload() {

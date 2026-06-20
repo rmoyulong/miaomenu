@@ -29,6 +29,7 @@ public class BedrockMenu {
         public static final String EXECUTE_AS = "execute_as";
         public static final String DEFAULT_ICON_TYPE = "path";
         public static final String ICON_TYPE_URL = "url";
+        public static final String UNSUPPORTED_ON_BEDROCK = "unsupported_on_bedrock";
     }
 
     private final String name;
@@ -76,8 +77,11 @@ public class BedrockMenu {
                 String command = map.get(ConfigKeys.COMMAND) != null ? map.get(ConfigKeys.COMMAND).toString() : "";
                 String executeAs = map.get(ConfigKeys.EXECUTE_AS) != null ? map.get(ConfigKeys.EXECUTE_AS).toString() : "player";
                 String lockMessage = map.get("lock_message") != null ? map.get("lock_message").toString() : null;
+                Object unsupportedRaw = map.get(ConfigKeys.UNSUPPORTED_ON_BEDROCK);
+                boolean unsupportedOnBedrock = unsupportedRaw instanceof Boolean b ? b
+                        : "true".equalsIgnoreCase(String.valueOf(unsupportedRaw));
                 ConditionGroup conditionGroup = loadConditionGroup(map);
-                menuItems.add(new BedrockMenuItem(text, icon, iconType, command, executeAs, conditionGroup, lockMessage));
+                menuItems.add(new BedrockMenuItem(text, icon, iconType, command, executeAs, conditionGroup, lockMessage, unsupportedOnBedrock));
             }
         }
     }
@@ -185,7 +189,8 @@ public class BedrockMenu {
             String command,
             String executeAs,
             ConditionGroup conditionGroup,
-            String lockMessage
+            String lockMessage,
+            boolean unsupportedOnBedrock
     ) {
         public BedrockMenuItem {
             if (text == null) {

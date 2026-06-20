@@ -26,9 +26,10 @@ public final class PlaceholderUtils {
             try {
                 text = PlaceholderAPI.setPlaceholders(player, text);
             } catch (RuntimeException e) {
-                if (plugin.getLogger().isLoggable(Level.FINE)) {
-                    plugin.getLogger().log(Level.FINE, plugin.getName() + " PlaceholderAPI parse failed", e);
-                }
+                // 抬升到 WARNING，否則 expansion 內部炸掉時 user 完全看不到失敗訊號，
+                // 表面只會看到「佔位符顯示原文」進而誤判是 MiaoMenu 沒呼叫 PAPI。
+                plugin.getLogger().log(Level.WARNING, "PlaceholderAPI 解析失敗（玩家 "
+                        + player.getName() + "，文字 \"" + text + "\"）", e);
             }
         }
         return text;

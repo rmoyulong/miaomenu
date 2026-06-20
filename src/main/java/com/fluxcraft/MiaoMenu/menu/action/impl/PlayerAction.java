@@ -1,5 +1,6 @@
 package com.fluxcraft.MiaoMenu.menu.action.impl;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -12,6 +13,11 @@ public class PlayerAction implements com.fluxcraft.MiaoMenu.menu.action.MenuActi
     public void execute(Player player, String content, Plugin plugin) {
         if (content == null || content.isEmpty()) return;
         String cmd = Constants.stripLeadingSlash(content);
+
+        // 與 Paper 處理 client chat packet 時印的 `issued server command:` 對齊；
+        // 因 player.performCommand() / ProxyManager.sendServerCommand() 都不會印這行，
+        // 走選單觸發的指令在主控台會默默消失，難以稽核。
+        Bukkit.getLogger().info(player.getName() + " issued server command: /" + cmd);
 
         if (plugin instanceof MiaoMenu miaoMenu) {
             String[] parts = cmd.split("\\s+", 2);

@@ -107,7 +107,7 @@ import:
   scan:
     header: "&b✦ 偵測到 &e{0} &b個可匯入的資料夾候選："
     entry: "&7  · &e{0} &7— Java 選單 &a{1} &7／基岩選單 &a{2} &7／config-version &b{3}"
-    entry-deluxemenus: "&7  · &e{0} &d[DeluxeMenus]&7 — 選單 &a{1} &7（會自動轉換到 java_menus/，原資料夾保留）"
+    entry-deluxemenus: "&7  · &e{0} &d[DeluxeMenus]&7 — 選單 &a{1} &7（會自動轉換到 java_menus/ + bedrock_menus/ 各一份，原資料夾保留）"
     empty: "&e✦ 未偵測到可匯入的資料夾（會搜尋 plugins/ 內的 DGeyserMenu、dgeysermenu、MiaoMenu、DeluxeMenus、dmenu）。"
     hint: "&7✎ 下一步：&f/dgm import preview <來源> &7查看差異與 token。"
   preview:
@@ -120,8 +120,11 @@ import:
     unknown-source: "&c✦ 找不到名為 &e{0}&c 的可匯入資料夾，可先用 &f/dgm import scan&c 查看清單。"
     io-error: "&c✦ 預覽 &e{0}&c 時讀檔失敗，請查閱主控台。"
     deluxemenus-note: |-
-      &d✦ 偵測到 DeluxeMenus 結構：將自動把 gui_menus/ 內的選單逐一轉換為本插件的 java_menus/&lt;id&gt;.yml。
+      &d✦ 偵測到 DeluxeMenus 結構：將自動同時產出兩份輸出
+      &7  · &fjava_menus/&lt;id&gt;.yml&7 — Java 版箱子 GUI（保留 slot、左/右/中/shift 全部 click 鏈）
+      &7  · &fbedrock_menus/&lt;id&gt;.yml&7 — 基岩版 Floodgate 表單（依 slot 排序成按鈕列表，每顆按鈕僅取第一個動作）
       &7  · 動作 prefix 對應：[console]→[cmd]、[openguimenu] X→[player] dgm open X，其餘原樣保留
+      &7  · material → 基岩貼圖走 vanilla 對照表，未命中者顯示為純文字按鈕
       &7  · 不轉 update / skin 欄位；conditions / view_requirement 會原樣保留供您手動審閱
       &7  · 原 DeluxeMenus 資料夾完全不動，可隨時 rollback
   apply:
@@ -152,6 +155,9 @@ about:
 
 open:
   error: "&c✦ 介面展開失敗，請查閱主控台日誌。"
+
+bedrock:
+  unsupported-button: "&c✦ 此按鈕的動作僅在 Java 版可用（shift+左/右鍵、中鍵、右鍵），基岩版無法執行；如需操作請改用 Java 版客戶端。"
 
 menu:
   clock:

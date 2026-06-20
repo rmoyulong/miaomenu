@@ -158,6 +158,11 @@ public class BedrockMenuManager {
         }
         String cmd = item.getCommand();
         if (cmd == null || cmd.isEmpty()) {
+            // 來源是 shift/middle/right-only 的按鈕（由 DeluxeMenus 匯入時自動標記），
+            // 基岩 SimpleForm 一顆按鈕只能跑單一動作 → 點下去要明確提示玩家「這個動作 Java 版才有」
+            if (item.unsupportedOnBedrock()) {
+                player.sendMessage(Lang.get("bedrock.unsupported-button"));
+            }
             return;
         }
         String parsed = PlaceholderUtils.parse(player, cmd, plugin);

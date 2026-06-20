@@ -21,7 +21,7 @@ Fork 版重點放在 **不改使用者操作習慣**：
 
 ### 無痛轉移（自動匯入舊資料夾）
 
-把 `MiaoMenu_fork-1.2.jar` 直接丟到 `plugins/`，啟動時插件會自動偵測下列舊版資料夾並整批匯入到 `plugins/MiaoMenu_fork/`：
+把 `MiaoMenu_fork-1.3.jar` 直接丟到 `plugins/`，啟動時插件會自動偵測下列舊版資料夾並整批匯入到 `plugins/MiaoMenu_fork/`：
 
 1. `plugins/DGeyserMenu/`
 2. `plugins/dgeysermenu/`
@@ -92,7 +92,7 @@ MiaoMenu_fork 是一款雙端選單插件：
 - 內建選單時鐘、範例選單與權限控制
 - 訊息抽出為獨立 `lang/<language>.yml`，繁中／英文可即時切換
 
-目前版本：`1.2`（在 `1.1` 之上以「指令引導舊版資料匯入」為主軸新增 `/dgm import` 系列指令；使用者既有操作零變動，純粹附加新功能。Fork 版重新起算，原作為 [Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) 2.7.7.9）
+目前版本：`1.3`（在 `1.2` 之上補齊 DeluxeMenus 匯入的點擊動作對齊：`JavaMenu` / `JavaMenuListener` / `DeluxeMenusImporter` 同時新增 `middle_click_commands` / `shift_left_click_commands` / `shift_right_click_commands` / 通用 `click_commands` 的讀取與分發，匯入後 dmenu 風格的多按鍵差異執行即可生效。使用者既有操作零變動，純粹附加。Fork 版重新起算，原作為 [Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) 2.7.7.9）
 
 ## 介面預覽
 
@@ -628,7 +628,7 @@ mvn test
 mvn package
 ```
 
-預設產物 `MiaoMenu_fork-1.2.jar` 會生成在 `target/` 目錄下。
+預設產物 `MiaoMenu_fork-1.3.jar` 會生成在 `target/` 目錄下。
 
 ## 常見問題
 

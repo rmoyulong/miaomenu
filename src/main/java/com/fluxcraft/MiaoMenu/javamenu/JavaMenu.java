@@ -78,6 +78,11 @@ public class JavaMenu {
             String path = "items." + key;
             List<String> leftCmds = config.getStringList(path + ".left_click_commands");
             List<String> rightCmds = config.getStringList(path + ".right_click_commands");
+            // DeluxeMenus 相容欄位：middle / shift_left / shift_right / 通用 click_commands
+            List<String> middleCmds = config.getStringList(path + ".middle_click_commands");
+            List<String> shiftLeftCmds = config.getStringList(path + ".shift_left_click_commands");
+            List<String> shiftRightCmds = config.getStringList(path + ".shift_right_click_commands");
+            List<String> clickCmds = config.getStringList(path + ".click_commands");
             ConditionGroup conditionGroup = loadConditionGroup(config, path);
             String lockMessage = config.getString(path + ".lock_message");
             MenuItem item = new MenuItem(
@@ -88,6 +93,10 @@ public class JavaMenu {
                     config.getStringList(path + ".lore"),
                     leftCmds,
                     rightCmds,
+                    middleCmds,
+                    shiftLeftCmds,
+                    shiftRightCmds,
+                    clickCmds,
                     conditionGroup,
                     lockMessage
             );
@@ -180,6 +189,10 @@ public class JavaMenu {
         private final List<String> lore;
         private final List<String> leftClickCommands;
         private final List<String> rightClickCommands;
+        private final List<String> middleClickCommands;
+        private final List<String> shiftLeftClickCommands;
+        private final List<String> shiftRightClickCommands;
+        private final List<String> clickCommands;
         private final ConditionGroup conditionGroup;
         private final String lockMessage;
 
@@ -191,6 +204,10 @@ public class JavaMenu {
                 List<String> lore,
                 List<String> leftClickCommands,
                 List<String> rightClickCommands,
+                List<String> middleClickCommands,
+                List<String> shiftLeftClickCommands,
+                List<String> shiftRightClickCommands,
+                List<String> clickCommands,
                 ConditionGroup conditionGroup,
                 String lockMessage
         ) {
@@ -201,6 +218,10 @@ public class JavaMenu {
             this.lore = lore;
             this.leftClickCommands = leftClickCommands != null ? leftClickCommands : new ArrayList<>();
             this.rightClickCommands = rightClickCommands != null ? rightClickCommands : new ArrayList<>();
+            this.middleClickCommands = middleClickCommands != null ? middleClickCommands : new ArrayList<>();
+            this.shiftLeftClickCommands = shiftLeftClickCommands != null ? shiftLeftClickCommands : new ArrayList<>();
+            this.shiftRightClickCommands = shiftRightClickCommands != null ? shiftRightClickCommands : new ArrayList<>();
+            this.clickCommands = clickCommands != null ? clickCommands : new ArrayList<>();
             this.conditionGroup = conditionGroup != null ? conditionGroup : ConditionGroup.fromLegacyConditions(null);
             this.lockMessage = lockMessage;
         }
@@ -310,6 +331,22 @@ public class JavaMenu {
 
         public List<String> getRightClickCommands() {
             return rightClickCommands;
+        }
+
+        public List<String> getMiddleClickCommands() {
+            return middleClickCommands;
+        }
+
+        public List<String> getShiftLeftClickCommands() {
+            return shiftLeftClickCommands;
+        }
+
+        public List<String> getShiftRightClickCommands() {
+            return shiftRightClickCommands;
+        }
+
+        public List<String> getClickCommands() {
+            return clickCommands;
         }
 
         public record LockState(boolean locked, String message) {

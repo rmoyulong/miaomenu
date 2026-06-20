@@ -158,8 +158,10 @@ public final class LegacyImportService {
     }
 
     /**
-     * DeluxeMenus 專用預覽：列出 gui_menus 內每個選單 → 計算 java_menus/&lt;id&gt;.yml 的 ADD / CONFLICT。
-     * 沒有 SKIP_SAME 概念（轉換結果幾乎不可能位元相等）。
+     * DeluxeMenus 專用預覽：列出 gui_menus 內每個選單 → 同時計算
+     * {@code java_menus/<id>.yml} 與 {@code bedrock_menus/<id>.yml} 的 ADD / CONFLICT。
+     * 自 v1.3 起雙寫，讓基岩端玩家也能直接 {@code /dgm open <id>} 看到對應的 Floodgate 表單，
+     * 不需手動補對應 YAML。沒有 SKIP_SAME 概念（轉換結果幾乎不可能位元相等）。
      */
     public static PreviewResult previewDeluxeMenus(String source, Path sourcePath, Path targetDir) throws IOException {
         if (!Files.isDirectory(sourcePath)) {
@@ -167,10 +169,13 @@ public final class LegacyImportService {
         }
         List<PreviewEntry> entries = new ArrayList<>();
         for (DeluxeMenusImporter.MenuEntry m : DeluxeMenusImporter.listMenus(sourcePath)) {
-            Path dst = targetDir.resolve(m.outputRelative());
-            EntryStatus status = Files.exists(dst) ? EntryStatus.CONFLICT : EntryStatus.ADD;
             long size = Files.size(m.sourceFile());
-            entries.add(new PreviewEntry(m.outputRelative(), status, size));
+            Path javaDst = targetDir.resolve(m.outputRelative());
+            entries.add(new PreviewEntry(m.outputRelative(),
+                    Files.exists(javaDst) ? EntryStatus.CONFLICT : EntryStatus.ADD, size));
+            Path bedrockDst = targetDir.resolve(m.bedrockOutputRelative());
+            entries.add(new PreviewEntry(m.bedrockOutputRelative(),
+                    Files.exists(bedrockDst) ? EntryStatus.CONFLICT : EntryStatus.ADD, size));
         }
         entries.sort(Comparator.comparing(PreviewEntry::relativePath));
         String token = computeToken(source, entries);
@@ -178,8 +183,13 @@ public final class LegacyImportService {
     }
 
     /**
-     * DeluxeMenus 專用套用：對 gui_menus 內每個選單跑 {@link DeluxeMenusImporter#convertMenu} 後寫到 java_menus/。
-     * 衝突檔同樣先備份到 backups/import-&lt;timestamp&gt;/，再依 {@link Conflict} 策略落盤。
+     * DeluxeMenus 專用套用：對 gui_menus 內每個選單**同時**走兩條轉換：
+     * <ul>
+     *   <li>{@link DeluxeMenusImporter#convertMenu} → {@code java_menus/<id>.yml}（箱子 GUI）</li>
+     *   <li>{@link DeluxeMenusImporter#convertMenuToBedrock} → {@code bedrock_menus/<id>.yml}（Floodgate SimpleForm）</li>
+     * </ul>
+     * 任一檔衝突都先備份到 {@code backups/import-<timestamp>/}，再依 {@link Conflict} 策略落盤。
+     * 計數規則：每個 menu 最多算 2 個檔（java + bedrock），added/skipped/handled 為兩端合計。
      */
     public static ApplyResult applyDeluxeMenus(Plugin plugin, PreviewResult preview, Conflict conflict) throws IOException {
         Path dataDir = plugin.getDataFolder().toPath();
@@ -189,30 +199,42 @@ public final class LegacyImportService {
         int skipped = 0;
         int handled = 0;
         for (DeluxeMenusImporter.MenuEntry m : DeluxeMenusImporter.listMenus(preview.sourcePath())) {
-            Path dst = dataDir.resolve(m.outputRelative());
-            ensureParent(dst);
-            boolean existed = Files.exists(dst);
-            String converted = DeluxeMenusImporter.convertMenu(m.sourceFile());
-            if (!existed) {
-                DeluxeMenusImporter.applyConversion(dst, converted);
-                added++;
-            } else {
-                switch (conflict) {
-                    case SKIP -> skipped++;
-                    case OVERWRITE -> {
-                        DeluxeMenusImporter.applyConversion(dst, converted);
-                        handled++;
-                    }
-                    case RENAME -> {
-                        Path renamed = dst.resolveSibling(dst.getFileName().toString() + ".imported");
-                        DeluxeMenusImporter.applyConversion(renamed, converted);
-                        handled++;
-                    }
-                }
-            }
+            int[] javaCounters = writeConverted(dataDir.resolve(m.outputRelative()),
+                    DeluxeMenusImporter.convertMenu(m.sourceFile()), conflict);
+            int[] bedrockCounters = writeConverted(dataDir.resolve(m.bedrockOutputRelative()),
+                    DeluxeMenusImporter.convertMenuToBedrock(m.sourceFile()), conflict);
+            added += javaCounters[0] + bedrockCounters[0];
+            skipped += javaCounters[1] + bedrockCounters[1];
+            handled += javaCounters[2] + bedrockCounters[2];
         }
         rotateBackups(plugin);
         return new ApplyResult(backupId, added, skipped, handled);
+    }
+
+    /**
+     * 把一份轉換完成的 YAML 寫到目標路徑，回傳 {@code [added, skipped, handled]} 三段計數。
+     * 提取出來給 DeluxeMenus 雙寫 (java + bedrock) 共用，避免兩段一模一樣的 switch 互相 drift。
+     */
+    private static int[] writeConverted(Path dst, String converted, Conflict conflict) throws IOException {
+        ensureParent(dst);
+        boolean existed = Files.exists(dst);
+        if (!existed) {
+            DeluxeMenusImporter.applyConversion(dst, converted);
+            return new int[]{1, 0, 0};
+        }
+        switch (conflict) {
+            case SKIP:
+                return new int[]{0, 1, 0};
+            case OVERWRITE:
+                DeluxeMenusImporter.applyConversion(dst, converted);
+                return new int[]{0, 0, 1};
+            case RENAME:
+                Path renamed = dst.resolveSibling(dst.getFileName().toString() + ".imported");
+                DeluxeMenusImporter.applyConversion(renamed, converted);
+                return new int[]{0, 0, 1};
+            default:
+                return new int[]{0, 1, 0};
+        }
     }
 
     /**

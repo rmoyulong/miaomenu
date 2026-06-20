@@ -107,7 +107,7 @@ import:
   scan:
     header: "&b✦ Detected &e{0} &bimportable candidate folder(s):"
     entry: "&7  · &e{0} &7— Java menus &a{1} &7/ Bedrock menus &a{2} &7/ config-version &b{3}"
-    entry-deluxemenus: "&7  · &e{0} &d[DeluxeMenus]&7 — menus &a{1} &7(auto-converted into java_menus/, original folder preserved)"
+    entry-deluxemenus: "&7  · &e{0} &d[DeluxeMenus]&7 — menus &a{1} &7(auto-converted into both java_menus/ and bedrock_menus/, original folder preserved)"
     empty: "&e✦ No importable folder detected (searches plugins/ for DGeyserMenu, dgeysermenu, MiaoMenu, DeluxeMenus, dmenu)."
     hint: "&7✎ Next: &f/dgm import preview <source> &7to view diff and confirm token."
   preview:
@@ -120,8 +120,11 @@ import:
     unknown-source: "&c✦ Importable folder &e{0}&c not found. Try &f/dgm import scan&c first."
     io-error: "&c✦ IO error while previewing &e{0}&c. See console for details."
     deluxemenus-note: |-
-      &d✦ DeluxeMenus layout detected — each menu under gui_menus/ will be converted into java_menus/<id>.yml.
+      &d✦ DeluxeMenus layout detected — two outputs will be produced per menu
+      &7  · &fjava_menus/<id>.yml&7 — Java chest GUI (preserves slot, full left/right/middle/shift click chains)
+      &7  · &fbedrock_menus/<id>.yml&7 — Bedrock Floodgate form (slot-ordered button list; only the first action per button)
       &7  · Action prefix mapping: [console]→[cmd], [openguimenu] X→[player] dgm open X; the rest is preserved
+      &7  · material → Bedrock texture follows a vanilla mapping table; unmapped materials fall back to text-only buttons
       &7  · update / skin fields are not carried over; conditions / view_requirement are kept verbatim for your review
       &7  · The original DeluxeMenus folder is untouched; rollback is always available
   apply:
@@ -152,6 +155,9 @@ about:
 
 open:
   error: "&c✦ Failed to open the menu. Please check the console log."
+
+bedrock:
+  unsupported-button: "&c✦ This button uses Java-only actions (shift+left/right click, middle click, right click) and cannot run on Bedrock. Switch to a Java client if you need to trigger it."
 
 menu:
   clock:

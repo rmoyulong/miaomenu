@@ -1,120 +1,451 @@
-menu_title: "&6&l主菜单 &7| &f服务器名称"
-# 菜单行数 (必须填 1, 2, 3, 4, 5 或 6)
-# 1行 = 9个格子, 6行 = 54个格子 (满)
+# =====================================================================
+#  MiaoMenu_fork — Java menu showcase (default test.yml)
+#  Fork:           https://github.com/Avery11111101/MiaoMenu_fork
+#  Original:       https://github.com/Yamada0001/MiaoMenu
+# ---------------------------------------------------------------------
+#  This file is the "feature catalogue" — every YAML key that the Java
+#  side of MiaoMenu_fork understands is exercised at least once here so
+#  you can copy & paste straight into your own menus.
+#
+#  Quick recap of what is shown below:
+#    * menu_title with PlaceholderAPI placeholders + alias "title"
+#    * rows (1-6, clamped server-side)
+#    * view_requirement (menu-level gate with deny_message + fallback_menu)
+#    * requirement_blocks (named, reusable condition groups, including
+#      a self-referencing nested example via the "block" requirement)
+#    * Every supported requirement type:
+#        permission, placeholder_equals, placeholder-not-equals,
+#        placeholder_contains, advancement, progress,
+#        score_gte, score_lte, score_equals, score_range, block
+#    * Every supported click chain on items:
+#        left_click_commands, right_click_commands,
+#        middle_click_commands, shift_left_click_commands,
+#        shift_right_click_commands, click_commands (catch-all)
+#    * Every action prefix:
+#        [player] [cmd] [message] [close] [menu] and no-prefix default
+#    * Every material prefix the ItemResolver supports:
+#        vanilla, vanilla + custom_model_data,
+#        craftengine:<namespace>:<id>, itemsadder:<namespace>:<id>,
+#        mmoitems:<type>:<id>, headdb:<id>, base64head:<base64>
+#    * conditions with operator: AND, operator: OR, and nested children
+#    * conditions referencing a shared requirement_block
+#    * Legacy item_conditions list (kept for back-compat)
+#    * lock_message override that wins over the global Lang fallback
+# =====================================================================
+
+menu_title: "&6&lMiaoMenu_fork &7| &fHi %player_name%"
+# Number of rows in the chest GUI. Allowed: 1, 2, 3, 4, 5, 6.
+# 1 row = 9 slots, 6 rows = 54 slots (full double chest size).
 rows: 6
-# 菜单级条件: 不满足时可提示并回退到其他菜单
+
+# ---------------------------------------------------------------------
+# Menu-level gate. If the player fails this check, the menu refuses to
+# open, shows deny_message, and (optionally) re-routes them to the menu
+# named in fallback_menu. Set fallback_menu to "" to disable the rerout.
+# ---------------------------------------------------------------------
 view_requirement:
-  deny_message: "&c你当前还不能打开这个菜单。"
-  fallback_menu: "test"
+  deny_message: "&cYou are not allowed to open this menu yet."
+  fallback_menu: ""
   requirements:
     - type: permission
       permission: dgeysermenu.use
+
+# ---------------------------------------------------------------------
+# Reusable, named condition groups. Reference them from anywhere with
+#   - type: block
+#     block: <name>
+# Each block can have its own deny_message and fallback_menu, which are
+# inherited when the block fails.
+# ---------------------------------------------------------------------
+requirement_blocks:
+  vip_only:
+    deny_message: "&cVIP members only."
+    requirements:
+      - type: permission
+        permission: "miaomenu.vip"
+  story_started:
+    deny_message: "&cStart the vanilla story progression first."
+    requirements:
+      - type: advancement
+        advancement: "minecraft:story/root"
+
 items:
-  # 这里的 "server_info" 是这个物品的ID，你可以随意修改，不要重复即可
-  server_info:
-    slot: 10 #图标显示的格数
-    # material 支持多种前缀:
-    #   原版材质: KNOWLEDGE_BOOK, PAPER 等
-    #   原版材质 + custom_model_data: 资源包自定义贴图
-    #   craftengine:命名空间:物品ID  → CraftEngine 自定义物品
-    #   itemsadder:命名空间:物品ID  → ItemsAdder 自定义物品
-    #   mmoitems:类型:ID            → MMOItems 自定义物品
-    #   headdb:头颅ID               → HeadDatabase 玩家头颅
-    #   base64head:Base64字符串     → Base64 自定义头颅
-    material: KNOWLEDGE_BOOK
-    custom_model_data: 0 # 资源包贴图ID (0=不使用, 需配合资源包)
-    display_name: "&e&l服务器信息" # 说明: 物品显示的名字 (支持颜色代码 &)
-    lore: # 说明: 物品的描述文字 (也就是鼠标放上去看到的几行字)
-      - "&7点击查看服务器信息"
-      - ""
-      - "&f在线玩家: &a%server_online%&f/&a%server_max_players%" # 常用变量 (需要安装PlaceholderAPI插件)
-      - "&f服务器版本: &a%server_version%"
-      - ""
-      - "&e点击查看详细信息"
-    left_click_commands: # 说明: 鼠标左键点击时执行的一系列动作 (按顺序执行)
-    # 此处可替换成right_click_commands  left是左键 right是右键
-      - "[message] &6=== 服务器信息 ===" # [message] = 发送一条聊天消息给点击的玩家
-      - "[player] list" # [player] = 让玩家自己执行后面的命令 (相当于玩家在聊天框输入)
-      - "[close]" # [close] = 点击后关闭菜单
-      # 可选项player(玩家执行) 、cmd（控制台执行）、message(发送消息)、close（关闭菜单）
-      #下面的均这么设置即可
 
-  teleport_spawn:
-    slot: 12
-    material: COMPASS
-    display_name: "&a&l传送回城"
+  # ---- Slot 10: minimal vanilla item, single left-click action -------
+  vanilla_basic:
+    slot: 10
+    material: PAPER
+    display_name: "&e&l1. Vanilla material"
     lore:
-      - "&7点击传送至主城"
+      - "&7The simplest possible item:"
+      - "&7vanilla material + single left-click action."
       - ""
-      - "&f立即传送至安全的主城"
-      - "&f区域，适合新手玩家"
+      - "&aLeft-click&7: send a chat message."
     left_click_commands:
-      - "[player] spawn"
-      - "[message] &a已传送至主城!"
+      - "[message] &aHello %player_name%! This is the simplest item."
 
-  player_info:
-    slot: 14
-    material: PLAYER_HEAD
-    display_name: "&b&l个人信息"
+  # ---- Slot 11: vanilla + custom_model_data (resource pack texture) --
+  custom_model:
+    slot: 11
+    material: PAPER
+    # custom_model_data ties this item to a resource-pack model.
+    # 0 means "do not set"; any value > 0 is forwarded to the ItemMeta.
+    custom_model_data: 1001
+    display_name: "&b&l2. custom_model_data"
     lore:
-      - "&7查看您的个人信息"
+      - "&7Same vanilla material as #1,"
+      - "&7but with custom_model_data: 1001 attached."
       - ""
-      - "&f昵称: &e%player_name%"
-      - "&f等级: &a%player_level%"
-      - "&f世界: &b%player_world%"
-      - "&f金钱: &6%vault_eco_balance%"
+      - "&7Without a resource pack, this still renders as paper."
+    left_click_commands:
+      - "[message] &bSlot 11 — custom_model_data demo (id 1001)"
 
-    # 物品条件: 条件不满足时，此按钮显示为锁定状态（灰色材质 + [未解锁]）
-    # 支持旧语法 item_conditions (隐式AND) 和新语法 conditions (支持 AND/OR 嵌套)
+  # ---- Slot 12: every click variant on one item ----------------------
+  click_chains:
+    slot: 12
+    material: STICK
+    display_name: "&d&l3. All click chains"
+    lore:
+      - "&7Try each mouse interaction:"
+      - "&a · Left-click&7 → run [player] command"
+      - "&a · Right-click&7 → console [cmd]"
+      - "&a · Middle-click&7 → just a message"
+      - "&a · Shift + Left&7 → open another menu"
+      - "&a · Shift + Right&7 → close the GUI"
+      - "&a · Any other click&7 → catch-all click_commands"
+    left_click_commands:
+      - "[player] me clicked the showcase item"
+    right_click_commands:
+      - "[cmd] say %player_name% triggered a console command"
+    middle_click_commands:
+      - "[message] &dMiddle-click works too!"
+    shift_left_click_commands:
+      - "[menu] test"
+    shift_right_click_commands:
+      - "[message] &cClosing the menu now..."
+      - "[close]"
+    # click_commands runs for any click type that does not match one of
+    # the dedicated chains above; useful for drop/swap-offhand etc.
+    click_commands:
+      - "[message] &7(catch-all) Detected a non-specific click."
+
+  # ---- Slot 13: every action prefix in one chain ---------------------
+  action_prefixes:
+    slot: 13
+    material: COMMAND_BLOCK
+    display_name: "&6&l4. Every action prefix"
+    lore:
+      - "&7One chain that fires every prefix in order:"
+      - "&f[message] [player] [cmd] [menu] [close]"
+      - ""
+      - "&7No prefix? The default action treats it as a chat message."
+    left_click_commands:
+      - "[message] &6Step 1/5 — [message] prefix"
+      - "[player] list"
+      - "[cmd] say %player_name% just ran a console action"
+      - "[menu] test"
+      - "Plain text with no prefix falls back to the default action."
+      - "[close]"
+
+  # ---- Slot 14: conditions with operator AND -------------------------
+  conditions_and:
+    slot: 14
+    material: IRON_INGOT
+    display_name: "&7&l5. conditions / AND"
+    lore:
+      - "&7Unlocks only when ALL of the following hold:"
+      - "&8 · has permission dgeysermenu.use"
+      - "&8 · placeholder %player_name% contains nothing (always true)"
+      - ""
+      - "&7Fails → grey glass pane + lock_message below."
     conditions:
       operator: AND
       requirements:
+        - type: permission
+          permission: "dgeysermenu.use"
         - type: placeholder_contains
           placeholder: "%player_name%"
           value: ""
-    lock_message: "&c尚未满足查看个人信息的条件。"
+    lock_message: "&cAND gate failed — see the lore for the rules."
     left_click_commands:
-      - "[message] &6=== 个人信息 ==="
-      - "[message] &f昵称: &e%player_name%"
-      - "[message] &f等级: &a%player_level%"
-      - "[message] &f世界: &b%player_world%"
-      - "[message] &f金钱: &6%vault_eco_balance%"
-      - "[close]"
+      - "[message] &7AND condition satisfied; here is your reward!"
 
-  shop:
-    slot: 16
-    material: EMERALD
-    display_name: "&2&l商店系统"
+  # ---- Slot 15: conditions with operator OR --------------------------
+  conditions_or:
+    slot: 15
+    material: GOLD_INGOT
+    display_name: "&e&l6. conditions / OR"
     lore:
-      - "&7打开服务器商店"
+      - "&7Unlocks when ANY of the following hold:"
+      - "&8 · placeholder %player_world% equals world"
+      - "&8 · player has permission miaomenu.vip"
+    conditions:
+      operator: OR
+      requirements:
+        - type: placeholder_equals
+          placeholder: "%player_world%"
+          value: "world"
+        - type: permission
+          permission: "miaomenu.vip"
+    lock_message: "&cOR gate failed — neither branch was satisfied."
+    left_click_commands:
+      - "[message] &eOR condition satisfied!"
+
+  # ---- Slot 16: conditions with nested children ----------------------
+  conditions_nested:
+    slot: 16
+    material: DIAMOND
+    display_name: "&b&l7. conditions / nested children"
+    lore:
+      - "&7Unlocks when:"
+      - "&8 · permission dgeysermenu.use AND"
+      - "&8   (placeholder_equals %player_world% = world OR"
+      - "&8    placeholder-not-equals %player_gamemode% = ADVENTURE)"
       - ""
-      - "&f购买和出售各种物品"
-      - "&f兑换稀有道具和装备"
-      - ""
-      - "&e点击打开商店"
-    # 条件组合示例: 需要完成成就 且 (VIP权限 或 进度达标) 才能解锁
+      - "&7Demonstrates AND wrapping an OR child group."
+    conditions:
+      operator: AND
+      requirements:
+        - type: permission
+          permission: "dgeysermenu.use"
+      children:
+        - operator: OR
+          requirements:
+            - type: placeholder_equals
+              placeholder: "%player_world%"
+              value: "world"
+            - type: placeholder-not-equals
+              placeholder: "%player_gamemode%"
+              value: "ADVENTURE"
+    lock_message: "&cNested AND/OR gate failed."
+    left_click_commands:
+      - "[message] &bNested condition group satisfied!"
+
+  # ---- Slot 19: requirement type — advancement -----------------------
+  req_advancement:
+    slot: 19
+    material: WRITTEN_BOOK
+    display_name: "&a&l8. type: advancement"
+    lore:
+      - "&7Unlocks once the player has completed:"
+      - "&fminecraft:story/root"
     conditions:
       operator: AND
       requirements:
         - type: advancement
           advancement: "minecraft:story/root"
-      children:
-        - operator: OR
-          requirements:
-            - type: permission
-              permission: "vip.shop"
-            - type: progress
-              objective: "trade_count"
-              value: 5
-    lock_message: "&c需要完成初始故事进度才能使用商店"
+    lock_message: "&cFinish the first vanilla advancement first."
     left_click_commands:
-      - "[player] shop"
+      - "[message] &aWelcome, advancement holder!"
 
+  # ---- Slot 20: requirement type — placeholder_contains --------------
+  req_placeholder_contains:
+    slot: 20
+    material: NAME_TAG
+    display_name: "&d&l9. type: placeholder_contains"
+    lore:
+      - "&7Unlocks when %player_name% contains the letter 'a'."
+      - "&7(Demonstrates substring matching on PlaceholderAPI output.)"
+    conditions:
+      operator: AND
+      requirements:
+        - type: placeholder_contains
+          placeholder: "%player_name%"
+          value: "a"
+    lock_message: "&cYour name does not contain the letter 'a'."
+    left_click_commands:
+      - "[message] &dYour name contains an 'a'!"
+
+  # ---- Slot 21: requirement type — score comparators -----------------
+  req_score:
+    slot: 21
+    material: REDSTONE
+    display_name: "&c&l10. type: score_* comparators"
+    lore:
+      - "&7Combines four score-based checks:"
+      - "&8 · score_gte    objective=kills   value=10"
+      - "&8 · score_lte    objective=deaths  value=5"
+      - "&8 · score_equals objective=team    value=1"
+      - "&8 · score_range  objective=level   min=10 max=99"
+      - ""
+      - "&7Create those objectives with /scoreboard to test."
+    conditions:
+      operator: AND
+      requirements:
+        - type: score_gte
+          objective: "kills"
+          value: 10
+        - type: score_lte
+          objective: "deaths"
+          value: 5
+        - type: score_equals
+          objective: "team"
+          value: 1
+        - type: score_range
+          objective: "level"
+          min: 10
+          max: 99
+    lock_message: "&cYour scoreboard objectives do not meet the thresholds."
+    left_click_commands:
+      - "[message] &cAll four scoreboard checks passed!"
+
+  # ---- Slot 22: requirement type — progress --------------------------
+  req_progress:
+    slot: 22
+    material: EXPERIENCE_BOTTLE
+    display_name: "&a&l11. type: progress"
+    lore:
+      - "&7'progress' is a friendlier alias of score_gte:"
+      - "&8 · objective=quests value=3"
+      - "&7Omit 'value' to mean ' > 0'."
+    conditions:
+      operator: AND
+      requirements:
+        - type: progress
+          objective: "quests"
+          value: 3
+    lock_message: "&cYou need at least 3 quests completed."
+    left_click_commands:
+      - "[message] &aQuest progress check passed!"
+
+  # ---- Slot 23: requirement type — block (reusable group) ------------
+  req_block_ref:
+    slot: 23
+    material: EMERALD
+    display_name: "&2&l12. type: block (VIP)"
+    lore:
+      - "&7Reuses the named block 'vip_only' defined"
+      - "&7at the top of this file."
+      - ""
+      - "&7Need miaomenu.vip permission to unlock."
+    conditions:
+      operator: AND
+      requirements:
+        - type: block
+          block: "vip_only"
+    left_click_commands:
+      - "[message] &2VIP-only feature unlocked!"
+
+  # ---- Slot 28: legacy item_conditions (back-compat) -----------------
+  legacy_conditions:
+    slot: 28
+    material: BOOK
+    display_name: "&8&l13. legacy item_conditions"
+    lore:
+      - "&7Old (pre-conditions) syntax — implicitly AND."
+      - "&7Kept for backwards compatibility with old menus."
+    item_conditions:
+      - type: permission
+        permission: "dgeysermenu.use"
+    lock_message: "&cLegacy item_conditions failed."
+    left_click_commands:
+      - "[message] &8Legacy syntax still works."
+
+  # ---- Slot 29: CraftEngine custom item ------------------------------
+  craftengine_item:
+    slot: 29
+    # material prefix → ItemResolver delegates to CraftEngine's API.
+    # If CraftEngine is not installed, the fallback material from
+    # config.yml settings.item-resolver.fallback-material kicks in.
+    material: "craftengine:default:example_item"
+    display_name: "&5&l14. material: craftengine:..."
+    lore:
+      - "&7Demonstrates the CraftEngine integration."
+      - "&7Falls back to a stone if CraftEngine is missing."
+    left_click_commands:
+      - "[message] &5CraftEngine demo clicked."
+
+  # ---- Slot 30: ItemsAdder custom item -------------------------------
+  itemsadder_item:
+    slot: 30
+    material: "itemsadder:default:example_item"
+    display_name: "&6&l15. material: itemsadder:..."
+    lore:
+      - "&7Demonstrates the ItemsAdder integration."
+    left_click_commands:
+      - "[message] &6ItemsAdder demo clicked."
+
+  # ---- Slot 31: MMOItems custom item ---------------------------------
+  mmoitems_item:
+    slot: 31
+    material: "mmoitems:SWORD:CUTLASS"
+    display_name: "&c&l16. material: mmoitems:..."
+    lore:
+      - "&7Demonstrates the MMOItems integration."
+    left_click_commands:
+      - "[message] &cMMOItems demo clicked."
+
+  # ---- Slot 32: HeadDatabase head ------------------------------------
+  headdb_item:
+    slot: 32
+    material: "headdb:1234"
+    display_name: "&e&l17. material: headdb:..."
+    lore:
+      - "&7Loads head id 1234 from HeadDatabase."
+    left_click_commands:
+      - "[message] &eHeadDatabase demo clicked."
+
+  # ---- Slot 33: Base64 player head -----------------------------------
+  base64_head:
+    slot: 33
+    # Truncated example — replace with the real base64 texture string
+    # from minecraft-heads.com or your own resource pack.
+    material: "base64head:e30="
+    display_name: "&7&l18. material: base64head:..."
+    lore:
+      - "&7Custom player head from a base64 texture URL hash."
+    left_click_commands:
+      - "[message] &7Base64 head demo clicked."
+
+  # ---- Slot 37: open another menu via [menu] -------------------------
+  open_other_menu:
+    slot: 37
+    material: ENDER_PEARL
+    display_name: "&9&l19. action [menu]"
+    lore:
+      - "&7Use [menu] <name> to chain into another menu"
+      - "&7without going through a slash command."
+      - ""
+      - "&7Here it re-opens the bundled 'server-selector' demo."
+    left_click_commands:
+      - "[menu] server-selector"
+
+  # ---- Slot 38: cross-server proxy command (BungeeCord/Velocity) -----
+  proxy_send:
+    slot: 38
+    material: COMPASS
+    display_name: "&b&l20. [player] server <name>"
+    lore:
+      - "&7With Velocity / BungeeCord enabled in config.yml,"
+      - "&7[player] server <name> routes through the proxy."
+      - ""
+      - "&7Without a proxy, the player just runs '/server' locally."
+    left_click_commands:
+      - "[player] server lobby"
+      - "[message] &bConnecting to lobby..."
+      - "[close]"
+
+  # ---- Slot 40: information / decorative -----------------------------
+  info:
+    slot: 40
+    material: KNOWLEDGE_BOOK
+    display_name: "&f&lMiaoMenu_fork — Showcase"
+    lore:
+      - "&7This menu lists every feature the plugin"
+      - "&7supports. Edit me freely — &fplugins/MiaoMenu_fork/java_menus/test.yml"
+      - ""
+      - "&7Commands:"
+      - "&f · /dgm help &7— full command list"
+      - "&f · /dgm help <sub> &7— deep-dive a command"
+      - "&f · /dgm lang <code> &7— switch language live"
+      - "&f · /dgm about &7— version + GitHub + Modrinth"
+
+  # ---- Slot 49: close button (always present) ------------------------
   close:
     slot: 49
     material: BARRIER
-    display_name: "&c&l关闭菜单"
+    display_name: "&c&lClose"
     lore:
-      - "&7点击关闭此菜单"
+      - "&7Closes this menu."
     left_click_commands:
       - "[close]"
