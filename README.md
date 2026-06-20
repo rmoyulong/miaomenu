@@ -2,6 +2,7 @@
 
 繁體中文（台灣） · 其他語言：[English](./docs/README-en.md) · 商店文案：[Store Listing](./docs/store-listing.md)
 
+> 📦 下載 / Modrinth：<https://modrinth.com/plugin/miaomenu_fork>
 > Fork：<https://github.com/Avery11111101/MiaoMenu_fork>
 > 原作：<https://github.com/Yamada0001/MiaoMenu>
 >

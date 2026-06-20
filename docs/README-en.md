@@ -2,8 +2,9 @@
 
 # MiaoMenu_fork — Dual-platform Menu Plugin (Fork)
 
-> Fork:           https://github.com/Avery11111101/MiaoMenu_fork
-> Original / 原作: https://github.com/Yamada0001/MiaoMenu
+> 📦 Download / Modrinth: https://modrinth.com/plugin/miaomenu_fork
+> Fork:                  https://github.com/Avery11111101/MiaoMenu_fork
+> Original / 原作:        https://github.com/Yamada0001/MiaoMenu
 >
 > A lightweight menu plugin for Paper / Folia / Geyser **26.1.2** (with 26.2 alpha compatibility), serving both Java and Bedrock players natively. Ships with `en` (default) and `zh_TW` locales.
 
