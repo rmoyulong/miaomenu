@@ -113,3 +113,18 @@ MiaoMenu_fork 是 MiaoMenu 的分支版，鎖定 Minecraft Java 26.1.2（含 26.
 **未動**：javamenu/、menu/action/（除了 CmdAction）、security/、proxy/ — 核心業務邏輯不動。
 
 **收斂分支**：完成後把 `feat/i18n-26.1.2-fork` 合進 `main`，本地與 GitHub 只剩 `main` 分支，避免 fork 內亂枝。
+
+### 2026-06-20 — README 全面對齊 v0.2（文件一致性同步）
+
+**動機**：Avery 要求「把所有 README 更新到符合目前的專案」。v0.2 已合進 main 並 build 過 `MiaoMenu_fork-0.2.jar`，但 README.md 內仍有 3 處寫 `0.1`、`docs/README-en.md` 與 `docs/README-zh.md` 還是原作 DGeyserMenuFlux 留下來的舊內容（簡中、未提 Fork、未提 v0.2 變更），存在「README 版本/品牌與 jar 不對齊」的問題。
+
+**改動範圍**：
+
+| 檔案 | 行為 |
+|------|------|
+| `README.md` | 三處 `0.1` → `0.2`（無痛轉移段的 jar 檔名、目前版本標示、`mvn package` 產物說明）；首行「英文 README 仍在翻譯」改成「其他語言：English / 简体中文」雙連結 |
+| `docs/README-en.md` | 整檔重寫：原本是 DGeyserMenuFlux 0.x 的舊英文 README，改成 MiaoMenu_fork 0.2 的精簡英文 README（Highlights、Backward Compatibility、Quick Start、Java/Bedrock 範例、i18n、Build、Changelog 0.2/0.1） |
+| `docs/README-zh.md` | 整檔重寫：原本是 DGeyserMenuFlux 0.x 的舊簡中 README，改成 MiaoMenu_fork 0.2 的簡中 README，並在頂端提示「繁中完整版見根目錄 README.md」 |
+| `README.AI.md` | 追加本次軌跡 |
+
+**未動**：原始碼、`pom.xml`、`plugin.yml`、`config.yml`、`lang/*.yml`、`java_menus/*.yml`、`bedrock_menus/*.yml` — 純文件層級的同步，不影響執行行為。

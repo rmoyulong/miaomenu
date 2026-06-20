@@ -1,6 +1,6 @@
 # MiaoMenu_fork / 喵喵選單插件（Fork 版）
 
-繁體中文（台灣） · 英文 README 仍在翻譯，暫可參考 `docs/README-en.md`（為原版 DGeyserMenuFlux 版本，與本 Fork 部分不同）
+繁體中文（台灣） · 其他語言：[English](./docs/README-en.md) · [简体中文](./docs/README-zh.md)
 
 > Fork：<https://github.com/Avery11111101/MiaoMenu_fork>
 > 原作：<https://github.com/Yamada0001/MiaoMenu>
@@ -20,7 +20,7 @@ Fork 版重點放在 **不改使用者操作習慣**：
 
 ### 無痛轉移（自動匯入舊資料夾）
 
-把 `MiaoMenu_fork-0.1.jar` 直接丟到 `plugins/`，啟動時插件會自動偵測下列舊版資料夾並整批匯入到 `plugins/MiaoMenu_fork/`：
+把 `MiaoMenu_fork-0.2.jar` 直接丟到 `plugins/`，啟動時插件會自動偵測下列舊版資料夾並整批匯入到 `plugins/MiaoMenu_fork/`：
 
 1. `plugins/dmenu/`
 2. `plugins/DGeyserMenu/`
@@ -40,7 +40,7 @@ MiaoMenu_fork 是一款雙端選單插件：
 - 內建選單時鐘、範例選單與權限控制
 - 訊息抽出為獨立 `lang/<language>.yml`，繁中／英文可即時切換
 
-目前版本：`0.1`（Fork 版重新起算；原作為 [Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) 2.7.7.9）
+目前版本：`0.2`（Fork 版重新起算；原作為 [Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) 2.7.7.9）
 
 ## 介面預覽
 
@@ -576,7 +576,7 @@ mvn test
 mvn package
 ```
 
-預設產物 `MiaoMenu_fork-0.1.jar` 會生成在 `target/` 目錄下。
+預設產物 `MiaoMenu_fork-0.2.jar` 會生成在 `target/` 目錄下。
 
 ## 常見問題
 

@@ -1,352 +1,189 @@
-[English](./README-en.md) | [中文](../zh/README-zh.md)
+[English](./README-en.md) | [繁體中文](../README.md) | [简体中文](./README-zh.md)
 
-# 🌟 DGeyserMenuFlux - 跨时代的多版本菜单插件
+# MiaoMenu_fork — 喵喵菜单插件分支版
 
-> 🚀 **一款革命性的 Minecraft 菜单插件，完美支持 Java 版与基岩版玩家**
+> Fork:           https://github.com/Avery11111101/MiaoMenu_fork
+> 原作 / Original: https://github.com/Yamada0001/MiaoMenu
+>
+> 面向 Paper / Folia / Geyser **26.1.2**（亦兼容 26.2 alpha）的轻量级菜单插件，同时为 Java 版与基岩版玩家提供原生交互体验，内置 `en` 英文（默认）与 `zh_TW` 繁体中文双语切换。
 
----
+**当前版本**：`0.2`（Fork 版重新起算；原作为 2.7.7.9）
 
-## ✨ 核心特性
-
-### 🎯 **划时代的多版本支持**
-- **Java 版**：原生箱子菜单，完美兼容传统操作习惯
-- **基岩版**：原生表单界面，为移动设备优化体验
-- **智能识别**：自动检测玩家版本，展示对应菜单
-
-### ⚡ **极致性能与体验**
-- **轻量化设计**：仅核心功能，零性能负担
-- **热重载配置**：修改配置即时生效，无需重启服务器
-- **超大容量**：支持最多 6 行（54格）Java菜单
-- **无缝迁移**：完美兼容 DeluxeMenus 配置格式
-
-### 🛠 **开发者友好**
-- **PAPI 支持**：全面支持 PlaceholderAPI 变量
-- **新手友好**：简单配置，快速上手
-- **丰富示例**：提供完整可用的示例菜单
-
-### 🎁 **智能物品系统**
-- **自动钟表管理**：自动检测背包中的菜单钟表，缺失时自动补充
-- **死亡保护**：钟表不会因玩家死亡而丢失
-- **唯一标识**：通过NBT标签确保钟表唯一性
-- **便捷操作**：右键钟表即可快速打开主菜单
+> 想看繁体中文完整说明，请到仓库根目录的 `README.md`。本文件只列重点。
 
 ---
 
-## 🚀 快速开始
+## 亮点
+
+- **双端原生菜单**：Java 玩家看到熟悉的箱子选单，基岩玩家看到 Floodgate 原生表单；插件内部自动分流。
+- **i18n 多语系**：所有可见文字搬到 `lang/<language>.yml`，加新语系直接丢一个文件就行。
+- **无痛迁移**：首次启动会自动从 `plugins/dmenu/`、`plugins/DGeyserMenu/`、`plugins/dgeysermenu/`、`plugins/MiaoMenu/` 整批匯入到 `plugins/MiaoMenu_fork/`，旧文件夹原封不动。
+- **热重载**：菜单 YAML 与 `lang/` 文件即时生效。
+- **跨服指令**：菜单按钮可直接发出 Velocity / BungeeCord 风格的 `server <name>` 跳转。
+- **PlaceholderAPI**：标题、lore、条件判断都支持占位符。
+- **条件系统**：选单级 `view_requirement`、物品级 `conditions`、可重用 `requirement_blocks`、`deny_message` / `fallback_menu` / `lock_message`。
+- **选单时钟**：加入服务器自动给予、死亡保护、右键开启默认选单。
+- **多来源物品**：CraftEngine / ItemsAdder / MMOItems / HeadDB / Base64 头颅，并附备援材质。
+
+---
+
+## 向后兼容声明
+
+Fork 版重点放在 **不改使用者操作习惯**：
+
+- 主指令 `/dgeysermenu`、`/dgm`、`/fluxmenu` 全数保留，**额外新增** `/mmf` 别名。
+- 子指令 `open / reload / help`、`/getmenuclock` 全数保留。
+- 权限节点 `dgeysermenu.*`、`dgeysermenu.use`、`dgeysermenu.admin`、`dgeysermenu.reload` 全数保留。
+- `config.yml`、`java_menus/*.yml`、`bedrock_menus/*.yml` 键名与结构保留，原本的配置文件可以直接带过来。
+
+唯一新增的设定是 `language: en|zh_TW`（默认 `en`），并把 `config.yml` 内原本的 `messages:` 区块搬到 `lang/<language>.yml`。
+
+---
+
+## 快速上手
+
+### 环境需求
+- Java 21
+- Paper / Folia **26.1.2**（也兼容 26.2 alpha）
+- （可选）Floodgate 2.2.5+ 与 Geyser 2.10.x（基岩玩家用）
+- （可选）PlaceholderAPI（占位符）
+- （可选）Velocity / BungeeCord 代理（跨服跳转）
 
 ### 安装步骤
-1. 将插件放入 `plugins` 文件夹
-2. 重启服务器
-3. 在 `plugins/DGeyserMenuFlux/` 查看生成的示例菜单
-4. 根据需要修改配置
+1. 把 `MiaoMenu_fork-0.2.jar` 丢进 `plugins/`。
+2. 启动服务器，自动生成 `config.yml`、`lang/en.yml`、`lang/zh_TW.yml` 与示例选单。
+3. （迁移情境）首次启动会从旧版插件文件夹自动匯入数据。
+4. 修改 `config.yml` 中的 `language: en` / `zh_TW`，或编辑 `java_menus/`、`bedrock_menus/` 内的 YAML。
+5. 执行 `/dgm reload` 即可生效。
 
-### 🕰️ 智能钟表系统
-插件会自动为每位玩家提供**菜单钟表**：
-- ✅ **自动检测**：登录时检查背包，缺失则自动补充
-- ✅ **死亡保护**：死亡不会掉落，重生后自动恢复
-- ✅ **快速访问**：右键钟表立即打开主菜单
-- ✅ **权限控制**：仅限拥有 `dgeysermenu.use` 权限的玩家
-
-**管理员命令**：
-```bash
-/getmenuclock  # 手动获取菜单钟表
-
-
-### 📋 基础命令
-```bash
-# 打开指定菜单
-/dgeysermenu open <菜单名称>
-
-# 重载插件配置
-/dgeysermenu reload [all|java|bedrock]
-
-# 查看可用菜单
-/dgeysermenu list
-
-# 获取菜单钟表（管理员）
-/getmenuclock
+### 指令一览
+```text
+/dgeysermenu open <menu>
+/dgeysermenu reload
+/dgeysermenu help
+/dgm open <menu>            # 短别名
+/fluxmenu open <menu>       # 旧别名
+/mmf open <menu>            # Fork 新别名
+/getmenuclock               # 管理员：取得选单时钟
 ```
 
-### 📋 简短命令
-```bash
-# 打开指定菜单
-/dgm open <菜单名称>
-
-# 重载插件配置
-/dgm reload [all|java|bedrock]
-
-# 查看可用菜单
-/dgm list
-```
-
-### 🔐 权限节点
-```yaml
-# 基础使用权限
-dgeysermenu.use
-
-# 管理员权限
-dgeysermenu.admin
-
-# 特定菜单权限
-dgeysermenu.menu.<菜单名称>
-
-# 重载权限
-dgeysermenu.reload
-```
+### 权限
+- `dgeysermenu.use` — 开启选单（默认所有人）
+- `dgeysermenu.admin` — 管理功能与 `/getmenuclock`（默认 op）
+- `dgeysermenu.reload` — `/dgm reload`（默认 op）
+- `dgeysermenu.*` — 以上全部
 
 ---
 
-## 📖 配置详解
+## Java 选单示例（`java_menus/test.yml`）
 
-### Java 版菜单配置 (java_menus/)
 ```yaml
-# 基础设置
-menu_title: "&6&l主菜单"  # 菜单标题（支持颜色代码）
-rows: 6                   # 菜单行数（1-6）
-
-# 物品配置示例
+menu_title: "&6&lMain Menu &7| &fServer Name"
+rows: 6
+view_requirement:
+  deny_message: "&cYou cannot open this menu yet."
+  fallback_menu: "test"
+  requirements:
+    - type: permission
+      permission: dgeysermenu.use
 items:
-  info_item:              # 物品唯一ID
-    slot: 11              # 槽位（0-53）或范围 "0-8"
-    material: PAPER       # 材质名称
-    display_name: "&e&l信息"  # 显示名称
-    lore:                 # 描述文本
-      - "&7点击查看服务器信息"
-      - "&f在线: &a%server_online%"
-  
-    # 命令配置
-    left_click_commands:  # 左键点击命令
-      - "[message] &a欢迎使用菜单!"
-      - "[player] spawn"
-    right_click_commands: # 右键点击命令
+  server_info:
+    slot: 10
+    material: KNOWLEDGE_BOOK
+    display_name: "&e&lServer Info"
+    lore:
+      - "&7Click to view server information"
+      - "&fOnline Players: &a%server_online%&f/&a%server_max_players%"
+    left_click_commands:
+      - "[message] &6=== Server Info ==="
+      - "[player] list"
       - "[close]"
 ```
 
-### 基岩版菜单配置 (bedrock_menus/)
+`material` 支持：原版材质（搭配 `custom_model_data`）、`craftengine:ns:id`、`itemsadder:ns:id`、`mmoitems:type:id`、`headdb:id`、`base64head:<b64>`。
+
+---
+
+## 基岩选单示例（`bedrock_menus/test.yml`）
+
 ```yaml
 menu:
-  title: "主菜单"         # 表单标题
-  subtitle: "欢迎使用"     # 副标题
-  footer: "服务器名称"     # 页脚文本
-
+  title: "§6§lMain Menu"
+  subtitle: "§7Welcome to the server!"
+  footer: "§8Server version 26.1.x"
   items:
-    - text: "服务器信息"    # 按钮文本
-      icon: "textures/items/paper"  # 图标路径
-      icon_type: "path"    # 图标类型 (path/url)
-      command: "dgeysermenu open info"  # 执行命令
-      execute_as: "player" # 执行身份 (player/console)
-```
-
-```yaml
-# 配置示例 - config.yml
-settings:
-  menu-clock:
-    enabled: true           # 启用钟表系统
-    auto-give: true         # 自动给予
-    death-protection: true  # 死亡保护
-```
-
----
-
-## 🎨 示例菜单详解
-
-### 🏠 主菜单配置分析
-
-#### Java 版主菜单 (main.yml)
-```yaml
-menu_title: "&6&l主菜单 &7| &f服务器名称"
-rows: 6
-
-items:
-  # 服务器信息区域
-  server_info:
-    slot: 10
-    material: KNOWLEDGE_BOOK        # 知识书材质，象征信息
-    display_name: "&e&l服务器信息"    # 黄色突出显示
-    lore:                           # 动态显示服务器数据
-      - "&7点击查看服务器信息"
-      - ""
-      - "&f在线玩家: &a%server_online%&f/&a%server_max_players%"
-      - "&fTPS: &a%server_tps%"
-    left_click_commands:
-      - "[message] &6=== 服务器信息 ==="
-      - "[message] &f在线玩家: &a%server_online%&f/&a%server_max_players%"
-
-  # 传送功能
-  teleport_spawn:
-    slot: 12
-    material: COMPASS               # 指南针材质，象征导航
-    display_name: "&a&l传送回城"     # 绿色表示安全传送
-    lore:
-      - "&7点击传送至主城"
-      - ""
-      - "&f立即传送至安全的主城区域"
-    left_click_commands:
-      - "[player] spawn"            # 执行传送命令
-      - "[message] &a已传送至主城!"  # 反馈信息
-
-  # 装饰边框系统
-  border_top:
-    slot: 0-8                      # 范围槽位，顶部边框
-    material: BLACK_STAINED_GLASS_PANE  # 黑色染色玻璃板
-    display_name: " "               # 空名称，纯装饰
-```
-
-#### 基岩版主菜单 (bedrock_main.yml)
-```yaml
-menu:
-  title: "§6§l主菜单"
-  subtitle: "§7欢迎来到服务器!"
-  footer: "§8服务器版本 1.21.x"
-
-  items:
-    - text: "§e§l服务器信息\n§7点击查看服务器状态"
-      icon: "textures/items/book_enchanted"  # 附魔书图标
+    - text: "§a§lTeleport\n§7Quickly travel to different locations"
+      icon: "textures/items/compass_item"
       icon_type: "path"
-      command: "dgeysermenu open info"
-    
-    - text: "§a§l传送功能\n§7快速传送至各个地点"
-      icon: "textures/items/compass_item"    # 指南针图标
-      icon_type: "path"
-      command: "dgeysermenu open warps"
+      command: "warp"
+      execute_as: "player"
+view_requirement:
+  deny_message: "&cYou cannot open the Bedrock main menu right now."
+  fallback_menu: "test"
+  requirements:
+    - type: permission
+      permission: dgeysermenu.use
 ```
 
 ---
 
-## 🔄 从 DeluxeMenus 迁移
+## 多语系
 
-### 配置对比表
-| DeluxeMenus | DGeyserMenuFlux | 说明 |
-|-------------|-----------------|------|
-| `menu_title` | `menu_title` | 完全兼容 |
-| `rows` | `rows` | 完全兼容 |
-| `items.<id>.slot` | `items.<id>.slot` | 完全兼容 |
-| `items.<id>.material` | `items.<id>.material` | 完全兼容 |
-| `items.<id>.display_name` | `items.<id>.display_name` | 完全兼容 |
-| `items.<id>.lore` | `items.<id>.lore` | 完全兼容 |
-| `items.<id>.left_click_commands` | `items.<id>.left_click_commands` | 完全兼容 |
-| `items.<id>.right_click_commands` | `items.<id>.right_click_commands` | 完全兼容 |
-
-### 📊 特性对比表
-
-| 特性 | DGeyserMenuFlux | 传统菜单插件 |
-|------|-----------------|--------------|
-| 自动物品管理 | ✅ 智能钟表系统 | ❌ 手动发放 |
-| 热重载支持 | ✅ 即时生效 | ⚠️ 需要重载 |
-| 多版本原生支持 | ✅ Java+基岩版 | ❌ 仅单版本 |
-| 迁移便利性 | ✅ 完美兼容 | ❌ 重新配置 |
-| 性能表现 | ✅ 轻量高效 | ⚠️ 资源消耗大 |
-
-
-### 迁移步骤
-1. **复制配置文件**：将 DeluxeMenus 的 YAML 文件复制到 `java_menus/` 文件夹
-2. **调整路径**：确保文件路径正确
-3. **测试功能**：使用 `/dgeysermenu open <菜单名>` 测试
-4. **基岩版适配**：根据需要创建对应的基岩版菜单
-
-### 迁移示例
-**DeluxeMenus 配置**：
 ```yaml
-menu-title: "&c主菜单"
-menu-rows: 3
-items:
-  test_item:
-    slot: 13
-    material: DIAMOND
-    display-name: "&b测试物品"
-    left-click-commands:
-      - "[player] say 测试命令"
+# config.yml
+language: en      # 或 zh_TW，或任何符合 lang/<code>.yml 的代号
 ```
 
-**DGeyserMenuFlux 配置**：
-```yaml
-menu_title: "&c主菜单"
-rows: 3
-items:
-  test_item:
-    slot: 13
-    material: DIAMOND
-    display_name: "&b测试物品"
-    left_click_commands:
-      - "[player] say 测试命令"
-```
+- 内建语系：`en`（默认）、`zh_TW`（繁体中文）。
+- 自订语系：在 `plugins/MiaoMenu_fork/lang/` 内新增 `<code>.yml`。
+- 缺少的键会自动 fallback 到 jar 内 `lang/en.yml`，不会出现空讯息。
+- 热重载会自动监听 `lang/`，不用每次 `/dgm reload`。
 
 ---
 
-## 💡 高级技巧
-
-### PAPI 变量使用
-```yaml
-items:
-  player_stats:
-    slot: 22
-    material: PLAYER_HEAD
-    display_name: "&b%player_name%"
-    lore:
-      - "&f等级: &e%player_level%"
-      - "&f金钱: &6%vault_eco_balance%"
-      - "&f在线: &b%player_time_hours%小时"
-```
-
-### 条件命令执行
-```yaml
-left_click_commands:
-  - "[message] &6=== 条件测试 ==="
-  - "[console] effect give %player_name% speed 30 1"
-  - "[message] &a已获得速度效果!"
-```
-
-### 嵌套菜单系统
-```yaml
-left_click_commands:
-  - "[menu] shop"          # 打开商店菜单
-  - "[message] &2欢迎光临商店!"
-```
-
----
-
-## 🛠 故障排除
-
-### 常见问题
-**Q: 菜单无法打开**
-- ✅ 检查权限设置 `dgeysermenu.use`
-- ✅ 确认菜单文件在正确的文件夹
-- ✅ 检查 YAML 语法是否正确
-
-**Q: 命令不执行**
-- ✅ 确认命令格式正确
-- ✅ 检查玩家是否有执行命令的权限
-- ✅ 查看控制台错误信息
-
-**Q: 基岩版玩家看不到菜单**
-- ✅ 确认 Floodgate 正确安装
-- ✅ 检查基岩版菜单配置路径
-
-**Q: PAPI 变量不显示**
-- ✅ 确认 PlaceholderAPI 已安装
-- ✅ 检查变量名称拼写正确
-
-### 调试模式
-在 `config.yml` 中启用调试模式：
-```yaml
-settings:
-  debug: true
-  hot-reload:
-    enabled: true
-```
-
-## 🎉 开始使用
-
-立即下载 DGeyserMenuFlux，为您的服务器带来革命性的菜单体验！
+## 建置
 
 ```bash
-# 快速命令测试
-/dgeysermenu open main
-/getmenuclock
-/dgeysermenu reload
+mvn package
 ```
 
-**🎯 完美支持多版本，极致性能体验，让每个玩家都享受最佳交互！**
+产物：`target/MiaoMenu_fork-0.2.jar`。
 
 ---
-*⭐ 如果这个插件对您有帮助，请给我们一个 Star！*
+
+## 更新日志
+
+### `0.2`（2026-06-20，稳定性与迁移）
+
+- **无痛转移**：新增 `LegacyDataMigrator`，首次启动自动从旧版插件文件夹匯入数据。
+- **修复**：没装 Floodgate 时插件启动失败 — `BedrockMenuManager` 改为 lazy 反射初始化。
+- **修复**：`/getmenuclock` 指令未挂载 — 补上 executor、权限与 Player 检查。
+- **修复**：`MENU_VERSION` 常数 3 → 6，不再每次启动覆写使用者 `test.yml`。
+- **修复 (Folia)**：玩家死亡会喷钟 — `PlayerLifecycleListener_Folia` 补上 `onDeath`。
+- **修复**：基岩选单 `requirement_blocks` 共享条件失效 — 改传真实 blocks map。
+- **安全**：`CmdAction` 接入 `InputValidator.isSafeCommandContent`，注入内容直接拒绝。
+- **体验**：时钟右键不再双手双触发。
+- **plugin.yml**：`softdepend` 大小写修正（`Floodgate` → `floodgate`）。
+- **多语系**：`menu.locked-tag` 抽出，基岩鎖定按钮的「[未解锁]」标签改由 lang 控制。
+
+### `0.1`（2026-06-20，Fork 起点）
+
+- 跟上 MC 26.x：`paper-api` → 26.1.2.build.72-stable、`folia-api` → 26.1.2.build.8-stable。
+- 升级 `floodgate` 2.2.0 → 2.2.5-SNAPSHOT；新增 `geyser` 2.10.1-SNAPSHOT 软相依。
+- `plugin.yml` 的 `api-version` 改为 `'26.1'`。
+- 多语系拆分：`config.yml` 内 `messages:` 区块抽出为 `lang/<language>.yml`，内建 `en`（默认）与 `zh_TW`。
+- `Lang.load()` 查询顺序：`lang/<language>.yml` → `lang/en.yml` fallback → `config.yml`（向后兼容）。
+- 热重载延伸：监听 `lang/`，编辑语系档即时生效。
+- 指令别名新增 `/mmf`，不影响原本 `/dgm`、`/fluxmenu`、`/dgeysermenu`。
+- 改名 `MiaoMenu_fork`：jar 与插件文件夹改名；指令、权限节点、配置键名「完全没动」。
+
+---
+
+## 鸣谢
+
+- 原作：[Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) — 没有原版就没有这个 Fork。
+- 多语系架构灵感：[Avery11111101/AFly](https://github.com/Avery11111101/AFly)。
+
+## License
+
+详见仓库根目录的 `LICENSE`。
