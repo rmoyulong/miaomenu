@@ -1,11 +1,22 @@
 # MiaoMenu_fork / 喵喵選單插件（Fork 版）
 
-[English](./README_en_us.md) | 繁體中文
+繁體中文（台灣） · 英文 README 仍在翻譯，暫可參考 `docs/README-en.md`（為原版 DGeyserMenuFlux 版本，與本 Fork 部分不同）
 
 > Fork：<https://github.com/Avery11111101/MiaoMenu_fork>
 > 原作：<https://github.com/Yamada0001/MiaoMenu>
 >
 > 面向 Paper / Folia / Geyser **26.1.2**（亦相容 26.2 alpha）的輕量級選單插件，同時為 Java 版與基岩版玩家提供原生互動體驗，內建 `en` 英文（預設）與 `zh_TW` 繁體中文雙語切換。
+
+## 向後相容聲明（從原版 MiaoMenu 升級必看）
+
+Fork 版重點放在 **不改使用者操作習慣**：
+
+- 主指令 `/dgeysermenu`、`/dgm`、`/fluxmenu` 全數保留，**額外新增** `/mmf` 別名
+- 子指令 `open / reload / help`、`/getmenuclock` 全數保留
+- 權限節點 `dgeysermenu.*`、`dgeysermenu.use`、`dgeysermenu.admin`、`dgeysermenu.reload` 全數保留
+- `config.yml`、`java_menus/*.yml`、`bedrock_menus/*.yml` 鍵名與結構保留，原本的設定檔可直接帶過來
+
+唯一新增的設定是 `language: en|zh_TW`（缺省即 `en`），並把 `config.yml` 內原本的 `messages:` 區塊搬到 `lang/<language>.yml`。若你升級時保留原 `config.yml`，插件啟動會偵測 `config-version` 自動補上新鍵，不會壞掉舊設定。
 
 ## 專案概覽
 
@@ -605,6 +616,22 @@ MiaoMenu_fork 適合以下伺服器：
 - 希望結合 PlaceholderAPI 顯示動態資料
 - 希望以低維護成本實作條件選單系統
 - 需要英文／繁中雙語介面
+
+## 更新日誌
+
+### `0.1`（2026-06-20，Fork 起點）
+
+- 跟上 MC 26.x：`paper-api` 1.21.11 → **26.1.2.build.72-stable**、`folia-api` → 26.1.2.build.8-stable
+- 升級 `floodgate` 2.2.0 → 2.2.5-SNAPSHOT、新增 `geyser` 2.10.1-SNAPSHOT 軟相依
+- `plugin.yml` 的 `api-version` 由 `1.21` 改為 `'26.1'`
+- 多語系拆分：原 `config.yml` 內 `messages:` 區塊抽出為 `lang/<language>.yml`，內建 `en`（預設）與 `zh_TW`
+- `Lang.load()` 查詢順序：`lang/<language>.yml` → `lang/en.yml` fallback → `config.yml`（向後相容舊用法）
+- 熱重載延伸：`HotReloadManager` 監聽 `lang/` 目錄，編輯語系檔即時生效
+- 指令別名新增 `/mmf`，不影響原本 `/dgm`、`/fluxmenu`、`/dgeysermenu`
+- 改名 `MiaoMenu_fork`：jar 與外掛資料夾改名為 `MiaoMenu_fork`；原本指令、權限節點、設定鍵名「完全沒動」
+- 中文行文重整：README、設定檔 header、lang 訊息一律改稱「插件」，去掉重複的「（台灣）」尾綴
+
+> 想要看每次變更的「為什麼這樣做」與檔案級別差異，請看 `README.AI.md`。
 
 ## 鳴謝
 

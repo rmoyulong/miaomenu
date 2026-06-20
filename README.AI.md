@@ -48,3 +48,32 @@ MiaoMenu_fork 是 MiaoMenu 的分支版，鎖定 Minecraft Java 26.1.2（含 26.
 **已知測試問題**：`RequirementServiceTest` 用 Mockito `mock(MiaoMenu.class)` 但 `MiaoMenu` 是 `final class`，Paper 26 把 `JavaPlugin` 鎖成 sealed → Mockito 無法 inline mock。此為**升版前就存在**的測試端問題，與本次無關。後續可考慮把 MiaoMenu 改成 non-final 或在測試端改用真實 JavaPlugin instance + InstantiatorService。
 
 **未動**：`bedrockmenu/`、`javamenu/`、`menu/`、`commands/impl/` 內的業務邏輯、範例 `java_menus/test.yml`、`bedrock_menus/test.yml`、`security/`、`proxy/`。
+
+### 2026-06-20 — 多代理迴圈修補（README 邏輯優化 + 程式碼小修）
+
+- **動機**：Avery 要求站在他的角度優化 README、修掉相關問題，但鐵則是「**使用者操作零變動、檔案不需重新設定**」。整個任務以「總代理發現 → 獨立子代理驗證 → 修補 → 再開不同子代理驗證」的迴圈推進，連續兩輪驗證代理都判 clean 才收尾，並透過 Discord webhook 每輪同步進度（共 4 輪 webhook）。
+- **背景考量**：
+  - Fork 化後語系系統重整，但有些「漏抽」的鍵與硬編碼簡中字串還在程式裡
+  - 用 Explore 子代理掃描 + 第二個 Explore 子代理交叉驗證，避免單一代理幻覺
+  - 處理代理與驗證代理嚴格分離，每輪換新代理避免上下文殘留
+- **改動範圍**：
+
+| 檔案 | 行為 |
+|------|------|
+| `README.md` | 首行壞掉的 `./README_en_us.md` 連結改為說明（英文版尚未翻譯，可參考舊 `docs/README-en.md`）；最前面新增「向後相容聲明」段，明列保留的指令／別名／權限／設定鍵；最後新增「更新日誌」段，把 `0.1` 的關鍵變更條列在 README 內供使用者快速掃讀 |
+| `src/main/java/com/fluxcraft/MiaoMenu/commands/CommandManager.java` | `loadHelpDescriptions()` 原本讀 `config.yml` 的 `messages.descriptions`（已不存在），會讓 `/dgm help` 印空白；改為優先呼叫 `Lang.get("descriptions.<name>")` 取 lang 檔內容，再退回 `config.yml messages.descriptions` 保持向後相容 |
+| `src/main/java/com/fluxcraft/MiaoMenu/commands/impl/HelpCommand.java` | 把 `Lang.get("message.help.header")` / `Lang.get("message.help.usage")` 改成正確的 `help.header` / `help.usage`（原寫法會直接印 raw key 給玩家） |
+| `src/main/java/com/fluxcraft/MiaoMenu/commands/impl/OpenCommand.java` | 把 `Lang.get("message.usage-open")` 改成正確的 `command.usage-open`（同樣原本會印 raw key） |
+| `src/main/java/com/fluxcraft/MiaoMenu/bedrockmenu/BedrockMenuManager.java` | `handleFormResponse()` 把 `(int) ... invoke(...)` 拆箱改為 `instanceof Integer` 檢查，避免玩家關閉表單或反射回 null 時 NPE；同時 `FloodgateReflectionAccess` 改為 lazy（double-checked locking），純 Java 伺服器啟動不再因 Floodgate 缺席炸掉；`isLocked` 由 `Collections.emptyMap()` 改傳 `menu.getRequirementBlocks()` 修復 requirement_blocks 引用 |
+| `src/main/java/com/fluxcraft/MiaoMenu/bedrockmenu/BedrockMenu.java` | 硬編碼簡中 `"§8[未解锁] §7"` 改用 `Lang.get("menu.locked-tag") + " §7"` |
+| `src/main/java/com/fluxcraft/MiaoMenu/javamenu/JavaMenu.java` | 硬編碼簡中 `" &8[未解锁]"` 改用 `" " + Lang.get("menu.locked-tag")` |
+| `src/main/java/com/fluxcraft/MiaoMenu/managers/HotReloadManager.java` | 執行緒名 `"MiaoMenu-HotReload-Thread"` → `"MiaoMenu_fork-HotReload-Thread"`，跟 Fork 改名一致 |
+| `src/main/java/com/fluxcraft/MiaoMenu/utils/Lang.java` | `load()` 對 `YamlConfiguration.loadConfiguration` 加 try-catch（YAML 解析失敗時保留前次成功的 `messages`，不再靜默失效）；對 jar 內預設 `lang/en.yml` 載入也加 try-catch；成功載入時 info log；找不到鍵時的 fallback 鏈不變 |
+| `src/main/resources/lang/en.yml` | `menu:` 區塊新增 `locked-tag: "&8[Locked]"` |
+| `src/main/resources/lang/zh_TW.yml` | `menu:` 區塊新增 `locked-tag: "&8[未解鎖]"`（簡 → 繁） |
+
+**驗證**：4 輪 build 皆 BUILD SUCCESS。每輪修補後皆派 2 位獨立 Explore 子代理交叉驗證（共 6 位驗證代理：C/D/E/F/G/H/I/J/K/L），最後一輪 K、L 雙雙判 clean、breaks_user_ops=false、confidence=high。
+
+**保留的使用者操作**：`/dgeysermenu`、`/dgm`、`/fluxmenu`、`/mmf`、`/getmenuclock` 指令、`dgeysermenu.*` 權限樹、`config.yml` 所有鍵、`java_menus/*.yml` 與 `bedrock_menus/*.yml` 的 YAML 結構、`config-version: 16` 與 `menu-version: 6` — **全部不變**。
+
+**未動**：核心選單渲染／時鐘／代理／安全模組／範例 yaml／pom.xml。`pom.xml` 沒改用 `<release>21</release>`（屬「低嚴重度建議」，未動以縮小 PR 範圍）；`RequirementServiceTest` 仍因 Byte Buddy 與 Java 25 環境不相容掛測（與本次無關，升版前就存在）。
