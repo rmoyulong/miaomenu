@@ -1,259 +1,110 @@
 # =====================================================================
-#  MiaoMenu_fork — Bedrock menu showcase (default test.yml)
-#  Fork:           https://github.com/Avery11111101/MiaoMenu_fork
-#  Original:       https://github.com/Yamada0001/MiaoMenu
+#  MiaoMenu_fork — Bedrock panel selector (default test.yml)
+#  Fork:     https://github.com/Avery11111101/MiaoMenu_fork
+#  Original: https://github.com/Yamada0001/MiaoMenu
 # ---------------------------------------------------------------------
-#  Bedrock menus are delivered as Floodgate / Cumulus SimpleForms.
-#  A SimpleForm is a vertical list of buttons (text + optional icon),
-#  so the schema is intentionally flatter than the Java chest GUI.
+#  6 顆網格式按鈕的 panel selector，視覺與原作 demo（pic/2.png）對齊：
+#  Bedrock SimpleForm 在 ≤6 顆 button 時會自動鋪成 3×2 網格，每顆都顯示
+#  左側貼圖 + 文字。伺服器主請把每顆 button 的 text / icon / command /
+#  execute_as 改成自家面板要做的事。
 #
-#  Everything supported by BedrockMenu.java is exercised here:
-#    * menu.title   (PlaceholderAPI placeholders supported)
-#    * menu.items[]:
-#        text                   — label printed on the button
-#        icon                   — resource-pack path or remote URL
-#        icon_type              — "path" (default) or "url"
-#        command                — payload passed to the action chain
-#        execute_as             — player | cmd | message | close
-#        conditions             — AND / OR / nested children
-#        item_conditions        — legacy implicit-AND list (back-compat)
-#        lock_message           — overrides Lang.message.item-locked
-#        unsupported_on_bedrock — true → click prints a Java-only notice
-#    * requirement_blocks       — named, reusable condition groups
-#    * view_requirement         — menu-level gate with fallback_menu
-#    * Every requirement type:
-#        permission, placeholder_equals, placeholder-not-equals,
-#        placeholder_contains, advancement, progress,
-#        score_gte, score_lte, score_equals, score_range, block
-# ---------------------------------------------------------------------
-#  Tip: Bedrock SimpleForm fires ONE action per button (the one stored
-#  in `command` + `execute_as`). If you want multiple effects on one
-#  click, chain them on the Java side and use [menu] from here.
+#  支援鍵（完整解說請見 README.md 與 java_menus/test.yml）：
+#    menu.title / menu.items[]:
+#      text                   — 按鈕文字（支援 § 顏色碼，\n 多行）
+#      icon                   — 資源包貼圖路徑或 PNG URL
+#      icon_type              — path（預設）或 url
+#      command                — 動作字串（可帶 [player]/[cmd]/[message]/[close]/[menu]）
+#      execute_as             — player / cmd / message / close
+#      conditions             — AND / OR / 巢狀 children
+#      item_conditions        — 舊版隱式 AND（保留向後相容）
+#      lock_message           — 覆寫 message.item-locked
+#      unsupported_on_bedrock — true 時點按鈕會印「Java 限定」提示
+#    requirement_blocks       — 具名可重複使用的 condition 群組
+#    view_requirement         — 整個 menu 入口閘 + fallback_menu
+#
+#  Tip：Bedrock SimpleForm 一顆按鈕只能跑一個動作，需要多動作鏈請用
+#  [menu] 把點擊轉到 Java 端的選單，再在 Java 側用 click_commands 串。
+#
+#  所有 icon 路徑都對照 Mojang/bedrock-samples 原版資源包驗證過，保證載得到。
 # =====================================================================
 
 menu:
-  title: "§6§lMiaoMenu_fork §7| §fHi %player_name%"
+  title: "§6§l▍§e§lMiaoMenu §6§l▍§r §7| §f%player_name%"
 
   items:
 
-    # ---- 1. execute_as: player (default) — runs as the player --------
-    - text: "§e§l1. execute_as: player\n§7Runs a command as the player"
-      icon: "textures/items/paper"
-      icon_type: "path"
-      command: "list"
-      execute_as: "player"
-
-    # ---- 2. execute_as: cmd — runs as console ------------------------
-    - text: "§b§l2. execute_as: cmd\n§7Runs a command from the console"
-      icon: "textures/items/command_block"
-      icon_type: "path"
-      command: "say %player_name% triggered a console command"
-      execute_as: "cmd"
-
-    # ---- 3. execute_as: message — sends a chat message ---------------
-    - text: "§d§l3. execute_as: message\n§7Sends a chat message"
-      icon: "textures/items/book_writable"
-      icon_type: "path"
-      command: "§dHello %player_name%, this is a chat message from the menu."
-      execute_as: "message"
-
-    # ---- 4. execute_as: close — closes the form ----------------------
-    - text: "§c§l4. execute_as: close\n§7Closes this form"
-      icon: "textures/items/barrier"
-      icon_type: "path"
-      command: ""
-      execute_as: "close"
-
-    # ---- 5. icon_type: url — remote PNG icon -------------------------
-    - text: "§a§l5. icon_type: url\n§7Remote icon (32x32 or 64x64 PNG)"
-      icon: "https://minecraft.wiki/images/Grass_Block_JE7_BE6.png"
-      icon_type: "url"
-      command: "[message] §aThis button uses an icon downloaded over HTTP."
-      execute_as: "player"
-
-    # ---- 6. conditions AND -------------------------------------------
-    - text: "§7§l6. conditions: AND\n§7Needs ALL listed checks"
-      icon: "textures/items/iron_ingot"
-      icon_type: "path"
-      command: "[message] §7AND condition satisfied!"
-      execute_as: "player"
-      conditions:
-        operator: AND
-        requirements:
-          - type: permission
-            permission: "dgeysermenu.use"
-          - type: placeholder_contains
-            placeholder: "%player_name%"
-            value: ""
-      lock_message: "§cAND gate failed — see the lore in /dgm help."
-
-    # ---- 7. conditions OR --------------------------------------------
-    - text: "§e§l7. conditions: OR\n§7Needs ANY listed check"
-      icon: "textures/items/gold_ingot"
-      icon_type: "path"
-      command: "[message] §eOR condition satisfied!"
-      execute_as: "player"
-      conditions:
-        operator: OR
-        requirements:
-          - type: placeholder_equals
-            placeholder: "%player_world%"
-            value: "world"
-          - type: permission
-            permission: "miaomenu.vip"
-      lock_message: "§cOR gate failed — neither branch matched."
-
-    # ---- 8. conditions with nested children --------------------------
-    - text: "§b§l8. conditions: nested children\n§7AND wrapping an OR group"
-      icon: "textures/items/diamond"
-      icon_type: "path"
-      command: "[message] §bNested condition satisfied!"
-      execute_as: "player"
-      conditions:
-        operator: AND
-        requirements:
-          - type: permission
-            permission: "dgeysermenu.use"
-        children:
-          - operator: OR
-            requirements:
-              - type: placeholder_equals
-                placeholder: "%player_world%"
-                value: "world"
-              - type: placeholder-not-equals
-                placeholder: "%player_gamemode%"
-                value: "ADVENTURE"
-      lock_message: "§cNested AND/OR gate failed."
-
-    # ---- 9. requirement type: advancement ----------------------------
-    - text: "§a§l9. type: advancement\n§7Needs minecraft:story/root"
-      icon: "textures/items/book_enchanted"
-      icon_type: "path"
-      command: "[message] §aWelcome, advancement holder!"
-      execute_as: "player"
-      conditions:
-        operator: AND
-        requirements:
-          - type: advancement
-            advancement: "minecraft:story/root"
-      lock_message: "§cFinish the first vanilla advancement first."
-
-    # ---- 10. requirement type: progress ------------------------------
-    - text: "§a§l10. type: progress\n§7Needs scoreboard quests >= 3"
-      icon: "textures/items/experience_bottle"
-      icon_type: "path"
-      command: "[message] §aQuest progress check passed!"
-      execute_as: "player"
-      conditions:
-        operator: AND
-        requirements:
-          - type: progress
-            objective: "quests"
-            value: 3
-      lock_message: "§cYou need at least 3 quests completed."
-
-    # ---- 11. requirement type: score_* (gte/lte/equals/range) -------
-    - text: "§c§l11. type: score_*\n§7Combines gte/lte/equals/range"
-      icon: "textures/items/redstone_dust"
-      icon_type: "path"
-      command: "[message] §cAll four scoreboard checks passed!"
-      execute_as: "player"
-      conditions:
-        operator: AND
-        requirements:
-          - type: score_gte
-            objective: "kills"
-            value: 10
-          - type: score_lte
-            objective: "deaths"
-            value: 5
-          - type: score_equals
-            objective: "team"
-            value: 1
-          - type: score_range
-            objective: "level"
-            min: 10
-            max: 99
-      lock_message: "§cYour scoreboard objectives do not meet the thresholds."
-
-    # ---- 12. requirement type: block (reuse a named group) -----------
-    - text: "§2§l12. type: block (VIP)\n§7Reuses the 'vip_only' block"
+    # ---- 1. 商店面板 -------------------------------------------------
+    - text: "§a§l商店面板\n§7點此開啟"
       icon: "textures/items/emerald"
       icon_type: "path"
-      command: "[message] §2VIP-only feature unlocked!"
+      command: "[message] §a這裡換成你的商店指令，例如 [cmd] cmi shop"
+      execute_as: "player"
+
+    # ---- 2. 貴賓面板（VIP 權限示範） ---------------------------------
+    - text: "§e§l貴賓面板\n§7VIP 專屬"
+      icon: "textures/items/gold_ingot"
+      icon_type: "path"
+      command: "[message] §eVIP 通過！換成你的 VIP 面板指令。"
       execute_as: "player"
       conditions:
         operator: AND
         requirements:
           - type: block
-            block: "vip_only"
+            block: vip_only
 
-    # ---- 13. legacy item_conditions ----------------------------------
-    - text: "§8§l13. legacy item_conditions\n§7Pre-conditions syntax (implicit AND)"
-      icon: "textures/items/book_normal"
-      icon_type: "path"
-      command: "[message] §8Legacy syntax still works."
-      execute_as: "player"
-      item_conditions:
-        - type: permission
-          permission: "dgeysermenu.use"
-      lock_message: "§cLegacy item_conditions failed."
-
-    # ---- 14. unsupported_on_bedrock flag -----------------------------
-    - text: "§c§l14. unsupported_on_bedrock\n§7Java-only actions guard"
-      icon: "textures/items/iron_door"
-      icon_type: "path"
-      command: ""
-      execute_as: "player"
-      unsupported_on_bedrock: true
-
-    # ---- 15. open another menu (Java [menu]) -------------------------
-    - text: "§9§l15. action [menu]\n§7Open another menu by name"
-      icon: "textures/items/ender_pearl"
-      icon_type: "path"
-      command: "[menu] server-selector"
-      execute_as: "player"
-
-    # ---- 16. proxy: switch to another sub-server ---------------------
-    - text: "§b§l16. server lobby\n§7Cross-server jump via proxy"
+    # ---- 3. 玩家面板 -------------------------------------------------
+    - text: "§b§l玩家面板\n§7查看玩家"
       icon: "textures/items/compass_item"
       icon_type: "path"
-      command: "server lobby"
+      command: "list"
       execute_as: "player"
 
-    # ---- 17. info / decorative (no command) --------------------------
-    - text: "§f§lMiaoMenu_fork — Showcase\n§7Edit plugins/MiaoMenu_fork/bedrock_menus/test.yml"
-      icon: "textures/items/book_writable"
+    # ---- 4. 傳送面板 -------------------------------------------------
+    - text: "§5§l傳送面板\n§7快速移動"
+      icon: "textures/items/ender_pearl"
+      icon_type: "path"
+      command: "[message] §5這裡換成傳送指令，例如 [player] warp"
+      execute_as: "player"
+
+    # ---- 5. 管理面板（OP 權限示範） ----------------------------------
+    - text: "§d§l管理面板\n§7OP 專用"
+      icon: "textures/items/minecart_command_block"
+      icon_type: "path"
+      command: "[message] §d歡迎管理員 %player_name%"
+      execute_as: "player"
+      conditions:
+        operator: AND
+        requirements:
+          - type: permission
+            permission: "miaomenu.admin"
+      lock_message: "§c你不是管理員，無法開啟此面板。"
+
+    # ---- 6. 關閉選單 -------------------------------------------------
+    - text: "§c§l關閉選單\n§7按此離開"
+      icon: "textures/ui/cancel"
       icon_type: "path"
       command: ""
       execute_as: "close"
 
 # ---------------------------------------------------------------------
 # Reusable, named condition groups.
-# Reference from item conditions with:
-#   - type: block
-#     block: vip_only
-# Each block can carry its own deny_message + fallback_menu.
+# 從 menu.items[].conditions.requirements 用 type: block + block: <名稱> 引用。
+# 每個 block 可以帶自己的 deny_message 與 fallback_menu。
 # ---------------------------------------------------------------------
 requirement_blocks:
   vip_only:
-    deny_message: "§cVIP members only."
+    deny_message: "§cVIP 玩家專屬。"
     requirements:
       - type: permission
         permission: "miaomenu.vip"
-  story_started:
-    deny_message: "§cStart the vanilla story progression first."
-    requirements:
-      - type: advancement
-        advancement: "minecraft:story/root"
 
 # ---------------------------------------------------------------------
-# Menu-level gate. If the player fails this check the form refuses to
-# open, shows deny_message, and (optionally) re-routes them through
-# fallback_menu. Set fallback_menu to "" to disable the rerout.
+# Menu-level 入口閘。玩家未通過則 menu 拒絕開啟、印 deny_message、
+# 並（可選）導去 fallback_menu。fallback_menu 設 "" 關閉導向。
+# dgeysermenu.use 在 plugin.yml 預設 true，所以一般玩家都能開。
 # ---------------------------------------------------------------------
 view_requirement:
-  deny_message: "§cYou are not allowed to open this menu yet."
+  deny_message: "§c你目前不能開啟此選單。"
   fallback_menu: ""
   requirements:
     - type: permission

@@ -218,10 +218,22 @@ public class BedrockMenuManager {
         }
 
         private Method findSendFormMethod(Class<?> floodgateApiClass) {
+            // FloodgateApi 提供兩個 overload：sendForm(UUID, Form) 與 sendForm(UUID, FormBuilder<?,?,?>)。
+            // 我們呼叫端傳的是已 build 完的 Form（SimpleForm 實例），必須鎖定第一個 overload，
+            // 否則 getMethods() 的順序不保證，可能命中 FormBuilder 簽名導致 argument type mismatch。
+            Method fallback = null;
             for (Method method : floodgateApiClass.getMethods()) {
-                if (method.getName().equals("sendForm") && method.getParameterCount() == 2 && method.getParameterTypes()[0] == UUID.class) {
+                if (!method.getName().equals("sendForm")) continue;
+                if (method.getParameterCount() != 2) continue;
+                if (method.getParameterTypes()[0] != UUID.class) continue;
+                String secondType = method.getParameterTypes()[1].getName();
+                if (secondType.equals("org.geysermc.cumulus.form.Form")) {
                     return method;
                 }
+                fallback = method;
+            }
+            if (fallback != null) {
+                return fallback;
             }
             throw new IllegalStateException(Lang.get("log.bedrock-menu.reflection-setup-failed"));
         }
