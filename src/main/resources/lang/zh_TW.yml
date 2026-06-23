@@ -77,6 +77,15 @@ help:
         &7顯示插件版本、Fork / 原作 GitHub 連結與 Modrinth 下載頁。
         &7若 Modrinth 上偵測到新版本，也會在此訊息底部提示。
       permission: "&7（無需權限）"
+    whoami:
+      usage: "&f/dgm whoami"
+      detail: |-
+        &7診斷 Floodgate / Geyser 對你這位玩家的辨識結果，主要用於排查
+        &7「基岩端進來卻看到 Java 箱子 GUI」的情境（Velocity proxy 常見）。
+        &7會列出：Floodgate plugin 版本、isFloodgatePlayer 回傳、UUID prefix、
+        &7Bedrock username / xuid、linkedPlayer、最終 smart-dispatch 走哪邊。
+        &7任何一行回 false / null 就指出哪段環節壞掉，不用再翻 server log。
+      permission: "&7（無需權限，僅顯示自己的資訊）"
     help:
       usage: "&f/dgm help [<子指令>]"
       detail: |-
@@ -90,6 +99,7 @@ descriptions:
   import: "&b✦ 從舊版插件資料夾引渡選單與設定"
   lang: "&d✦ 切換顯示語言並重新載入訊息"
   about: "&7✦ 關於這個插件（版本、原作、Modrinth）"
+  whoami: "&7✦ 診斷 Floodgate 對你的辨識結果"
   help: "&e✦ 探索智慧的指引篇章"
 
 command:
@@ -155,6 +165,27 @@ about:
 
 open:
   error: "&c✦ 介面展開失敗，請查閱主控台日誌。"
+
+whoami:
+  header: "&6✿ &eMiaoMenu_fork &7— &fFloodgate 診斷 &6✿"
+  floodgate-plugin: "&7floodgate plugin：&f{0}"
+  geyser-plugin: "&7Geyser-Spigot plugin：&f{0}"
+  uuid: "&7你的 UUID：&f{0} &8（基岩玩家通常以 00000000-0000-0000 開頭）"
+  smart-dispatch: "&7smart-dispatch 判定為基岩端：&f{0}"
+  floodgate-api: "&7FloodgateApi 可呼叫：&f{0}"
+  is-floodgate-player: "&7isFloodgatePlayer(uuid)：&f{0}"
+  floodgate-username: "&7Bedrock username：&f{0}"
+  floodgate-xuid: "&7XUID：&f{0}"
+  floodgate-linked: "&7已連結 Java 帳號（linkedPlayer）：&f{0}"
+  floodgate-error: "&c反射呼叫例外：&f{0}"
+  verdict-bedrock: "&a✦ 判定為基岩端 → 開選單會走 Floodgate SimpleForm（原生 UI）。"
+  verdict-java: "&c✦ 判定為 Java 端 → 開選單會走箱子 GUI。若你其實是基岩玩家，多半是 Velocity 後端 Floodgate key.pem 未對齊、auth-type 設定錯誤，或玩家用 linked Java 帳號繞過 Floodgate。"
+  missing: "&c未安裝"
+  enabled: "&a已啟用"
+  disabled: "&e已停用"
+  true: "&atrue"
+  false: "&cfalse"
+  null: "&7(null)"
 
 bedrock:
   unsupported-button: "&c✦ 此按鈕的動作僅在 Java 版可用（shift+左/右鍵、中鍵、右鍵），基岩版無法執行；如需操作請改用 Java 版客戶端。"

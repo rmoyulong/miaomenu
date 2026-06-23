@@ -8,7 +8,7 @@
 >
 > A lightweight menu plugin for Paper / Folia / Geyser **26.1.2** (with 26.2 alpha compatibility), serving both Java and Bedrock players natively. Ships with `en` (default) and `zh_TW` locales.
 
-**Current version**: `1.3` (Adds click-action parity for DeluxeMenus imports on top of `1.2`: `JavaMenu` / `JavaMenuListener` / `DeluxeMenusImporter` now read and dispatch `middle_click_commands` / `shift_left_click_commands` / `shift_right_click_commands` / the catch-all `click_commands`, so dmenu-style multi-button differential actions take effect after import. **Zero user-facing changes to existing operations** — purely additive. `config.yml`, menu YAMLs, existing commands, permissions and versions all unchanged. Fork numbering reset from upstream 2.7.7.9)
+**Current version**: `1.3.2` (Adds the `/dgm whoami` diagnostic command on top of `1.3.1`. One command prints everything Floodgate knows about you on this backend: plugin version / enabled state, `isFloodgatePlayer(uuid)` return value, your UUID prefix, Bedrock username / XUID, `linkedPlayer` status, and the final smart-dispatch verdict (Java vs Bedrock). Built for the classic "Bedrock player on a Velocity proxy still gets a Java chest GUI" headache — any `false` / `null` line points to the broken link, no server-log archaeology required. **Zero impact on existing commands / configs / permissions / player operations** — purely additive. Fork numbering reset from upstream [Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) 2.7.7.9)
 
 ---
 
@@ -49,7 +49,7 @@ The only new setting is `language: en|zh_TW` (defaults to `en`). If you keep you
 - (Optional) Velocity / BungeeCord proxy for `server <name>` jumps
 
 ### Install
-1. Drop `MiaoMenu_fork-1.3.jar` into `plugins/`.
+1. Drop `MiaoMenu_fork-1.3.2.jar` into `plugins/`.
 2. Start the server. The plugin auto-generates `config.yml`, `lang/en.yml`, `lang/zh_TW.yml`, and sample menus.
 3. (If migrating) Old data is auto-imported from legacy folders on the first run.
 4. Edit `config.yml` to change `language: en` / `zh_TW`, or edit menus under `java_menus/` / `bedrock_menus/`.
@@ -72,6 +72,7 @@ The only new setting is `language: en|zh_TW` (defaults to `en`). If you keep you
 /mmflang <code>                                           # 1.2+: short form
 /lang <code>                                              # 1.2+: shortest (may collide with other plugins)
 /dgm about                                                # 1.2+: version + GitHub + Modrinth links
+/dgm whoami                                               # 1.3.2+: Floodgate identification probe
 ```
 
 > Heads-up: `/lang` is an alias of `/mmflang`. If another plugin (e.g. LiteBans) registers `/lang` first, Bukkit hands the command to whichever plugin loaded first — use `/mmflang` or `/dgm lang` as a stable fallback.
@@ -157,7 +158,7 @@ language: en      # or zh_TW, or any <code> matching a lang/<code>.yml file
 mvn package
 ```
 
-Output: `target/MiaoMenu_fork-1.3.jar`.
+Output: `target/MiaoMenu_fork-1.3.2.jar`.
 
 ---
 

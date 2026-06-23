@@ -77,6 +77,15 @@ help:
         &7Show plugin version, Fork / Original GitHub links and the Modrinth download page.
         &7If a newer version is detected on Modrinth, it's shown at the bottom.
       permission: "&7(no permission needed)"
+    whoami:
+      usage: "&f/dgm whoami"
+      detail: |-
+        &7Diagnoses how Floodgate / Geyser identifies you. Use this when a Bedrock
+        &7player ends up seeing the Java chest GUI (common with Velocity proxies).
+        &7Prints: floodgate plugin version, isFloodgatePlayer result, UUID prefix,
+        &7Bedrock username / xuid, linkedPlayer status, and the final smart-dispatch verdict.
+        &7Any false / null line points to the broken link — no need to dig through server logs.
+      permission: "&7(no permission needed; only shows your own info)"
     help:
       usage: "&f/dgm help [<sub>]"
       detail: |-
@@ -90,6 +99,7 @@ descriptions:
   import: "&b✦ Import menus & config from a legacy plugin folder"
   lang: "&d✦ Switch display language and reload messages"
   about: "&7✦ Plugin info (version, source, Modrinth)"
+  whoami: "&7✦ Diagnose how Floodgate identifies you"
   help: "&e✦ Show the help page"
 
 command:
@@ -155,6 +165,27 @@ about:
 
 open:
   error: "&c✦ Failed to open the menu. Please check the console log."
+
+whoami:
+  header: "&6✿ &eMiaoMenu_fork &7— &fFloodgate diagnostics &6✿"
+  floodgate-plugin: "&7floodgate plugin: &f{0}"
+  geyser-plugin: "&7Geyser-Spigot plugin: &f{0}"
+  uuid: "&7Your UUID: &f{0} &8(Bedrock players normally start with 00000000-0000-0000)"
+  smart-dispatch: "&7smart-dispatch verdict (Bedrock): &f{0}"
+  floodgate-api: "&7FloodgateApi reachable: &f{0}"
+  is-floodgate-player: "&7isFloodgatePlayer(uuid): &f{0}"
+  floodgate-username: "&7Bedrock username: &f{0}"
+  floodgate-xuid: "&7XUID: &f{0}"
+  floodgate-linked: "&7Linked Java account (linkedPlayer): &f{0}"
+  floodgate-error: "&cReflection error: &f{0}"
+  verdict-bedrock: "&a✦ Identified as Bedrock → menus will open via Floodgate SimpleForm (native UI)."
+  verdict-java: "&c✦ Identified as Java → menus will open via chest GUI. If you actually connected from Bedrock, the usual culprit is a mismatched Floodgate key.pem between Velocity and this backend, a wrong auth-type, or a linked Java account bypassing Floodgate."
+  missing: "&cnot installed"
+  enabled: "&aenabled"
+  disabled: "&edisabled"
+  true: "&atrue"
+  false: "&cfalse"
+  null: "&7(null)"
 
 bedrock:
   unsupported-button: "&c✦ This button uses Java-only actions (shift+left/right click, middle click, right click) and cannot run on Bedrock. Switch to a Java client if you need to trigger it."

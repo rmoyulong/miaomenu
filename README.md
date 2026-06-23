@@ -21,7 +21,7 @@ Fork 版重點放在 **不改使用者操作習慣**：
 
 ### 無痛轉移（自動匯入舊資料夾）
 
-把 `MiaoMenu_fork-1.3.jar` 直接丟到 `plugins/`，啟動時插件會自動偵測下列舊版資料夾並整批匯入到 `plugins/MiaoMenu_fork/`：
+把 `MiaoMenu_fork-1.3.2.jar` 直接丟到 `plugins/`，啟動時插件會自動偵測下列舊版資料夾並整批匯入到 `plugins/MiaoMenu_fork/`：
 
 1. `plugins/DGeyserMenu/`
 2. `plugins/dgeysermenu/`
@@ -51,6 +51,19 @@ Fork 版重點放在 **不改使用者操作習慣**：
 顯示插件版本、Fork / 原作 GitHub 連結、Modrinth 下載頁；若 Modrinth 上偵測到新版本，也會在訊息底部附上提示。**啟動時也會把同一份資訊印到主控台**，方便維運。
 
 擁有 `dgeysermenu.admin` 權限的管理員上線（join）時，若插件啟動時已從 Modrinth 抓到比目前版本更新的版號，就會主動推一條訊息提示去 Modrinth 下載。普通玩家不受打擾。
+
+### Floodgate 辨識診斷（`/dgm whoami`，1.3.2 新增）
+
+當基岩玩家明明已透過 Floodgate 連進來，卻被當成 Java 玩家看到箱子 GUI 時（典型情境：Velocity 後端 `key.pem` 未對齊、`player-info-forwarding-mode` 設定錯誤、玩家掛了 linked Java 帳號），用 `/dgm whoami` 一次把所有環節印出來：
+
+- `floodgate plugin` 與 `Geyser-Spigot plugin` 的版本與啟用狀態
+- 你的 UUID（基岩玩家通常以 `00000000-0000-0000` 開頭）
+- smart-dispatch 最終判定（true ＝會走 Floodgate SimpleForm 原生 UI；false ＝會走箱子 GUI）
+- `FloodgateApi.isFloodgatePlayer(uuid)` 反射回傳
+- Floodgate 登記的 Bedrock username、XUID、linkedPlayer 狀態
+- 若反射失敗，會印出例外型別與訊息（不會把整段 stack trace 噴給玩家）
+
+無需額外權限，僅顯示呼叫者自己的資訊（玩家專用）。
 
 ### 指令引導的手動匯入（`/dgm import`）
 
@@ -92,7 +105,7 @@ MiaoMenu_fork 是一款雙端選單插件：
 - 內建選單時鐘、範例選單與權限控制
 - 訊息抽出為獨立 `lang/<language>.yml`，繁中／英文可即時切換
 
-目前版本：`1.3`（在 `1.2` 之上補齊 DeluxeMenus 匯入的點擊動作對齊：`JavaMenu` / `JavaMenuListener` / `DeluxeMenusImporter` 同時新增 `middle_click_commands` / `shift_left_click_commands` / `shift_right_click_commands` / 通用 `click_commands` 的讀取與分發，匯入後 dmenu 風格的多按鍵差異執行即可生效。使用者既有操作零變動，純粹附加。Fork 版重新起算，原作為 [Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) 2.7.7.9）
+目前版本：`1.3.2`（在 `1.3.1` 之上新增 `/dgm whoami` 診斷指令，一行打進去就能看出 Floodgate 對你這位玩家的真實辨識結果：plugin 版本／enabled、`isFloodgatePlayer(uuid)` 回傳、UUID prefix、Bedrock username／XUID、`linkedPlayer` 狀態，以及 smart-dispatch 最終判定走 Java 還是基岩分支。專為「基岩玩家在 Velocity 後端卻看到 Java 箱子 GUI」這類疑難排查設計，任何一行回 `false` ／ `null` 即指出哪段環節壞掉，不必再翻 server log。**對既有指令／設定檔／權限／玩家操作完全零影響**，純粹附加。原作為 [Yamada0001/MiaoMenu](https://github.com/Yamada0001/MiaoMenu) 2.7.7.9）
 
 ## 介面預覽
 
@@ -212,6 +225,7 @@ Java 選單位於 `src/main/resources/java_menus/`，支援：
 - `reload` 用於重新載入設定與選單檔
 - `help` 用於顯示說明
 - `getmenuclock` 用於取得選單時鐘
+- `whoami`（1.3.2 新增）用於印 Floodgate 對你的辨識結果，排查「基岩玩家被當 Java 玩家」的疑難雜症
 
 ### 選單時鐘
 選單時鐘是插件的特色功能：
@@ -628,7 +642,7 @@ mvn test
 mvn package
 ```
 
-預設產物 `MiaoMenu_fork-1.3.jar` 會生成在 `target/` 目錄下。
+預設產物 `MiaoMenu_fork-1.3.2.jar` 會生成在 `target/` 目錄下。
 
 ## 常見問題
 

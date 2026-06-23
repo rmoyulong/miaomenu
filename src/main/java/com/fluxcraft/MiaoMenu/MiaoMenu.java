@@ -261,7 +261,7 @@ public class MiaoMenu extends JavaPlugin {
         javaMenuManager.openMenu(player, menuName);
     }
 
-    private boolean isBedrockPlayer(Player player) {
+    public boolean isBedrockPlayer(Player player) {
         if (Bukkit.getPluginManager().getPlugin("floodgate") == null) {
             return false;
         }

@@ -24,6 +24,7 @@ import com.fluxcraft.MiaoMenu.commands.impl.ImportCommand;
 import com.fluxcraft.MiaoMenu.commands.impl.LangCommand;
 import com.fluxcraft.MiaoMenu.commands.impl.OpenCommand;
 import com.fluxcraft.MiaoMenu.commands.impl.ReloadCommand;
+import com.fluxcraft.MiaoMenu.commands.impl.WhoamiCommand;
 import com.fluxcraft.MiaoMenu.utils.Lang;
 
 public class CommandManager implements CommandExecutor, TabCompleter {
@@ -53,6 +54,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         register("import", new ImportCommand(plugin));
         register("lang", new LangCommand(plugin));
         register("about", new AboutCommand(plugin));
+        register("whoami", new WhoamiCommand(plugin));
         helpCommand = new HelpCommand(helpDescriptions);
         register(CMD_HELP, helpCommand);
     }
