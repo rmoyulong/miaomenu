@@ -37,6 +37,7 @@ public final class Lang {
     public static void init(Plugin plugin) {
         Lang.plugin = plugin;
         saveDefault("lang/en.yml");
+		saveDefault("lang/zh_CN.yml");
         saveDefault("lang/zh_TW.yml");
     }
 
