@@ -17,9 +17,37 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
+          java-version: '25'
           cache: maven
       - name: Test
         run: mvn test
       - name: Package
         run: mvn package
+        
+      - name: 检测编译完的插件
+        run: |
+          mkdir -p ./upload
+          cp -f target/*.jar ./upload/
+          cd ./upload/
+          echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        
+      - name: 上传插件jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: miaomenu-plugin
+          path: target/*.jar
+ 
+      - name: 生成标签，上传固件 
+        uses: ncipollo/release-action@main
+        with:
+          tag: miaomenu-Plugins
+          artifacts: ${{ env.FIRMWARE }}/*
+          allowUpdates: true
+          removeArtifacts: false
+          replacesArtifacts: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            ====================🧊插件信息🧊=======================
+            ➦ 📒 插件名称：miaomenu
+            ➦ 💻 插件平台：Minecraft
+            ➦ ⚽ 插件源码：Avery11111101/MiaoMenu_fork          
