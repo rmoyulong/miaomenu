@@ -1,0 +1,261 @@
+# MiaoMenu_fork 语言文件（简体中文）
+# Fork:           https://github.com/Avery11111101/MiaoMenu_fork
+# 原作 / Original: https://github.com/Yamada0001/MiaoMenu
+# 颜色代码使用 '&'。占位符：{0}， {1}， ...
+
+default-item-name: "&6传送门菜单 &7(右键打开菜单)"
+
+message:
+  no-permission: "&c✦ 权限不足，你无法触碰此指令。"
+  players-only: "&c✦ 只有身临其境的冒险者（玩家）才能使用此令。"
+  menu-not-found: "&c✦ 未曾见过名为 &e{0}&c 的菜单，请检查拼写。"
+  error: "&c✦ 操作受阻，请查看控制台查明原因。"
+  invalid-player: "&c✦ 查无此人，或他已离去（离线）。"
+  requirement-denied: "&c✦ 当前条件不足，无法执行该菜单操作。"
+  item-locked: "&c✦ 该功能尚未解锁。"
+  unsafe-input: "&c✦ 输入内容不符合安全规则，操作已拦截。"
+  rate-limited: "&c✦ 操作过于频繁，请稍后再试。"
+  config-update-warning: "&e✦ 检测到旧版配置，正在尝试自动更新..."
+  reloaded: "&a✦ 配置文件已更新，一切就绪。"
+  io-error: "&c✦ 笔触受阻，无法在卷轴上书写（IO 错误），请检查封印权限（文件权限）。"
+  craftengine-missing: "&e✦ CraftEngine 尚未安装，已使用备用材质。"
+  craftengine-item-not-found: "&e✦ CraftEngine 物品 &6{0}&e 不存在，已使用备用材质。"
+  config-updated: "&a✦ 配置文件已自动更新到最新版本。"
+
+verbose:
+  config-adding-key: "✦ 拾遗补缺，刻写法则: {0}"
+  config-keys-added: "✦ 卷轴焕新完毕，共增添 {0} 处笔触"
+
+help:
+  header: "&6✿ &e你好呀，旅行者 &6✿"
+  usage: "&7✎ 悬停查看详情，轻触以令之行"
+  detail-hint: "&7✎ 想看单个指令详解，输入 &f/dgm help <指令名称>"
+  unknown-command: "&c✦ 没有 &e{0}&c 这道指令。可用 &f/dgm help&c 查看完整列表。"
+  detail:
+    header: "&6✿ &e/dgm {0} &6— 指令详解 ✿"
+    usage-label: "&7用法："
+    permission-label: "&7权限："
+  commands:
+    open:
+      usage: "&f/dgm open <菜单名称>"
+      detail: |-
+        &7打开指定的菜单。
+        &7Java 玩家会看到箱子 GUI，基岩玩家会看到 Floodgate 表单，插件自动判断。
+        &7菜单名称可用 Tab 补全（会列出 java_menus/ 与 bedrock_menus/ 内定义的菜单）。
+      permission: "&fdgeysermenu.use"
+    reload:
+      usage: "&f/dgm reload"
+      detail: |-
+        &7重新加载 config.yml、所有 Java 菜单与基岩菜单。
+        &7若同时修改了 lang 文件，请改用 &f/dgm lang <现有语言>&7 或直接重启。
+      permission: "&fdgeysermenu.reload"
+    import:
+      usage: |-
+        &f/dgm import scan
+        &f/dgm import preview <来源>
+        &f/dgm import apply <来源> <token> [--overwrite|--rename]
+        &f/dgm import rollback [备份ID]
+      detail: |-
+        &7在「插件已运行」的服务器上手动导入旧版文件夹。
+        &7支持来源：
+        &7  · &fDGeyserMenu&7／&fdgeysermenu&7／&fMiaoMenu&7 — 同 schema，整批文件复制
+        &7  · &fDeluxeMenus&7／&fdmenu&7 — 不同 schema，自动把 gui_menus 转换成 java_menus/&lt;id&gt;.yml
+        &7流程：scan 看候选 → preview 出 token → apply 带 token 落盘（冲突文件自动备份到 backups/）→ rollback 还原。
+        &7默认冲突策略 SKIP；可加 &f--overwrite&7 强制覆写或 &f--rename&7 把旧版加 .imported 后缀并存。
+      permission: "&fdgeysermenu.import &7或 &fdgeysermenu.admin"
+    lang:
+      usage: "&f/dgm lang [<语言代码>] &7或 &f/mmflang <语言代码> &7或 &f/lang <语言代码>"
+      detail: |-
+        &7切换 MiaoMenu_fork 显示语言并即时重新加载消息文件。
+        &7无参数时显示当前语言与可用语言列表。
+        &7常见语言代码：&fen&7（英文）、&fzh_TW&7（繁中）；你也可以在 plugins/MiaoMenu_fork/lang/ 内放 &f<code>.yml&7 自定义语言文件。
+        &7切换后 &f/dgm help&7 与所有消息会跟着变语系，无需重启。
+      permission: "&fdgeysermenu.admin"
+    about:
+      usage: "&f/dgm about"
+      detail: |-
+        &7显示插件版本、Fork / 原作 GitHub 链接与 Modrinth 下载页。
+        &7若 Modrinth 上检测到新版本，也会在此消息底部提示。
+      permission: "&7（无需权限）"
+    whoami:
+      usage: "&f/dgm whoami"
+      detail: |-
+        &7诊断 Floodgate / Geyser 对你这位玩家的辨识结果，主要用于排查
+        &7「基岩端进来却看到 Java 箱子 GUI」的情境（Velocity proxy 常见）。
+        &7会列出：Floodgate plugin 版本、isFloodgatePlayer 返回、UUID prefix、
+        &7Bedrock username / xuid、linkedPlayer、最终 smart-dispatch 走哪边。
+        &7任何一行返回 false / null 就指出哪段环节坏掉，不用再翻 server log。
+      permission: "&7（无需权限，仅显示自己的信息）"
+    help:
+      usage: "&f/dgm help [<子指令>]"
+      detail: |-
+        &7不带参数时列出所有子指令；带参数时显示该子指令的详解。
+        &7例如：&f/dgm help import&7 会显示导入指令的完整教学。
+      permission: "&7（无需权限）"
+
+descriptions:
+  open: "&a✦ 翻开指定的魔法卷轴"
+  reload: "&c✦ 让核心法则重焕新生"
+  import: "&b✦ 从旧版插件文件夹引渡菜单与配置"
+  lang: "&d✦ 切换显示语言并重新加载消息"
+  about: "&7✦ 关于这个插件（版本、原作、Modrinth）"
+  whoami: "&7✦ 诊断 Floodgate 对你的辨识结果"
+  help: "&e✦ 探索智慧的指引篇章"
+
+command:
+  unknown: "&c✦ 虚空并未回应这句未知的低语，请查阅 /dgm help。"
+  usage-open: "&c✦ 吟唱咒语的真确格式：/dgm open <卷轴名称>"
+  usage-import: |-
+    &c✦ /dgm import 用法：
+    &7  /dgm import scan
+    &7  /dgm import preview <来源>
+    &7  /dgm import apply <来源> <token> [--overwrite|--rename]
+    &7  /dgm import rollback [备份ID]
+  usage-lang: "&c✦ 用法：&f/dgm lang <语言代码>&c 或 &f/mmflang <语言代码>&c（无参数可查当前语言与可用清单）"
+
+import:
+  scan:
+    header: "&b✦ 检测到 &e{0} &b个可导入的文件夹候选："
+    entry: "&7  · &e{0} &7— Java 菜单 &a{1} &7／基岩菜单 &a{2} &7／config-version &b{3}"
+    entry-deluxemenus: "&7  · &e{0} &d[DeluxeMenus]&7 — 菜单 &a{1} &7（会自动转换到 java_menus/ + bedrock_menus/ 各一份，原文件夹保留）"
+    empty: "&e✦ 未检测到可导入的文件夹（会搜索 plugins/ 内的 DGeyserMenu、dgeysermenu、MiaoMenu、DeluxeMenus、dmenu）。"
+    hint: "&7✎ 下一步：&f/dgm import preview <来源> &7查看差异与 token。"
+  preview:
+    header: "&b✦ 预览 &e{0} &b：新增 &a{1} &b／跳过 &7{2} &b／冲突 &c{3}"
+    add: "&a  + {0}"
+    skip: "&7  = {0}"
+    conflict: "&c  ! {0}"
+    truncated: "&7  …（另有 {0} 笔未显示）"
+    token: "&e✦ 确认码：&f{0} &7— 套用时请输入 &f/dgm import apply {1} {0}"
+    unknown-source: "&c✦ 找不到名为 &e{0}&c 的可导入文件夹，可先用 &f/dgm import scan&c 查看清单。"
+    io-error: "&c✦ 预览 &e{0}&c 时读档失败，请查阅控制台。"
+    deluxemenus-note: |-
+      &d✦ 检测到 DeluxeMenus 结构：将自动同时产出两份输出
+      &7  · &fjava_menus/&lt;id&gt;.yml&7 — Java 版箱子 GUI（保留 slot、左/右/中/shift 全部 click 链）
+      &7  · &fbedrock_menus/&lt;id&gt;.yml&7 — 基岩版 Floodgate 表单（依 slot 排序成按钮列表，每颗按钮仅取第一个动作）
+      &7  · 动作 prefix 对应：[console]→[cmd]、[openguimenu] X→[player] dgm open X，其余原样保留
+      &7  · material → 基岩贴图走 vanilla 对照表，未命中者显示为纯文本按钮
+      &7  · 不转换 update / skin 字段；conditions / view_requirement 会原样保留供您手动审阅
+      &7  · 原 DeluxeMenus 文件夹完全不动，可随时 rollback
+  apply:
+    no-session: "&c✦ 找不到对应的 preview 记录（可能已超时 5 分钟），请重跑 &f/dgm import preview <来源>&c。"
+    token-mismatch: "&c✦ 确认码或来源不符，请对照 preview 显示的内容重新输入。"
+    success: "&a✦ 已导入 &e{0}&a：新增 &f{1} &a／跳过 &f{2} &a／冲突处理 &f{3} &a，备份 &7{4}&a。已自动重新加载。"
+    io-error: "&c✦ 套用过程发生 IO 错误，请查阅控制台。已建立的备份不会被删除。"
+  rollback:
+    success: "&a✦ 已从备份 &e{0}&a 还原 &f{1}&a 个文件，并重新加载。"
+    not-found: "&e✦ 当前没有可用的导入备份。"
+    io-error: "&c✦ 还原备份 &e{0}&c 失败，请查阅控制台。"
+
+lang:
+  current: "&b✦ 当前语言：&f{0}"
+  available: "&7✎ 可用语言：&f{0}"
+  unknown: "&c✦ 没有语言文件 &e{0}&c。可用清单：&f{1}"
+  changed: "&a✦ 已切换语言为 &f{0}&a。所有消息已即时重新加载。"
+  save-failed: "&c✦ 切换语言为 &e{0}&c 失败：写回 config.yml 时发生 IO 错误，请查阅控制台。"
+
+about:
+  header: "&6✿ &eMiaoMenu_fork &6✿"
+  version: "&7版本：&f{0}"
+  author: "&7作者：&fAvery11111101"
+  fork: "&7Fork：&b{0}"
+  modrinth: "&7Modrinth：&b{0}"
+  footer: "&8感谢你使用 MiaoMenu_fork ✦（原作信息请查看 Fork 链接内的来源）"
+  update-available: "&e✦ 检测到新版本 &6{0}&e（当前 &7{1}&e）→ 下载：&b{2}"
+
+open:
+  error: "&c✦ 界面展开失败，请查阅控制台日志。"
+
+whoami:
+  header: "&6✿ &eMiaoMenu_fork &7— &fFloodgate 诊断 &6✿"
+  floodgate-plugin: "&7floodgate plugin：&f{0}"
+  geyser-plugin: "&7Geyser-Spigot plugin：&f{0}"
+  uuid: "&7你的 UUID：&f{0} &8（基岩玩家通常以 00000000-0000-0000 开头）"
+  smart-dispatch: "&7smart-dispatch 判定为基岩端：&f{0}"
+  floodgate-api: "&7FloodgateApi 可调用：&f{0}"
+  is-floodgate-player: "&7isFloodgatePlayer(uuid)：&f{0}"
+  floodgate-username: "&7Bedrock username：&f{0}"
+  floodgate-xuid: "&7XUID：&f{0}"
+  floodgate-linked: "&7已链接 Java 账号（linkedPlayer）：&f{0}"
+  floodgate-error: "&c反射调用例外：&f{0}"
+  verdict-bedrock: "&a✦ 判定为基岩端 → 开菜单会走 Floodgate SimpleForm（原生 UI）。"
+  verdict-java: "&c✦ 判定为 Java 端 → 开菜单会走箱子 GUI。若你其实是基岩玩家，多半是 Velocity 后端 Floodgate key.pem 未对齐、auth-type 设置错误，或玩家用 linked Java 账号绕过 Floodgate。"
+  missing: "&c未安装"
+  enabled: "&a已启用"
+  disabled: "&e已停用"
+  true: "&atrue"
+  false: "&cfalse"
+  null: "&7(null)"
+
+bedrock:
+  unsupported-button: "&c✦ 此按钮的动作仅在 Java 版可用（shift+左/右键、中键、右键），基岩版无法执行；如需操作请改用 Java 版客户端。"
+
+menu:
+  clock:
+    name: "&6传送门菜单 &7(右键打开菜单)"
+    given: "&a✦ 已获赠时光之镜，右键即可映照出菜单！"
+    restored: "&f✦ 物品已完好如初地归还于你。"
+  locked-tag: "&8[未解锁]"
+
+hot-reload:
+  initialized: "✦ 菜单的律动已开始（自动重新加载已启动）。"
+  detected: "✦ 感知到波动: {0}，正在重塑菜单..."
+
+log:
+  plugin:
+    enabled: "MiaoMenu v{0} 已启用。"
+    enable-failed: "启用 MiaoMenu 时发生致命错误，插件已停用。"
+  config:
+    backup-delete-failed: "无法删除备份文件 {0}。"
+    backup-create-failed: "无法备份文件 {0}，将直接覆写。"
+    menu-refresh-failed: "无法刷新菜单示例文件。"
+    example-missing: "插件 jar 内找不到示例资源 '{0}'，已跳过自动生成。"
+  command:
+    register-failed: "无法注册指令 '{0}'，请检查 plugin.yml。"
+    descriptions-missing: "在 lang/<language>.yml 与 config.yml 中皆找不到 'descriptions' 节点。"
+    execute-failed: "为发送者 '{1}' 执行指令 '{0}' 失败。"
+  import:
+    preview-failed: "预览旧版数据 '{0}' 失败。"
+    copy-failed: "导入旧版数据 '{0}' 过程中复制文件失败。"
+    completed: "旧版数据 '{0}' 已由 {1} 导入，备份：{2}。"
+    rollback-failed: "还原备份 '{0}' 失败。"
+  lang:
+    changed: "显示语言已由 {1} 切换为 '{0}'。"
+    save-failed: "切换语言为 '{0}' 时写回 config.yml 失败。"
+  update:
+    fetch-failed: "从 Modrinth 获取最新版本信息失败（{0}），跳过更新检查。"
+    available: "检测到新版本：{0}（当前 {1}）。请至 https://modrinth.com/plugin/miaomenu_fork 下载。"
+    up-to-date: "插件已为最新版本，无需更新。"
+  action:
+    dispatch-failed: "为玩家 '{1}' 派发动作 '{0}' 失败。"
+  requirement:
+    unknown-type: "未知的 requirement 类型 '{0}'，请检查菜单 YAML；同类后续出现会被静音。"
+  hot-reload:
+    initialize-failed: "无法初始化 HotReloadManager，菜单热重新加载功能将停用。"
+    loop-failed: "HotReloadManager 监看循环执行失败。"
+  floodgate:
+    player-check-failed: "无法检查玩家 {0} 是否为 Floodgate 玩家。"
+  bstats:
+    initialize-failed: "BStats 初始化失败。"
+  proxy:
+    detected: "检测到代理: {0} - 跨服务器指令已启用"
+    velocity-forwarding-required: "Velocity 模式：请确保已启用 BungeeCord 插件消息转发"
+    disabled: "未检测到代理 - 跨服务器指令已停用"
+    not-detected: "未检测到代理，无法发送跨服务器指令"
+    send-failed: "跨服务器指令发送失败，目标服务器: {0}"
+    channel-not-registered: "频道 {0} 未注册。"
+    message-create-failed: "建立跨服务器消息失败，目标服务器: {0}"
+    message-received: "收到 BungeeCord 消息: {0}"
+    response-handle-failed: "处理 BungeeCord 响应失败。"
+  java-menu:
+    directory-create-failed: "无法建立 java_menus 文件夹。"
+    load-failed: "无法加载菜单: {0}"
+    open-failed: "打开菜单 {0} 时发生错误"
+  bedrock-menu:
+    directory-create-failed: "无法建立 bedrock_menus 文件夹，请检查文件权限。"
+    load-failed: "无法加载基岩版菜单: {0}"
+    send-failed: "无法将表单 '{0}' 发送给基岩版玩家 {1}。"
+    form-build-returned-null: "为基岩版玩家构建表单失败: {0}"
+    form-build-failed: "构建基岩版表单失败。"
+    reflection-send-failed: "通过反射为菜单 '{0}' 发送 Floodgate 表单给玩家 {1} 失败。"
+    reflection-setup-failed: "无法初始化 Floodgate/Cumulus 反射访问。"
