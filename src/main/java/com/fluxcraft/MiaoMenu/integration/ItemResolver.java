@@ -5,15 +5,14 @@ import java.net.URL;
 import java.util.UUID;
 import java.util.Base64;
 
-import org.bukkit.Bukkit;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.profile.PlayerProfile;
-import org.bukkit.profile.PlayerTextures;
-
+import com.destroystokyo.paper.profile.PlayerProfile; // 注意导入这个包
+import com.destroystokyo.paper.profile.ProfileProperty;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
+import org.bukkit.inventory.meta.SkullMeta;
+import java.util.UUID;
 
+import org.jetbrains.annotations.NotNull;
 import com.fluxcraft.MiaoMenu.MiaoMenu;
 
 public class ItemResolver {
@@ -179,25 +178,17 @@ public class ItemResolver {
 		SkullMeta meta = (SkullMeta) head.getItemMeta();
 		
 		if (meta != null) {
-			// 1. 创建一个新的 PlayerProfile
-			PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID(), "CustomHead");
+			// 1. 创建 Paper 的 PlayerProfile
+			PlayerProfile profile = new PlayerProfile(UUID.randomUUID(), "CustomHead");
 			
-			// 2. 获取纹理对象并设置 URL
-			// 注意：base64Texture 需要转换为 Mojang 纹理 URL
-			// 通常 base64 解码后包含 {"textures":{"SKIN":{"url":"http://..."}}}
-			// 这里假设你已经解析出了具体的 texture URL
-			String textureUrl = decodeBase64ToUrl(base64Texture); // 你需要自己实现这个解码逻辑
+			// 2. 添加纹理属性
+			// Paper 的 ProfileProperty 构造函数通常为: new ProfileProperty("textures", value, signature)
+			// 对于自定义头颅，signature 通常可以为 null 或空，具体取决于服务端实现
+			profile.getProperties().add(new ProfileProperty("textures", base64Texture));
 			
-			try {
-				PlayerTextures textures = profile.getTextures();
-				textures.setSkin(new URL(textureUrl));
-				profile.setTextures(textures);
-				
-				// 3. 应用 Profile 到 SkullMeta
-				meta.setPlayerProfile(profile);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			// 3. 设置到元数据
+			// Paper 的 SkullMeta 通常有 setPlayerProfile 方法接受 Paper 的 Profile
+			meta.setPlayerProfile(profile);
 			
 			head.setItemMeta(meta);
 		}
