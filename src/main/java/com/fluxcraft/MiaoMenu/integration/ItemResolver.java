@@ -171,51 +171,52 @@ public class ItemResolver {
             return true;
         }
     }
-}
 
-///////////////////////////////////////////
-public ItemStack getCustomHead(String base64Texture) {
-    ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-    SkullMeta meta = (SkullMeta) head.getItemMeta();
-    
-    if (meta != null) {
-        // 1. 创建一个新的 PlayerProfile
-        PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID(), "CustomHead");
-        
-        // 2. 获取纹理对象并设置 URL
-        // 注意：base64Texture 需要转换为 Mojang 纹理 URL
-        // 通常 base64 解码后包含 {"textures":{"SKIN":{"url":"http://..."}}}
-        // 这里假设你已经解析出了具体的 texture URL
-        String textureUrl = decodeBase64ToUrl(base64Texture); // 你需要自己实现这个解码逻辑
-        
-        try {
-            PlayerTextures textures = profile.getTextures();
-            textures.setSkin(new URL(textureUrl));
-            profile.setTextures(textures);
-            
-            // 3. 应用 Profile 到 SkullMeta
-            meta.setPlayerProfile(profile);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        head.setItemMeta(meta);
+    ///////////////////////////////////////////
+    public ItemStack getCustomHead(String base64Texture) {
+		ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+		SkullMeta meta = (SkullMeta) head.getItemMeta();
+		
+		if (meta != null) {
+			// 1. 创建一个新的 PlayerProfile
+			PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID(), "CustomHead");
+			
+			// 2. 获取纹理对象并设置 URL
+			// 注意：base64Texture 需要转换为 Mojang 纹理 URL
+			// 通常 base64 解码后包含 {"textures":{"SKIN":{"url":"http://..."}}}
+			// 这里假设你已经解析出了具体的 texture URL
+			String textureUrl = decodeBase64ToUrl(base64Texture); // 你需要自己实现这个解码逻辑
+			
+			try {
+				PlayerTextures textures = profile.getTextures();
+				textures.setSkin(new URL(textureUrl));
+				profile.setTextures(textures);
+				
+				// 3. 应用 Profile 到 SkullMeta
+				meta.setPlayerProfile(profile);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			head.setItemMeta(meta);
+		}
+		
+		return head;
     }
-    
-    return head;
-}
 
-// 辅助方法：将 Base64 纹理字符串解析为 URL
-private String decodeBase64ToUrl(String base64Texture) {
-    try {
-        byte[] decodedBytes = java.util.Base64.getDecoder().decode(base64Texture);
-        String json = new String(decodedBytes);
-        // 简单解析 JSON 获取 URL，建议使用 Gson 或 Jackson
-        // 格式通常为: {"textures":{"SKIN":{"url":"http://textures.minecraft.net/..."}}}
-        int start = json.indexOf("\"url\":\"") + 7;
-        int end = json.indexOf("\"", start);
-        return json.substring(start, end);
-    } catch (Exception e) {
-        throw new RuntimeException("Invalid base64 texture", e);
+    // 辅助方法：将 Base64 纹理字符串解析为 URL
+    private String decodeBase64ToUrl(String base64Texture) {
+		try {
+			byte[] decodedBytes = java.util.Base64.getDecoder().decode(base64Texture);
+			String json = new String(decodedBytes);
+			// 简单解析 JSON 获取 URL，建议使用 Gson 或 Jackson
+			// 格式通常为: {"textures":{"SKIN":{"url":"http://textures.minecraft.net/..."}}}
+			int start = json.indexOf("\"url\":\"") + 7;
+			int end = json.indexOf("\"", start);
+			return json.substring(start, end);
+		} catch (Exception e) {
+			throw new RuntimeException("Invalid base64 texture", e);
+		}
     }
-}
+	
+}	
