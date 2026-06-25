@@ -27,7 +27,7 @@ public class MenuClockManager {
         ItemMeta meta = clock.getItemMeta();
         if (meta != null) {
             String rawName = Lang.get("menu.clock.name");
-			List list_lore;
+			ArrayList<String> list_lore = new ArrayList<String>();
 			list_lore.add("&e==================");
 			list_lore.add("&b=====小森监制=====");
 			list_lore.add("&e==================");
