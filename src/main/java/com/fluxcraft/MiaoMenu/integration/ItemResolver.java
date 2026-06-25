@@ -2,6 +2,7 @@ package com.fluxcraft.MiaoMenu.integration;
 
 import java.net.URI;
 import java.util.UUID;
+import java.util.Base64;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -147,7 +148,7 @@ public class ItemResolver {
     private static final java.util.regex.Pattern TEXTURE_HASH = java.util.regex.Pattern.compile("[A-Fa-f0-9]{16,128}");
 
     private ItemStack resolveBase64Head(String base64) {
-        if (base64 == null || !TEXTURE_HASH.matcher(base64).matches()) {
+        if (base64 == null || base64.length() <= 20) {
             plugin.getLogger().fine("Rejected invalid base64 head id: " + (base64 == null ? "null" : base64.substring(0, Math.min(20, base64.length())) + "..."));
             return null;
         }
@@ -156,8 +157,12 @@ public class ItemResolver {
             var server = plugin.getServer();
             var profile = server.createProfile(UUID.randomUUID());
             var textures = profile.getTextures();
+			
+			byte[] decodedBytes = Base64.getDecoder().decode(base64);
+			String decodedString = new String(decodedBytes);
+			
             //var url = URI.create("https://textures.minecraft.net/texture/" + base64).toURL();
-			var url = URI.create("http://textures.minecraft.net/texture/" + base64);
+			var url = URI.create(decodedString).toURL();
             textures.setSkin(url);
             profile.setTextures(textures);
             ItemStack head = new ItemStack(Material.PLAYER_HEAD);
