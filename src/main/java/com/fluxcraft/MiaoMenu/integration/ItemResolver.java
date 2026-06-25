@@ -1,6 +1,7 @@
 package com.fluxcraft.MiaoMenu.integration;
 
 import java.net.URI;
+import java.net.URL;
 import java.util.UUID;
 import java.util.Base64;
 
