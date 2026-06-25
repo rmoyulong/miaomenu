@@ -15,7 +15,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import java.util.Map;
 import java.util.ArrayList;
-import org.bukkit.inventory.ItemFlag
+import org.bukkit.inventory.ItemFlag;
 
 public class MenuClockManager {
     private final MiaoMenu plugin;
