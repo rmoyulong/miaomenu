@@ -193,13 +193,13 @@ bedrock:
 menu:
   clock:
     name: "&6传送门菜单 &7(右键打开菜单)"
-    given: "&a✦ 已获赠传送门菜单，右键即可映照出菜单！"
+    given: "&a✦ 已获赠传送门菜单，右键即可打开菜单！"
     restored: "&f✦ 物品已完好如初地归还于你。"
   locked-tag: "&8[未解锁]"
 
 hot-reload:
   initialized: "✦ 菜单的律动已开始（自动重新加载已启动）。"
-  detected: "✦ 感知到波动: {0}，正在重塑菜单..."
+  detected: "✦ 感到变化: {0}，正在重载菜单..."
 
 log:
   plugin:
