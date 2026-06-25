@@ -156,7 +156,8 @@ public class ItemResolver {
             var server = plugin.getServer();
             var profile = server.createProfile(UUID.randomUUID());
             var textures = profile.getTextures();
-            var url = URI.create("https://textures.minecraft.net/texture/" + base64).toURL();
+            //var url = URI.create("https://textures.minecraft.net/texture/" + base64).toURL();
+			var url = URI.create("http://textures.minecraft.net/texture/" + base64).toURL();
             textures.setSkin(url);
             profile.setTextures(textures);
             ItemStack head = new ItemStack(Material.PLAYER_HEAD);

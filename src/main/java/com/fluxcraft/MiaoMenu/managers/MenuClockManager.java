@@ -36,6 +36,7 @@ public class MenuClockManager {
                     .decoration(TextDecoration.ITALIC, false);
             meta.displayName(nameComponent);
             meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+			meta.addItemFlags(ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES);
 			meta.setLore(lore);
             PersistentDataContainer pdc = meta.getPersistentDataContainer();
             pdc.set(clockKey, PersistentDataType.BYTE, (byte) 1);
