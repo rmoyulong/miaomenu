@@ -27,10 +27,10 @@ public class MenuClockManager {
         ItemMeta meta = clock.getItemMeta();
         if (meta != null) {
             String rawName = Lang.get("menu.clock.name");
-			List<String> lore = new ArrayList<>();
-			lore.add("&e==================");
-			lore.add("&b=====小森监制=====");
-			lore.add("&e==================");
+			ArrayList<String> lore = new ArrayList<>();
+			lore.add("§e==================");
+			lore.add("§b=====小森监制=====");
+			lore.add("§e==================");
             Component nameComponent = Component.text(rawName)
                     .decoration(TextDecoration.ITALIC, false);
             meta.displayName(nameComponent);
