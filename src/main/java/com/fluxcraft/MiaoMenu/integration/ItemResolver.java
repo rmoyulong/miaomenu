@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.UUID;
 import java.util.Base64;
 
+import org.bukkit.Bukkit
 import com.destroystokyo.paper.profile.PlayerProfile; // 注意导入这个包
 import com.destroystokyo.paper.profile.ProfileProperty;
 import org.bukkit.Material;
