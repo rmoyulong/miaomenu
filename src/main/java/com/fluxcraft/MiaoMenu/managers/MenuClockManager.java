@@ -27,15 +27,15 @@ public class MenuClockManager {
         ItemMeta meta = clock.getItemMeta();
         if (meta != null) {
             String rawName = Lang.get("menu.clock.name");
-			List<String> list_lore = new ArrayList<>();
-			list_lore.add("&e==================");
-			list_lore.add("&b=====小森监制=====");
-			list_lore.add("&e==================");
+			List<String> lore = new ArrayList<>();
+			lore.add("&e==================");
+			lore.add("&b=====小森监制=====");
+			lore.add("&e==================");
             Component nameComponent = Component.text(rawName)
                     .decoration(TextDecoration.ITALIC, false);
             meta.displayName(nameComponent);
             meta.addEnchant(Enchantment.UNBREAKING, 1, true);
-			meta.setLore(list_lore);
+			meta.setLore(lore);
             PersistentDataContainer pdc = meta.getPersistentDataContainer();
             pdc.set(clockKey, PersistentDataType.BYTE, (byte) 1);
             clock.setItemMeta(meta);
