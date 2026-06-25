@@ -30,7 +30,7 @@ public class MenuClockManager {
             Component nameComponent = Component.text(rawName)
                     .decoration(TextDecoration.ITALIC, false);
             meta.displayName(nameComponent);
-            //meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+            meta.addEnchant(Enchantment.UNBREAKING, 1, true);
 			meta.setLore("&e==================");
 			meta.setLore("&b=====小森监制=====");
 			meta.setLore("&e==================");
