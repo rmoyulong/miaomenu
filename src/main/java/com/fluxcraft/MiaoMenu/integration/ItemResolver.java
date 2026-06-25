@@ -5,9 +5,9 @@ import java.net.URL;
 import java.util.UUID;
 import java.util.Base64;
 
-import org.bukkit.Bukkit;
-import com.destroystokyo.paper.profile.PlayerProfile; // 注意导入这个包
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -179,16 +179,16 @@ public class ItemResolver {
 		SkullMeta meta = (SkullMeta) head.getItemMeta();
 		
 		if (meta != null) {
-			// 1. 创建 Paper 的 PlayerProfile
-			PlayerProfile profile = new PlayerProfile(UUID.randomUUID(), "CustomHead");
+			// 1. 使用 Bukkit 工厂方法创建 PlayerProfile (不要直接 new)
+			// UUID.randomUUID() 生成一个随机UUID，名称可以随意填，因为皮肤由纹理决定
+			PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID(), "CustomHead");
 			
 			// 2. 添加纹理属性
-			// Paper 的 ProfileProperty 构造函数通常为: new ProfileProperty("textures", value, signature)
-			// 对于自定义头颅，signature 通常可以为 null 或空，具体取决于服务端实现
+			// 注意：Paper 的 ProfileProperty 通常需要 value 和 signature
+			// 对于自定义头颅，如果只有 base64 texture，signature 通常留空或为 null
 			profile.getProperties().add(new ProfileProperty("textures", base64Texture));
 			
 			// 3. 设置到元数据
-			// Paper 的 SkullMeta 通常有 setPlayerProfile 方法接受 Paper 的 Profile
 			meta.setPlayerProfile(profile);
 			
 			head.setItemMeta(meta);
