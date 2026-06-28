@@ -1,11 +1,16 @@
-name: Java CI
+name: miaomenu 编译
+
 on:
+  #对应的是 UTC 时间，需要转换，0 代表北京时间8点，每个月4日/18日12点编译一次
+  #关闭则手动编译
+  workflow_dispatch:
+
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
 
 permissions: write-all
 
