@@ -87,19 +87,19 @@ items:
   # ---- 槽位 11: 原版 + custom_model_data (资源包纹理) --
   custom_model:
     slot: 11
-    material: PAPER
+    material: netherite_sword
     glow: true # 开启发光效果
     # custom_model_data 将此物品与资源包模型绑定。
     # 0 表示 "不设置"；任何大于 0 的值都会传递给 ItemMeta。
-    custom_model_data: 1001
+    custom_model_data: 18007
     display_name: "&b&l2. custom_model_data 示例"
     lore:
       - "&7与 #1 使用相同的原版材质，"
-      - "&7但附加了 custom_model_data: 1001。"
+      - "&7但附加了 custom_model_data: 18007。"
       - ""
       - "&7如果没有资源包，它仍然会显示为纸。"
     left_click_commands:
-      - "[message] &b槽位 11 —— custom_model_data 演示 (ID 1001)"
+      - "[message] &b槽位 11 —— custom_model_data 演示 (ID 18007)"
 
   # ---- 槽位 12: 单个物品上展示所有点击方式 ----------------------
   click_chains:
