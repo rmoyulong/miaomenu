@@ -390,7 +390,7 @@ items:
     slot: 33
     # Truncated example — replace with the real base64 texture string
     # from minecraft-heads.com or your own resource pack.
-    material: "base64head:e30="
+    material: "base64head:e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2YzZjEyODY3MWJhODM0Nzg5NTExOWRlYTIxYTk5ZmQ0ODI0ZWMxOTg0MWU0ZTg5MzFkODFmZWIwZDUzMGVlZCJ9fX0="
     display_name: "&7&l18. material: base64head:..."
     lore:
       - "&7Custom player head from a base64 texture URL hash."
