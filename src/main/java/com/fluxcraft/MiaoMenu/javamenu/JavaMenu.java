@@ -13,6 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.enchantments.Enchantment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,6 +87,12 @@ public class JavaMenu {
             List<String> clickCmds = config.getStringList(path + ".click_commands");
             ConditionGroup conditionGroup = loadConditionGroup(config, path);
             String lockMessage = config.getString(path + ".lock_message");
+            
+            // 新增：读取发光和隐藏属性的配置
+            boolean glow = config.getBoolean(path + ".glow", false);
+            boolean hideAttributes = config.getBoolean(path + ".hide_attributes", true);
+            boolean hideEnchants = config.getBoolean(path + ".hide_enchants", true);
+            
             MenuItem item = new MenuItem(
                     config.getInt(path + ".slot", 0),
                     config.getString(path + ".material", "STONE"),
@@ -98,7 +106,10 @@ public class JavaMenu {
                     shiftRightCmds,
                     clickCmds,
                     conditionGroup,
-                    lockMessage
+                    lockMessage,
+                    glow,
+                    hideAttributes,
+                    hideEnchants
             );
             items.add(item);
             itemsBySlot.put(item.getSlot(), item);
@@ -195,6 +206,11 @@ public class JavaMenu {
         private final List<String> clickCommands;
         private final ConditionGroup conditionGroup;
         private final String lockMessage;
+        
+        // 新增字段
+        private final boolean glow;
+        private final boolean hideAttributes;
+        private final boolean hideEnchants;
 
         public MenuItem(
                 int slot,
@@ -209,7 +225,10 @@ public class JavaMenu {
                 List<String> shiftRightClickCommands,
                 List<String> clickCommands,
                 ConditionGroup conditionGroup,
-                String lockMessage
+                String lockMessage,
+                boolean glow,
+                boolean hideAttributes,
+                boolean hideEnchants
         ) {
             this.slot = slot;
             this.material = material;
@@ -224,6 +243,9 @@ public class JavaMenu {
             this.clickCommands = clickCommands != null ? clickCommands : new ArrayList<>();
             this.conditionGroup = conditionGroup != null ? conditionGroup : ConditionGroup.fromLegacyConditions(null);
             this.lockMessage = lockMessage;
+            this.glow = glow;
+            this.hideAttributes = hideAttributes;
+            this.hideEnchants = hideEnchants;
         }
 
         public boolean isLocked(Player player, RequirementService requirementService, String menuName, Map<String, RequirementBlock> requirementBlocks) {
@@ -316,6 +338,31 @@ public class JavaMenu {
                 if (customModelData > 0) {
                     meta.setCustomModelData(customModelData);
                 }
+                
+                // 处理发光效果
+                if (glow) {
+                    // 添加一个不可见的附魔来产生发光效果
+                    meta.addEnchant(Enchantment.DURABILITY, 1, true);
+                    // 隐藏附魔显示（如果配置要求）
+                    if (hideEnchants) {
+                        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    }
+                }
+                
+                // 隐藏属性
+                if (hideAttributes) {
+                    meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+                }
+                
+                // 额外隐藏其他信息（可选）
+                if (hideEnchants) {
+                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                }
+                meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+                meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+                meta.addItemFlags(ItemFlag.HIDE_DESTROYS);
+                meta.addItemFlags(ItemFlag.HIDE_PLACED_ON);
+                
                 item.setItemMeta(meta);
             }
             return item;
@@ -347,6 +394,18 @@ public class JavaMenu {
 
         public List<String> getClickCommands() {
             return clickCommands;
+        }
+
+        public boolean isGlow() {
+            return glow;
+        }
+
+        public boolean isHideAttributes() {
+            return hideAttributes;
+        }
+
+        public boolean isHideEnchants() {
+            return hideEnchants;
         }
 
         public record LockState(boolean locked, String message) {
