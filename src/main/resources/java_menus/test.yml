@@ -1,163 +1,167 @@
 # =====================================================================
-#  MiaoMenu_fork — Java menu showcase (default test.yml)
+#  MiaoMenu_fork — Java 菜单展示 (默认 test.yml)
 #  Fork:           https://github.com/Avery11111101/MiaoMenu_fork
-#  Original:       https://github.com/Yamada0001/MiaoMenu
+#  原版:           https://github.com/Yamada0001/MiaoMenu
 # ---------------------------------------------------------------------
-#  This file is the "feature catalogue" — every YAML key that the Java
-#  side of MiaoMenu_fork understands is exercised at least once here so
-#  you can copy & paste straight into your own menus.
+#  此文件是一个 "功能目录" —— 此处展示了 MiaoMenu_fork Java 端支持的
+#  每一个 YAML 键，方便您直接复制粘贴到您自己的菜单配置中。
 #
-#  Quick recap of what is shown below:
-#    * menu_title with PlaceholderAPI placeholders + alias "title"
-#    * rows (1-6, clamped server-side)
-#    * view_requirement (menu-level gate with deny_message + fallback_menu)
-#    * requirement_blocks (named, reusable condition groups, including
-#      a self-referencing nested example via the "block" requirement)
-#    * Every supported requirement type:
+#  下方展示内容的快速回顾：
+#    * menu_title 支持 PlaceholderAPI 占位符 + 别名 "title"
+#    * rows (1-6, 服务端会自动限制范围)
+#    * view_requirement (菜单级别的进入门槛，带有 deny_message 和 fallback_menu)
+#    * requirement_blocks (命名的、可复用的条件组，包含一个通过 "block" 类型
+#      实现的自引用嵌套示例)
+#    * 所有支持的条件类型:
 #        permission, placeholder_equals, placeholder-not-equals,
 #        placeholder_contains, advancement, progress,
 #        score_gte, score_lte, score_equals, score_range, block
-#    * Every supported click chain on items:
+#    * 物品上支持的所有点击链:
 #        left_click_commands, right_click_commands,
 #        middle_click_commands, shift_left_click_commands,
-#        shift_right_click_commands, click_commands (catch-all)
-#    * Every action prefix:
-#        [player] [cmd] [message] [close] [menu] and no-prefix default
-#    * Every material prefix the ItemResolver supports:
+#        shift_right_click_commands, click_commands (通用捕获)
+#    * 所有动作前缀:
+#        [player] [cmd] [message] [close] [menu] 以及无前缀时的默认行为
+#    * ItemResolver 支持的所有材质前缀:
 #        vanilla, vanilla + custom_model_data,
-#        craftengine:<namespace>:<id>, itemsadder:<namespace>:<id>,
-#        mmoitems:<type>:<id>, headdb:<id>, base64head:<base64>
-#    * conditions with operator: AND, operator: OR, and nested children
-#    * conditions referencing a shared requirement_block
-#    * Legacy item_conditions list (kept for back-compat)
-#    * lock_message override that wins over the global Lang fallback
+#        craftengine:<命名空间>:<ID>, itemsadder:<命名空间>:<ID>,
+#        mmoitems:<类型>:<ID>, headdb:<ID>, base64head:<Base64>
+#    * 带有 operator: AND 和 operator: OR 的条件，以及嵌套子条件
+#    * 引用共享 requirement_block 的条件
+#    * 为向后兼容保留的旧版 item_conditions 列表
+#    * lock_message 覆盖，会优先于全局 Lang 的备用文本
 # =====================================================================
 
-menu_title: "&6&lMiaoMenu_fork &7| &fHi %player_name%"
-# Number of rows in the chest GUI. Allowed: 1, 2, 3, 4, 5, 6.
-# 1 row = 9 slots, 6 rows = 54 slots (full double chest size).
+menu_title: "&6&lMiaoMenu_fork &7| &f你好 %player_name%"
+# GUI物品栏的行数。允许的值为: 1, 2, 3, 4, 5, 6。
+# 1行 = 9个槽位，6行 = 54个槽位 (满的双箱大小)。
 rows: 6
 
 # ---------------------------------------------------------------------
-# Menu-level gate. If the player fails this check, the menu refuses to
-# open, shows deny_message, and (optionally) re-routes them to the menu
-# named in fallback_menu. Set fallback_menu to "" to disable the rerout.
+# 菜单级别的进入门槛。如果玩家未通过此检查，菜单将拒绝打开，
+# 显示 deny_message，并且（可选地）将他们重新导向到
+# fallback_menu 中指定的菜单。将 fallback_menu 设置为 "" 以禁用重定向。
 # ---------------------------------------------------------------------
 view_requirement:
-  deny_message: "&cYou are not allowed to open this menu yet."
+  deny_message: "&c你暂时没有权限打开此菜单。"
   fallback_menu: ""
   requirements:
     - type: permission
       permission: dgeysermenu.use
 
 # ---------------------------------------------------------------------
-# Reusable, named condition groups. Reference them from anywhere with
+# 可复用的、命名的条件组。您可以从任何地方通过以下方式引用它们：
 #   - type: block
-#     block: <name>
-# Each block can have its own deny_message and fallback_menu, which are
-# inherited when the block fails.
+#     block: <名称>
+# 每个 block 都可以有自己的 deny_message 和 fallback_menu，
+# 当该 block 条件失败时会继承这些设置。
 # ---------------------------------------------------------------------
 requirement_blocks:
   vip_only:
-    deny_message: "&cVIP members only."
+    deny_message: "&c仅限VIP成员。"
     requirements:
       - type: permission
         permission: "miaomenu.vip"
   story_started:
-    deny_message: "&cStart the vanilla story progression first."
+    deny_message: "&c请先开始原版游戏进度。"
     requirements:
       - type: advancement
         advancement: "minecraft:story/root"
 
 items:
 
-  # ---- Slot 10: minimal vanilla item, single left-click action -------
+  # ---- 槽位 10: 最简单的原版物品，单个左键动作 -------
   vanilla_basic:
     slot: 10
     material: PAPER
-    display_name: "&e&l1. Vanilla material"
+    glow: true # 开启发光效果
+    display_name: "&e&l1. 原版材质"
     lore:
-      - "&7The simplest possible item:"
-      - "&7vanilla material + single left-click action."
+      - "&7最简单的物品示例："
+      - "&7原版材质 + 单个左键动作。"
       - ""
-      - "&aLeft-click&7: send a chat message."
+      - "&a左键点击&7：发送一条聊天消息。"
     left_click_commands:
-      - "[message] &aHello %player_name%! This is the simplest item."
+      - "[message] &a你好 %player_name%！这是最简单的物品。"
 
-  # ---- Slot 11: vanilla + custom_model_data (resource pack texture) --
+  # ---- 槽位 11: 原版 + custom_model_data (资源包纹理) --
   custom_model:
     slot: 11
     material: PAPER
-    # custom_model_data ties this item to a resource-pack model.
-    # 0 means "do not set"; any value > 0 is forwarded to the ItemMeta.
+    glow: true # 开启发光效果
+    # custom_model_data 将此物品与资源包模型绑定。
+    # 0 表示 "不设置"；任何大于 0 的值都会传递给 ItemMeta。
     custom_model_data: 1001
-    display_name: "&b&l2. custom_model_data"
+    display_name: "&b&l2. custom_model_data 示例"
     lore:
-      - "&7Same vanilla material as #1,"
-      - "&7but with custom_model_data: 1001 attached."
+      - "&7与 #1 使用相同的原版材质，"
+      - "&7但附加了 custom_model_data: 1001。"
       - ""
-      - "&7Without a resource pack, this still renders as paper."
+      - "&7如果没有资源包，它仍然会显示为纸。"
     left_click_commands:
-      - "[message] &bSlot 11 — custom_model_data demo (id 1001)"
+      - "[message] &b槽位 11 —— custom_model_data 演示 (ID 1001)"
 
-  # ---- Slot 12: every click variant on one item ----------------------
+  # ---- 槽位 12: 单个物品上展示所有点击方式 ----------------------
   click_chains:
     slot: 12
     material: STICK
-    display_name: "&d&l3. All click chains"
+    glow: true # 开启发光效果
+    display_name: "&d&l3. 所有点击链"
     lore:
-      - "&7Try each mouse interaction:"
-      - "&a · Left-click&7 → run [player] command"
-      - "&a · Right-click&7 → console [cmd]"
-      - "&a · Middle-click&7 → just a message"
-      - "&a · Shift + Left&7 → open another menu"
-      - "&a · Shift + Right&7 → close the GUI"
-      - "&a · Any other click&7 → catch-all click_commands"
+      - "&7尝试每种鼠标交互："
+      - "&a · 左键点击&7 → 运行 [player] 命令"
+      - "&a · 右键点击&7 → 控制台 [cmd] 命令"
+      - "&a · 中键点击&7 → 发送消息"
+      - "&a · Shift + 左键&7 → 打开另一个菜单"
+      - "&a · Shift + 右键&7 → 关闭 GUI"
+      - "&a · 其他点击&7 → 通用捕获 click_commands"
     left_click_commands:
-      - "[player] me clicked the showcase item"
+      - "[player] me 点击了展示物品"
     right_click_commands:
-      - "[cmd] say %player_name% triggered a console command"
+      - "[cmd] say %player_name% 触发了控制台命令"
     middle_click_commands:
-      - "[message] &dMiddle-click works too!"
+      - "[message] &d中键点击也有效！"
     shift_left_click_commands:
       - "[menu] test"
     shift_right_click_commands:
-      - "[message] &cClosing the menu now..."
+      - "[message] &c正在关闭菜单..."
       - "[close]"
-    # click_commands runs for any click type that does not match one of
-    # the dedicated chains above; useful for drop/swap-offhand etc.
+    # click_commands 会为任何未匹配到上述专用链的点击类型运行；
+    # 适用于 Q键丢弃、副手交换等操作。
     click_commands:
-      - "[message] &7(catch-all) Detected a non-specific click."
+      - "[message] &7(通用捕获) 检测到非特定点击。"
 
-  # ---- Slot 13: every action prefix in one chain ---------------------
+  # ---- 槽位 13: 在一条链中展示所有动作前缀 ---------------------
   action_prefixes:
     slot: 13
     material: COMMAND_BLOCK
-    display_name: "&6&l4. Every action prefix"
+    glow: true # 开启发光效果
+    display_name: "&6&l4. 所有动作前缀"
     lore:
-      - "&7One chain that fires every prefix in order:"
+      - "&7一条按顺序触发所有前缀的链："
       - "&f[message] [player] [cmd] [menu] [close]"
       - ""
-      - "&7No prefix? The default action treats it as a chat message."
+      - "&7没有前缀？默认动作会将其视为聊天消息。"
     left_click_commands:
-      - "[message] &6Step 1/5 — [message] prefix"
+      - "[message] &6步骤 1/5 —— [message] 前缀"
       - "[player] list"
-      - "[cmd] say %player_name% just ran a console action"
+      - "[cmd] say %player_name% 刚刚运行了一个控制台动作"
       - "[menu] test"
-      - "Plain text with no prefix falls back to the default action."
+      - "没有前缀的纯文本将回退到默认动作。"
       - "[close]"
 
-  # ---- Slot 14: conditions with operator AND -------------------------
+  # ---- 槽位 14: 使用 AND 操作符的条件 -------------------------
   conditions_and:
     slot: 14
     material: IRON_INGOT
-    display_name: "&7&l5. conditions / AND"
+    glow: true # 开启发光效果
+    display_name: "&7&l5. 条件 / AND"
     lore:
-      - "&7Unlocks only when ALL of the following hold:"
-      - "&8 · has permission dgeysermenu.use"
-      - "&8 · placeholder %player_name% contains nothing (always true)"
+      - "&7仅当满足以下 ALL 条件时解锁："
+      - "&8 · 拥有权限 dgeysermenu.use"
+      - "&8 · 占位符 %player_name% 不包含任何内容 (永远为真)"
       - ""
-      - "&7Fails → grey glass pane + lock_message below."
+      - "&7条件失败 → 显示灰色玻璃板 + 下方的 lock_message。"
     conditions:
       operator: AND
       requirements:
@@ -166,19 +170,20 @@ items:
         - type: placeholder_contains
           placeholder: "%player_name%"
           value: ""
-    lock_message: "&cAND gate failed — see the lore for the rules."
+    lock_message: "&cAND 条件失败——请查看物品描述中的规则。"
     left_click_commands:
-      - "[message] &7AND condition satisfied; here is your reward!"
+      - "[message] &7AND 条件已满足，这是给你的奖励！"
 
-  # ---- Slot 15: conditions with operator OR --------------------------
+  # ---- 槽位 15: 使用 OR 操作符的条件 --------------------------
   conditions_or:
     slot: 15
     material: GOLD_INGOT
-    display_name: "&e&l6. conditions / OR"
+    glow: true # 开启发光效果
+    display_name: "&e&l6. 条件 / OR"
     lore:
-      - "&7Unlocks when ANY of the following hold:"
-      - "&8 · placeholder %player_world% equals world"
-      - "&8 · player has permission miaomenu.vip"
+      - "&7当满足以下 ANY 条件时解锁："
+      - "&8 · 占位符 %player_world% 等于 world"
+      - "&8 · 玩家拥有权限 miaomenu.vip"
     conditions:
       operator: OR
       requirements:
@@ -187,22 +192,23 @@ items:
           value: "world"
         - type: permission
           permission: "miaomenu.vip"
-    lock_message: "&cOR gate failed — neither branch was satisfied."
+    lock_message: "&cOR 条件失败——没有任何分支被满足。"
     left_click_commands:
-      - "[message] &eOR condition satisfied!"
+      - "[message] &eOR 条件已满足！"
 
-  # ---- Slot 16: conditions with nested children ----------------------
+  # ---- 槽位 16: 包含嵌套子条件的条件 ----------------------
   conditions_nested:
     slot: 16
     material: DIAMOND
-    display_name: "&b&l7. conditions / nested children"
+    glow: true # 开启发光效果
+    display_name: "&b&l7. 条件 / 嵌套子条件"
     lore:
-      - "&7Unlocks when:"
-      - "&8 · permission dgeysermenu.use AND"
-      - "&8   (placeholder_equals %player_world% = world OR"
-      - "&8    placeholder-not-equals %player_gamemode% = ADVENTURE)"
+      - "&7满足以下条件时解锁："
+      - "&8 · 拥有权限 dgeysermenu.use 且"
+      - "&8   (占位符 %player_world% 等于 world 或"
+      - "&8    占位符 %player_gamemode% 不等于 ADVENTURE)"
       - ""
-      - "&7Demonstrates AND wrapping an OR child group."
+      - "&7演示了 AND 包装一个 OR 子条件组。"
     conditions:
       operator: AND
       requirements:
@@ -217,58 +223,61 @@ items:
             - type: placeholder-not-equals
               placeholder: "%player_gamemode%"
               value: "ADVENTURE"
-    lock_message: "&cNested AND/OR gate failed."
+    lock_message: "&c嵌套 AND/OR 条件失败。"
     left_click_commands:
-      - "[message] &bNested condition group satisfied!"
+      - "[message] &b嵌套条件组已满足！"
 
-  # ---- Slot 19: requirement type — advancement -----------------------
+  # ---- 槽位 19: 条件类型 —— advancement -----------------------
   req_advancement:
     slot: 19
     material: WRITTEN_BOOK
-    display_name: "&a&l8. type: advancement"
+    glow: true # 开启发光效果
+    display_name: "&a&l8. 类型: advancement"
     lore:
-      - "&7Unlocks once the player has completed:"
+      - "&7玩家完成以下进度后解锁："
       - "&fminecraft:story/root"
     conditions:
       operator: AND
       requirements:
         - type: advancement
           advancement: "minecraft:story/root"
-    lock_message: "&cFinish the first vanilla advancement first."
+    lock_message: "&c请先完成第一个原版进度。"
     left_click_commands:
-      - "[message] &aWelcome, advancement holder!"
+      - "[message] &a欢迎，进度达成者！"
 
-  # ---- Slot 20: requirement type — placeholder_contains --------------
+  # ---- 槽位 20: 条件类型 —— placeholder_contains --------------
   req_placeholder_contains:
     slot: 20
     material: NAME_TAG
-    display_name: "&d&l9. type: placeholder_contains"
+    glow: true # 开启发光效果
+    display_name: "&d&l9. 类型: placeholder_contains"
     lore:
-      - "&7Unlocks when %player_name% contains the letter 'a'."
-      - "&7(Demonstrates substring matching on PlaceholderAPI output.)"
+      - "&7当 %player_name% 包含字母 'a' 时解锁。"
+      - "&7(演示对 PlaceholderAPI 输出的子串匹配。) "
     conditions:
       operator: AND
       requirements:
         - type: placeholder_contains
           placeholder: "%player_name%"
           value: "a"
-    lock_message: "&cYour name does not contain the letter 'a'."
+    lock_message: "&c你的名字不包含字母 'a'。"
     left_click_commands:
-      - "[message] &dYour name contains an 'a'!"
+      - "[message] &d你的名字包含字母 'a'！"
 
-  # ---- Slot 21: requirement type — score comparators -----------------
+  # ---- 槽位 21: 条件类型 —— 分数比较器 -----------------
   req_score:
     slot: 21
     material: REDSTONE
-    display_name: "&c&l10. type: score_* comparators"
+    glow: true # 开启发光效果
+    display_name: "&c&l10. 类型: score_* 比较器"
     lore:
-      - "&7Combines four score-based checks:"
-      - "&8 · score_gte    objective=kills   value=10"
-      - "&8 · score_lte    objective=deaths  value=5"
-      - "&8 · score_equals objective=team    value=1"
-      - "&8 · score_range  objective=level   min=10 max=99"
+      - "&7组合了四个基于分数的检查："
+      - "&8 · score_gte    目标= kills   值=10"
+      - "&8 · score_lte    目标= deaths  值=5"
+      - "&8 · score_equals 目标= team    值=1"
+      - "&8 · score_range  目标= level   最小值=10 最大值=99"
       - ""
-      - "&7Create those objectives with /scoreboard to test."
+      - "&7使用 /scoreboard 创建这些目标以进行测试。"
     conditions:
       operator: AND
       requirements:
@@ -285,167 +294,178 @@ items:
           objective: "level"
           min: 10
           max: 99
-    lock_message: "&cYour scoreboard objectives do not meet the thresholds."
+    lock_message: "&c你的计分板目标未达到阈值要求。"
     left_click_commands:
-      - "[message] &cAll four scoreboard checks passed!"
+      - "[message] &c所有四个计分板检查均已通过！"
 
-  # ---- Slot 22: requirement type — progress --------------------------
+  # ---- 槽位 22: 条件类型 —— progress --------------------------
   req_progress:
     slot: 22
     material: EXPERIENCE_BOTTLE
-    display_name: "&a&l11. type: progress"
+    glow: true # 开启发光效果
+    display_name: "&a&l11. 类型: progress"
     lore:
-      - "&7'progress' is a friendlier alias of score_gte:"
-      - "&8 · objective=quests value=3"
-      - "&7Omit 'value' to mean ' > 0'."
+      - "&7'progress' 是 score_gte 的友好别名："
+      - "&8 · 目标=quests 值=3"
+      - "&7省略 'value' 表示 ' > 0'。"
     conditions:
       operator: AND
       requirements:
         - type: progress
           objective: "quests"
           value: 3
-    lock_message: "&cYou need at least 3 quests completed."
+    lock_message: "&c你至少需要完成 3 个任务。"
     left_click_commands:
-      - "[message] &aQuest progress check passed!"
+      - "[message] &a任务进度检查通过！"
 
-  # ---- Slot 23: requirement type — block (reusable group) ------------
+  # ---- 槽位 23: 条件类型 —— block (可复用组) ------------
   req_block_ref:
     slot: 23
     material: EMERALD
-    display_name: "&2&l12. type: block (VIP)"
+    glow: true # 开启发光效果
+    display_name: "&2&l12. 类型: block (VIP)"
     lore:
-      - "&7Reuses the named block 'vip_only' defined"
-      - "&7at the top of this file."
+      - "&7复用文件顶部定义的"
+      - "&7名为 'vip_only' 的条件块。"
       - ""
-      - "&7Need miaomenu.vip permission to unlock."
+      - "&7需要 miaomenu.vip 权限才能解锁。"
     conditions:
       operator: AND
       requirements:
         - type: block
           block: "vip_only"
     left_click_commands:
-      - "[message] &2VIP-only feature unlocked!"
+      - "[message] &2VIP 专属功能已解锁！"
 
-  # ---- Slot 28: legacy item_conditions (back-compat) -----------------
+  # ---- 槽位 28: 旧版 item_conditions (向后兼容) -----------------
   legacy_conditions:
     slot: 28
     material: BOOK
-    display_name: "&8&l13. legacy item_conditions"
+    glow: true # 开启发光效果
+    display_name: "&8&l13. 旧版 item_conditions"
     lore:
-      - "&7Old (pre-conditions) syntax — implicitly AND."
-      - "&7Kept for backwards compatibility with old menus."
+      - "&7旧式 (pre-conditions) 语法——隐式的 AND。"
+      - "&7为向后兼容旧菜单而保留。"
     item_conditions:
       - type: permission
         permission: "dgeysermenu.use"
-    lock_message: "&cLegacy item_conditions failed."
+    lock_message: "&c旧版 item_conditions 失败。"
     left_click_commands:
-      - "[message] &8Legacy syntax still works."
+      - "[message] &8旧版语法仍然有效。"
 
-  # ---- Slot 29: CraftEngine custom item ------------------------------
+  # ---- 槽位 29: CraftEngine 自定义物品 ------------------------------
   craftengine_item:
     slot: 29
-    # material prefix → ItemResolver delegates to CraftEngine's API.
-    # If CraftEngine is not installed, the fallback material from
-    # config.yml settings.item-resolver.fallback-material kicks in.
+    # material 前缀 → ItemResolver 委托给 CraftEngine 的 API。
+    # 如果未安装 CraftEngine，将回退到
+    # config.yml 中 settings.item-resolver.fallback-material 设置的材质。
     material: "craftengine:default:example_item"
-    display_name: "&5&l14. material: craftengine:..."
+    glow: true # 开启发光效果
+    display_name: "&5&l14. 材质: craftengine:..."
     lore:
-      - "&7Demonstrates the CraftEngine integration."
-      - "&7Falls back to a stone if CraftEngine is missing."
+      - "&7演示 CraftEngine 集成。"
+      - "&7如果 CraftEngine 缺失，将回退为石头。"
     left_click_commands:
-      - "[message] &5CraftEngine demo clicked."
+      - "[message] &5已点击 CraftEngine 演示。"
 
-  # ---- Slot 30: ItemsAdder custom item -------------------------------
+  # ---- 槽位 30: ItemsAdder 自定义物品 -------------------------------
   itemsadder_item:
     slot: 30
     material: "itemsadder:default:example_item"
-    display_name: "&6&l15. material: itemsadder:..."
+    glow: true # 开启发光效果
+    display_name: "&6&l15. 材质: itemsadder:..."
     lore:
-      - "&7Demonstrates the ItemsAdder integration."
+      - "&7演示 ItemsAdder 集成。"
     left_click_commands:
-      - "[message] &6ItemsAdder demo clicked."
+      - "[message] &6已点击 ItemsAdder 演示。"
 
-  # ---- Slot 31: MMOItems custom item ---------------------------------
+  # ---- 槽位 31: MMOItems 自定义物品 ---------------------------------
   mmoitems_item:
     slot: 31
     material: "mmoitems:SWORD:CUTLASS"
-    display_name: "&c&l16. material: mmoitems:..."
+    glow: true # 开启发光效果
+    display_name: "&c&l16. 材质: mmoitems:..."
     lore:
-      - "&7Demonstrates the MMOItems integration."
+      - "&7演示 MMOItems 集成。"
     left_click_commands:
-      - "[message] &cMMOItems demo clicked."
+      - "[message] &c已点击 MMOItems 演示。"
 
-  # ---- Slot 32: HeadDatabase head ------------------------------------
+  # ---- 槽位 32: HeadDatabase 头颅 ------------------------------------
   headdb_item:
     slot: 32
     material: "headdb:1234"
-    display_name: "&e&l17. material: headdb:..."
+    glow: true # 开启发光效果
+    display_name: "&e&l17. 材质: headdb:..."
     lore:
-      - "&7Loads head id 1234 from HeadDatabase."
+      - "&7从 HeadDatabase 加载 ID 为 1234 的头颅。"
     left_click_commands:
-      - "[message] &eHeadDatabase demo clicked."
+      - "[message] &e已点击 HeadDatabase 演示。"
 
-  # ---- Slot 33: Base64 player head -----------------------------------
+  # ---- 槽位 33: Base64 玩家头颅 -----------------------------------
   base64_head:
     slot: 33
-    # Truncated example — replace with the real base64 texture string
-    # from minecraft-heads.com or your own resource pack.
+    # 示例已截断——请替换为来自 minecraft-heads.com 或您自己资源包的真实 base64 纹理字符串。
     material: "base64head:e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvN2YzZjEyODY3MWJhODM0Nzg5NTExOWRlYTIxYTk5ZmQ0ODI0ZWMxOTg0MWU0ZTg5MzFkODFmZWIwZDUzMGVlZCJ9fX0="
-    display_name: "&7&l18. material: base64head:..."
+    glow: true # 开启发光效果
+    display_name: "&7&l18. 材质: base64head:..."
     lore:
-      - "&7Custom player head from a base64 texture URL hash."
+      - "&7来自 base64 纹理 URL 哈希的自定义玩家头颅。"
     left_click_commands:
-      - "[message] &7Base64 head demo clicked."
+      - "[message] &7已点击 Base64 头颅演示。"
 
-  # ---- Slot 37: open another menu via [menu] -------------------------
+  # ---- 槽位 37: 通过 [menu] 打开另一个菜单 -------------------------
   open_other_menu:
     slot: 37
     material: ENDER_PEARL
-    display_name: "&9&l19. action [menu]"
+    glow: true # 开启发光效果
+    display_name: "&9&l19. 动作 [menu]"
     lore:
-      - "&7Use [menu] <name> to chain into another menu"
-      - "&7without going through a slash command."
+      - "&7使用 [menu] <名称> 链式打开另一个菜单，"
+      - "&7无需通过斜杠命令。"
       - ""
-      - "&7Here it re-opens the bundled 'server-selector' demo."
+      - "&7这里会重新打开捆绑的 'server-selector' 演示菜单。"
     left_click_commands:
       - "[menu] server-selector"
 
-  # ---- Slot 38: cross-server proxy command (BungeeCord/Velocity) -----
+  # ---- 槽位 38: 跨服务器代理命令 (BungeeCord/Velocity) -----
   proxy_send:
     slot: 38
     material: COMPASS
-    display_name: "&b&l20. [player] server <name>"
+    glow: true # 开启发光效果
+    display_name: "&b&l20. [player] server <名称>"
     lore:
-      - "&7With Velocity / BungeeCord enabled in config.yml,"
-      - "&7[player] server <name> routes through the proxy."
+      - "&7如果在 config.yml 中启用了 Velocity / BungeeCord，"
+      - "&7[player] server <名称> 将通过代理进行路由。"
       - ""
-      - "&7Without a proxy, the player just runs '/server' locally."
+      - "&7如果没有代理，玩家将只在本地运行 '/server' 命令。"
     left_click_commands:
       - "[player] server lobby"
-      - "[message] &bConnecting to lobby..."
+      - "[message] &b正在连接至 lobby..."
       - "[close]"
 
-  # ---- Slot 40: information / decorative -----------------------------
+  # ---- 槽位 40: 信息 / 装饰性物品 -----------------------------
   info:
     slot: 40
     material: KNOWLEDGE_BOOK
-    display_name: "&f&lMiaoMenu_fork — Showcase"
+    glow: true # 开启发光效果
+    display_name: "&f&lMiaoMenu_fork — 功能展示"
     lore:
-      - "&7This menu lists every feature the plugin"
-      - "&7supports. Edit me freely — &fplugins/MiaoMenu_fork/java_menus/test.yml"
+      - "&7此菜单列出了插件支持的每一项功能。"
+      - "&7请随意编辑我 —— &fplugins/MiaoMenu_fork/java_menus/test.yml"
       - ""
-      - "&7Commands:"
-      - "&f · /dgm help &7— full command list"
-      - "&f · /dgm help <sub> &7— deep-dive a command"
-      - "&f · /dgm lang <code> &7— switch language live"
-      - "&f · /dgm about &7— version + GitHub + Modrinth"
+      - "&7命令："
+      - "&f · /mmf help &7— 完整命令列表"
+      - "&f · /mmf help <子命令> &7— 深入查看某个命令"
+      - "&f · /mmf lang <代码> &7— 实时切换语言"
+      - "&f · /mmf about &7— 版本 + GitHub + Modrinth"
 
-  # ---- Slot 49: close button (always present) ------------------------
+  # ---- 槽位 49: 关闭按钮 (始终存在) ------------------------
   close:
     slot: 49
-    material: BARRIER
-    display_name: "&c&lClose"
+    material: copper_door
+    glow: true # 开启发光效果
+    display_name: "&c&l关闭"
     lore:
-      - "&7Closes this menu."
+      - "&7关闭此菜单。"
     left_click_commands:
       - "[close]"
