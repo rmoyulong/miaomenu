@@ -320,6 +320,7 @@ public class JavaMenu {
             return item;
         }
 
+/////////////////////////////////////////////////////////////////////////////
 		@SuppressWarnings("deprecation")
 		private ItemStack createUnlockedItemStack(Player player, Plugin plugin, @Nullable ItemResolver itemResolver) {
 			// material 若使用者在 YAML 寫 ~（null）或空字串，matchMaterial 會丟 IAE；先擋掉再 fallback。
@@ -368,12 +369,10 @@ public class JavaMenu {
 					meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 				}
 				meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-				// HIDE_POTION_EFFECTS 在 1.21+ 已移除，用 try-catch 保护
-				try {
-					meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-				} catch (NoSuchFieldError e) {
-					// 1.21+ 版本已移除此标志，忽略
-				}
+				
+				// 使用反射动态添加 HIDE_POTION_EFFECTS（如果存在）
+				addItemFlagIfExists(meta, "HIDE_POTION_EFFECTS");
+				
 				meta.addItemFlags(ItemFlag.HIDE_DESTROYS);
 				meta.addItemFlags(ItemFlag.HIDE_PLACED_ON);
 				
@@ -381,6 +380,21 @@ public class JavaMenu {
 			}
 			return item;
 		}
+
+		/**
+		 * 使用反射动态添加 ItemFlag，如果该标志存在的话
+		 */
+		private void addItemFlagIfExists(ItemMeta meta, String flagName) {
+			try {
+				// 尝试获取 ItemFlag 枚举常量
+				ItemFlag flag = ItemFlag.valueOf(flagName);
+				meta.addItemFlags(flag);
+			} catch (IllegalArgumentException e) {
+				// 该标志在当前版本不存在，忽略
+				// 这在不同 Minecraft 版本间是正常的
+			}
+		}
+/////////////////////////////////////////////////////////////////////////////
 
         public int getSlot() {
             return slot;
