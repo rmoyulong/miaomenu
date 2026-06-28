@@ -320,53 +320,67 @@ public class JavaMenu {
             return item;
         }
 
-        @SuppressWarnings("deprecation")
-        private ItemStack createUnlockedItemStack(Player player, Plugin plugin, @Nullable ItemResolver itemResolver) {
-            // material 若使用者在 YAML 寫 ~（null）或空字串，matchMaterial 會丟 IAE；先擋掉再 fallback。
-            Material resolvedMaterial = (material == null || material.isBlank()) ? null : Material.matchMaterial(material);
-            ItemStack item = itemResolver != null
-                    ? itemResolver.resolve(material, customModelData)
-                    : new ItemStack(resolvedMaterial != null ? resolvedMaterial : Material.STONE);
-            ItemMeta meta = item.getItemMeta();
-            if (meta != null) {
-                meta.displayName(LegacyComponentSerializer.legacySection().deserialize(PlaceholderUtils.parse(player, name, plugin)));
-                List<Component> loreComponents = new ArrayList<>();
-                lore.forEach(line -> loreComponents.add(
-                        LegacyComponentSerializer.legacySection().deserialize(PlaceholderUtils.parse(player, line, plugin))
-                ));
-                meta.lore(loreComponents);
-                if (customModelData > 0) {
-                    meta.setCustomModelData(customModelData);
-                }
-                
-                // 处理发光效果
-                if (glow) {
-                    // 添加一个不可见的附魔来产生发光效果
-                    meta.addEnchant(Enchantment.DURABILITY, 1, true);
-                    // 隐藏附魔显示（如果配置要求）
-                    if (hideEnchants) {
-                        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                    }
-                }
-                
-                // 隐藏属性
-                if (hideAttributes) {
-                    meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
-                }
-                
-                // 额外隐藏其他信息（可选）
-                if (hideEnchants) {
-                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                }
-                meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
-                meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
-                meta.addItemFlags(ItemFlag.HIDE_DESTROYS);
-                meta.addItemFlags(ItemFlag.HIDE_PLACED_ON);
-                
-                item.setItemMeta(meta);
-            }
-            return item;
-        }
+		@SuppressWarnings("deprecation")
+		private ItemStack createUnlockedItemStack(Player player, Plugin plugin, @Nullable ItemResolver itemResolver) {
+			// material 若使用者在 YAML 寫 ~（null）或空字串，matchMaterial 會丟 IAE；先擋掉再 fallback。
+			Material resolvedMaterial = (material == null || material.isBlank()) ? null : Material.matchMaterial(material);
+			ItemStack item = itemResolver != null
+					? itemResolver.resolve(material, customModelData)
+					: new ItemStack(resolvedMaterial != null ? resolvedMaterial : Material.STONE);
+			ItemMeta meta = item.getItemMeta();
+			if (meta != null) {
+				meta.displayName(LegacyComponentSerializer.legacySection().deserialize(PlaceholderUtils.parse(player, name, plugin)));
+				List<Component> loreComponents = new ArrayList<>();
+				lore.forEach(line -> loreComponents.add(
+						LegacyComponentSerializer.legacySection().deserialize(PlaceholderUtils.parse(player, line, plugin))
+				));
+				meta.lore(loreComponents);
+				if (customModelData > 0) {
+					meta.setCustomModelData(customModelData);
+				}
+				
+				// 处理发光效果
+				if (glow) {
+					// 使用 UNBREAKING 替代 DURABILITY（1.21+ 兼容）
+					try {
+						meta.addEnchant(Enchantment.UNBREAKING, 1, true);
+					} catch (NoSuchFieldError | Exception e) {
+						// 如果 UNBREAKING 也不存在，尝试使用其他附魔
+						try {
+							meta.addEnchant(Enchantment.MENDING, 1, true);
+						} catch (Exception ex) {
+							// 静默失败，不影响功能
+						}
+					}
+					// 隐藏附魔显示（如果配置要求）
+					if (hideEnchants) {
+						meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+					}
+				}
+				
+				// 隐藏属性
+				if (hideAttributes) {
+					meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+				}
+				
+				// 额外隐藏其他信息（可选）
+				if (hideEnchants) {
+					meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+				}
+				meta.addItemFlags(ItemFlag.HIDE_UNBREAKABLE);
+				// HIDE_POTION_EFFECTS 在 1.21+ 已移除，用 try-catch 保护
+				try {
+					meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
+				} catch (NoSuchFieldError e) {
+					// 1.21+ 版本已移除此标志，忽略
+				}
+				meta.addItemFlags(ItemFlag.HIDE_DESTROYS);
+				meta.addItemFlags(ItemFlag.HIDE_PLACED_ON);
+				
+				item.setItemMeta(meta);
+			}
+			return item;
+		}
 
         public int getSlot() {
             return slot;
