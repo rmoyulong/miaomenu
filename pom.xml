@@ -12,10 +12,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.fluxcraft</groupId>
-    <artifactId>MiaoMenu_fork</artifactId>
+    <artifactId>MiaoMenu</artifactId>
     <version>1.3.5</version>
     <packaging>jar</packaging>
-    <name>MiaoMenu_fork</name>
+    <name>MiaoMenu</name>
     <description>MiaoMenu_fork — 喵喵選單插件分支版，支援 Paper/Folia/Geyser 26.1.x（亦相容 26.2 alpha）與多語系。Fork: https://github.com/Avery11111101/MiaoMenu_fork ／ 原作 Original: https://github.com/Yamada0001/MiaoMenu</description>
 
     <properties>
@@ -169,7 +169,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.3</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
